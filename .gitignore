@@ -1,0 +1,29 @@
+
+# Python virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Testing cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment secrets
+.env
+.env.*
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+
+# macOS files
+.DS_Store
+
+# Editor settings
+.vscode/
