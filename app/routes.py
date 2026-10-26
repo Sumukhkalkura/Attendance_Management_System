@@ -305,6 +305,7 @@ def view_attendance():
         subject_id: Filter records by subject.
         attendance_date: Filter records by YYYY-MM-DD date.
         student_id: Filter records by student.
+        status: Filter records by attendance status.
     """
     db = get_db()
     current_user = g.current_user
@@ -312,9 +313,13 @@ def view_attendance():
     subject_id_arg = request.args.get("subject_id")
     student_id_arg = request.args.get("student_id")
     date_arg = request.args.get("attendance_date")
+    status_arg = request.args.get("status")
 
-    # Validate subject_id.
+    # ---------------------------------------------------------------
+    # Validate subject_id
+    # ---------------------------------------------------------------
     subject_id = None
+
     if subject_id_arg is not None:
         try:
             subject_id = int(subject_id_arg)
@@ -328,8 +333,11 @@ def view_attendance():
                 error="subject_id must be a positive integer"
             ), 400
 
-    # Validate student_id.
+    # ---------------------------------------------------------------
+    # Validate student_id
+    # ---------------------------------------------------------------
     student_id = None
+
     if student_id_arg is not None:
         try:
             student_id = int(student_id_arg)
@@ -343,8 +351,11 @@ def view_attendance():
                 error="student_id must be a positive integer"
             ), 400
 
-    # Validate attendance_date.
+    # ---------------------------------------------------------------
+    # Validate attendance_date
+    # ---------------------------------------------------------------
     attendance_date = None
+
     if date_arg is not None:
         attendance_date = parse_date(date_arg)
 
@@ -353,12 +364,28 @@ def view_attendance():
                 error="Invalid date format, expected YYYY-MM-DD"
             ), 400
 
+    # ---------------------------------------------------------------
+    # Validate status
+    # ---------------------------------------------------------------
+    if status_arg is not None:
+        status_arg = status_arg.strip()
+
+        if not status_arg:
+            return jsonify(
+                error="status must not be empty"
+            ), 400
+
     role = current_user["role"]
     current_user_id = current_user["id"]
 
-    # Students may view only their own attendance.
+    # ---------------------------------------------------------------
+    # Students may view only their own attendance records
+    # ---------------------------------------------------------------
     if role == "student":
-        if student_id is not None and student_id != current_user_id:
+        if (
+            student_id is not None
+            and student_id != current_user_id
+        ):
             return jsonify(
                 error="Access denied: students can only view their own records"
             ), 403
@@ -366,7 +393,9 @@ def view_attendance():
         student_id = current_user_id
 
     try:
-        # Validate that the requested subject exists and check ownership.
+        # -----------------------------------------------------------
+        # Validate the requested subject and check teacher ownership
+        # -----------------------------------------------------------
         if subject_id is not None:
             subject = db.execute(
                 """
@@ -378,7 +407,9 @@ def view_attendance():
             ).fetchone()
 
             if subject is None:
-                return jsonify(error="Subject not found"), 404
+                return jsonify(
+                    error="Subject not found"
+                ), 404
 
             if (
                 role == "teacher"
@@ -388,7 +419,9 @@ def view_attendance():
                     error="Access denied: teacher not assigned to this subject"
                 ), 403
 
-        # Validate the requested student when a filter is supplied.
+        # -----------------------------------------------------------
+        # Validate the requested student
+        # -----------------------------------------------------------
         if student_id is not None:
             student = db.execute(
                 """
@@ -400,8 +433,13 @@ def view_attendance():
             ).fetchone()
 
             if student is None:
-                return jsonify(error="Student not found"), 404
+                return jsonify(
+                    error="Student not found"
+                ), 404
 
+        # -----------------------------------------------------------
+        # Build the attendance query
+        # -----------------------------------------------------------
         query = """
             SELECT
                 a.id AS attendance_id,
@@ -421,29 +459,41 @@ def view_attendance():
 
         params = []
 
-        # Teachers are restricted to subjects assigned to them.
+        # Teachers can view records only for their assigned subjects.
         if role == "teacher":
             query += " AND s.teacher_id = ?"
             params.append(current_user_id)
 
-        # Students are restricted to their own records.
+        # Students can view only their own records.
         if role == "student":
             query += " AND a.student_id = ?"
             params.append(current_user_id)
 
+        # Filter by subject.
         if subject_id is not None:
             query += " AND a.subject_id = ?"
             params.append(subject_id)
 
+        # Filter by attendance date.
         if attendance_date is not None:
             query += " AND a.attendance_date = ?"
             params.append(attendance_date)
 
+        # Filter by student.
         if student_id is not None:
             query += " AND a.student_id = ?"
             params.append(student_id)
 
-        query += " ORDER BY a.attendance_date DESC, u.username ASC"
+        # Filter by attendance status.
+        if status_arg is not None:
+            query += " AND a.status = ?"
+            params.append(status_arg)
+
+        query += """
+            ORDER BY
+                a.attendance_date DESC,
+                u.username ASC
+        """
 
         rows = db.execute(query, params).fetchall()
 
@@ -452,8 +502,13 @@ def view_attendance():
             error="Unable to retrieve attendance records"
         ), 503
 
+    # ---------------------------------------------------------------
+    # Format response
+    # ---------------------------------------------------------------
     records = [
         {
+            # Keep both fields for backward compatibility.
+            "id": row["attendance_id"],
             "attendance_id": row["attendance_id"],
             "student_id": row["student_id"],
             "student_name": row["student_name"],
@@ -469,7 +524,6 @@ def view_attendance():
         count=len(records),
         records=records
     ), 200
-
 # =====================================================================
 # FR-03: Attendance Record Management & Teacher Helpers
 # =====================================================================
