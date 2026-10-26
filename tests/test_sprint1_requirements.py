@@ -113,9 +113,88 @@ def test_fr02_attendance_marking(client):
     assert res_unassigned.status_code == 403
 
 
-@pytest.mark.skip(reason='FR-03 pending: update, persistence, duplicate protection, permissions')
 def test_fr03_record_management(client):
-    raise NotImplementedError
+    """FR-03 acceptance test: creation, update, duplicate protection, persistence, permissions."""
+    db_path = client.application.config["DATABASE"]
+    with sqlite3.connect(db_path) as db:
+        db.execute(
+            "INSERT INTO users (username, password_hash, role, active) VALUES (?, ?, ?, ?)",
+            ("teacher_fr03", generate_password_hash("pass123"), "teacher", 1),
+        )
+        teacher_id = db.execute("SELECT id FROM users WHERE username = 'teacher_fr03'").fetchone()[0]
+
+        db.execute(
+            "INSERT INTO users (username, password_hash, role, active) VALUES (?, ?, ?, ?)",
+            ("student_fr03", generate_password_hash("pass123"), "student", 1),
+        )
+        student_id = db.execute("SELECT id FROM users WHERE username = 'student_fr03'").fetchone()[0]
+
+        db.execute(
+            "INSERT INTO subjects (name, teacher_id) VALUES (?, ?)",
+            ("Mathematics FR03", teacher_id),
+        )
+        subject_id = db.execute("SELECT id FROM subjects WHERE name = 'Mathematics FR03'").fetchone()[0]
+        db.commit()
+
+    # 1. Login as teacher
+    login_res = client.post("/api/login", json={"username": "teacher_fr03", "password": "pass123"})
+    assert login_res.status_code == 200
+
+    # 2. Record attendance (Creation)
+    create_res = client.post(
+        "/api/attendance",
+        json={
+            "student_id": student_id,
+            "subject_id": subject_id,
+            "attendance_date": "2026-10-25",
+            "status": "Present",
+        },
+    )
+    assert create_res.status_code == 201
+    record = create_res.get_json()["record"]
+    assert record["status"] == "Present"
+    record_id = record["id"]
+
+    # 3. Duplicate protection
+    dup_res = client.post(
+        "/api/attendance",
+        json={
+            "student_id": student_id,
+            "subject_id": subject_id,
+            "attendance_date": "2026-10-25",
+            "status": "Absent",
+        },
+    )
+    assert dup_res.status_code == 409
+
+    # 4. Update record
+    update_res = client.put(
+        f"/api/attendance/{record_id}",
+        json={"status": "Absent"},
+    )
+    assert update_res.status_code == 200
+    assert update_res.get_json()["record"]["status"] == "Absent"
+
+    # 5. Verify persistence via GET
+    get_res = client.get(f"/api/attendance/{record_id}")
+    assert get_res.status_code == 200
+    assert get_res.get_json()["record"]["status"] == "Absent"
+
+    # 6. Verify role permissions (student cannot modify)
+    client.post("/api/login", json={"username": "student_fr03", "password": "pass123"})
+    stu_post_res = client.post(
+        "/api/attendance",
+        json={
+            "student_id": student_id,
+            "subject_id": subject_id,
+            "attendance_date": "2026-10-26",
+            "status": "Present",
+        },
+    )
+    assert stu_post_res.status_code == 403
+
+    stu_put_res = client.put(f"/api/attendance/{record_id}", json={"status": "Present"})
+    assert stu_put_res.status_code == 403
 
 
 @pytest.mark.skip(reason='FR-04 pending: 100%, 50%, zero records, late policy, filters')
