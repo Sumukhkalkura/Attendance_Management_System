@@ -209,88 +209,6 @@ def student_check():
         message="Student access granted"
     ), 200
 
-    
-# FR-04: Attendance Percentage Calculation
-
-@api.get("/attendance/percentages")
-@login_required(["admin", "teacher"])
-def attendance_percentages():
-    """
-    Calculate and return attendance percentages for students.
-
-    Optional query parameter:
-        subject_id: Calculate attendance for a specific subject.
-    """
-
-    subject_id = request.args.get("subject_id", type=int)
-
-    if request.args.get("subject_id") is not None:
-        if subject_id is None or subject_id <= 0:
-            return jsonify(
-                error="subject_id must be a positive integer"
-            ), 400
-
-    try:
-        rows = get_db().execute(
-            """
-            SELECT
-                u.id AS student_id,
-                u.username AS student_name,
-                COUNT(a.id) AS total_classes,
-                COALESCE(
-                    SUM(
-                        CASE
-                            WHEN a.status = 'Present' THEN 1
-                            ELSE 0
-                        END
-                    ),
-                    0
-                ) AS classes_attended
-            FROM users AS u
-            LEFT JOIN attendance AS a
-                ON a.student_id = u.id
-                AND (
-                    ? IS NULL
-                    OR a.subject_id = ?
-                )
-            WHERE u.role = 'student'
-            GROUP BY u.id, u.username
-            ORDER BY u.username
-            """,
-            (subject_id, subject_id)
-        ).fetchall()
-
-    except sqlite3.Error:
-        return jsonify(
-            error="Unable to retrieve attendance records"
-        ), 503
-
-    results = []
-
-    for row in rows:
-        total_classes = row["total_classes"]
-        classes_attended = row["classes_attended"]
-
-        if total_classes == 0:
-            percentage = 0.0
-        else:
-            percentage = round(
-                (classes_attended / total_classes) * 100,
-                2
-            )
-
-        results.append({
-            "student_id": row["student_id"],
-            "student_name": row["student_name"],
-            "classes_attended": classes_attended,
-            "total_classes": total_classes,
-            "attendance_percentage": percentage
-        })
-
-    return jsonify(
-        count=len(results),
-        students=results
-    ), 200
 
 # =====================================================================
 # FR-03: Attendance Record Management & Teacher Helpers
@@ -847,4 +765,3 @@ def mark_attendance():
             "status": norm_status
         }
     ), status_code
-
