@@ -55,11 +55,12 @@ def app(tmp_path):
                 (username, generate_password_hash(password), role, active),
             )
 
-        # Classes: CSE-A (1), CSE-B (2)
+        # Classes: CSE-A (1), CSE-B (2), CSE-Empty (3)
         db.execute("INSERT INTO classes (name) VALUES (?)", ("CSE-A",))
         db.execute("INSERT INTO classes (name) VALUES (?)", ("CSE-B",))
+        db.execute("INSERT INTO classes (name) VALUES (?)", ("CSE-Empty",))
 
-        # Subjects: DBMS (1, teacher1 id 2), OS (2, teacher2 id 3)
+        # Subjects: DBMS (1, teacher1 id 2), OS (2, teacher2 id 3), Python (3, teacher1 id 2)
         db.execute(
             "INSERT INTO subjects (name, teacher_id) VALUES (?, ?)",
             ("DBMS", 2),
@@ -67,6 +68,10 @@ def app(tmp_path):
         db.execute(
             "INSERT INTO subjects (name, teacher_id) VALUES (?, ?)",
             ("OS", 3),
+        )
+        db.execute(
+            "INSERT INTO subjects (name, teacher_id) VALUES (?, ?)",
+            ("Python", 2),
         )
 
         # Enrollments:
@@ -478,9 +483,11 @@ def test_database_persistence(client, app):
     assert res.status_code == 201
 
     with sqlite3.connect(app.config["DATABASE"]) as db:
-        row = db.execute(
-            "SELECT student_id, subject_id, attendance_date, status FROM attendance WHERE student_id = 4 AND subject_id = 1",
-        ).fetchone()
+        query = (
+            "SELECT student_id, subject_id, attendance_date, status "
+            "FROM attendance WHERE student_id = 4 AND subject_id = 1"
+        )
+        row = db.execute(query).fetchone()
 
     assert row is not None
     assert row[0] == 4
@@ -534,3 +541,111 @@ def test_batch_rollback_on_failure(client, app):
             "SELECT id FROM attendance WHERE student_id = 6 AND subject_id = 1 AND attendance_date = '2026-10-25'",
         ).fetchone()
         assert row6 is None
+
+
+# ---------------------------------------------------------------------------
+# Strict Enrollment Validation (Single, Batch, Zero-Enrollment, Mixed)
+# ---------------------------------------------------------------------------
+
+def test_unenrolled_student_rejected_single(client):
+    """An unenrolled student is rejected for single attendance marking -> 400 Bad Request."""
+    login(client, "teacher2", "teacher123")  # teacher2 teaches OS (id 2)
+
+    # student2 (id 5) is NOT enrolled in CSE-B (id 2) for OS (id 2)
+    response = client.post(
+        "/api/attendance",
+        json={
+            "student_id": 5,
+            "subject_id": 2,
+            "class_id": 2,
+            "attendance_date": "2026-10-25",
+            "status": "Present",
+        },
+    )
+    assert response.status_code == 400
+    assert "not enrolled" in response.get_json()["error"]
+
+
+def test_unenrolled_student_rejected_batch(client):
+    """An unenrolled student is rejected in batch attendance marking -> 400 Bad Request."""
+    login(client, "teacher2", "teacher123")  # teacher2 teaches OS (id 2)
+
+    # student2 (id 5) is not enrolled in CSE-B (id 2) for OS (id 2)
+    response = client.post(
+        "/api/attendance",
+        json={
+            "class_id": 2,
+            "subject_id": 2,
+            "attendance_date": "2026-10-25",
+            "records": [
+                {"student_id": 5, "status": "Present"},
+            ],
+        },
+    )
+    assert response.status_code == 400
+    assert "not enrolled" in response.get_json()["error"]
+
+
+def test_zero_enrollments_rejected_single(client):
+    """A class and subject with zero enrollments reject single attendance marking -> 400 Bad Request."""
+    login(client, "teacher1", "teacher123")  # teacher1 teaches Python (id 3)
+
+    # CSE-Empty (id 3) for Python (id 3) has zero enrollments
+    response = client.post(
+        "/api/attendance",
+        json={
+            "student_id": 4,
+            "subject_id": 3,
+            "class_id": 3,
+            "attendance_date": "2026-10-25",
+            "status": "Present",
+        },
+    )
+    assert response.status_code == 400
+    assert "not enrolled" in response.get_json()["error"]
+
+
+def test_zero_enrollments_rejected_batch(client):
+    """A class and subject with zero enrollments reject batch attendance marking -> 400 Bad Request."""
+    login(client, "teacher1", "teacher123")
+
+    # CSE-Empty (id 3) for Python (id 3) has zero enrollments
+    response = client.post(
+        "/api/attendance",
+        json={
+            "class_id": 3,
+            "subject_id": 3,
+            "attendance_date": "2026-10-25",
+            "records": [
+                {"student_id": 4, "status": "Present"},
+            ],
+        },
+    )
+    assert response.status_code == 400
+    assert "enrolled" in response.get_json()["error"]
+
+
+def test_batch_mixture_enrolled_unenrolled_rejected_without_partial_writes(client, app):
+    """A batch containing a mixture of enrolled and unenrolled students is rejected without partial writes."""
+    login(client, "teacher2", "teacher123")
+
+    # In CSE-B / OS, student 4 is enrolled, but student 5 is NOT enrolled.
+    batch_payload = {
+        "class_id": 2,
+        "subject_id": 2,
+        "attendance_date": "2026-10-25",
+        "records": [
+            {"student_id": 4, "status": "Present"},
+            {"student_id": 5, "status": "Present"},
+        ],
+    }
+    response = client.post("/api/attendance", json=batch_payload)
+    assert response.status_code == 400
+    assert "not enrolled" in response.get_json()["error"]
+
+    # Verify student 4 was NOT recorded in database (atomic transaction, no partial write)
+    with sqlite3.connect(app.config["DATABASE"]) as db:
+        row = db.execute(
+            "SELECT id FROM attendance WHERE student_id = 4 AND subject_id = 2 AND attendance_date = '2026-10-25'",
+        ).fetchone()
+        assert row is None
