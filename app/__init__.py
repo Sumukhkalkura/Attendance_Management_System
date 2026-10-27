@@ -55,4 +55,14 @@ def create_app(test_config=None):
             note="Sprint 1 features under development",
         )
 
+        # NFR-01: Security response headers
+    @app.after_request
+    def add_security_headers(response):
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Content-Security-Policy"] = "default-src 'self'; frame-ancestors 'none'"
+        response.headers["Cache-Control"] = "no-store"
+        return response
+    
     return app
