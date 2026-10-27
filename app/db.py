@@ -12,12 +12,18 @@ CREATE TABLE IF NOT EXISTS users (
 );
 CREATE TABLE IF NOT EXISTS classes (
  id INTEGER PRIMARY KEY AUTOINCREMENT,
- name TEXT NOT NULL UNIQUE
+ name TEXT NOT NULL UNIQUE,
+ teacher_id INTEGER REFERENCES users(id)
 );
 CREATE TABLE IF NOT EXISTS subjects (
  id INTEGER PRIMARY KEY AUTOINCREMENT,
  name TEXT NOT NULL UNIQUE,
  teacher_id INTEGER REFERENCES users(id)
+);
+CREATE TABLE IF NOT EXISTS class_subjects (
+ class_id INTEGER NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+ subject_id INTEGER NOT NULL REFERENCES subjects(id) ON DELETE CASCADE,
+ PRIMARY KEY (class_id, subject_id)
 );
 CREATE TABLE IF NOT EXISTS enrollments (
  student_id INTEGER NOT NULL REFERENCES users(id),
@@ -35,6 +41,7 @@ CREATE TABLE IF NOT EXISTS attendance (
 );
 '''
 
+
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(current_app.config['DATABASE'])
@@ -48,6 +55,23 @@ def init_db(app):
         connection = sqlite3.connect(app.config['DATABASE'])
         try:
             connection.executescript(SCHEMA)
+            cursor = connection.cursor()
+            cursor.execute("PRAGMA table_info(classes)")
+            cols = [row[1] for row in cursor.fetchall()]
+            if 'teacher_id' not in cols:
+                connection.execute(
+                    "ALTER TABLE classes ADD COLUMN teacher_id "
+                    "INTEGER REFERENCES users(id)"
+                )
+            connection.execute('''
+                CREATE TABLE IF NOT EXISTS class_subjects (
+                    class_id INTEGER NOT NULL REFERENCES classes(id)
+                        ON DELETE CASCADE,
+                    subject_id INTEGER NOT NULL REFERENCES subjects(id)
+                        ON DELETE CASCADE,
+                    PRIMARY KEY (class_id, subject_id)
+                )
+            ''')
             connection.commit()
         finally:
             connection.close()
