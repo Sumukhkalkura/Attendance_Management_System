@@ -627,6 +627,253 @@ def activate_user(user_id):
         ), 503
 
 
+# =====================================================================
+# FR-05: Attendance Record Viewing
+# =====================================================================
+
+@api.get("/attendance")
+@login_required(["admin", "teacher", "student"])
+def view_attendance():
+    """View attendance records according to the user's role.
+
+    Optional query parameters:
+        subject_id: Filter records by subject.
+        attendance_date: Filter records by YYYY-MM-DD date.
+        student_id: Filter records by student.
+        status: Filter records by attendance status.
+        class_id: Accepted for backward compatibility.
+    """
+    db = get_db()
+    current_user = g.current_user
+
+    subject_id_arg = request.args.get("subject_id")
+    student_id_arg = request.args.get("student_id")
+    date_arg = request.args.get("attendance_date")
+    status_arg = request.args.get("status")
+
+    # ---------------------------------------------------------------
+    # Validate subject_id.
+    # ---------------------------------------------------------------
+    subject_id = None
+
+    if subject_id_arg is not None:
+        try:
+            subject_id = int(subject_id_arg)
+        except (TypeError, ValueError):
+            return jsonify(
+                error="subject_id must be a positive integer"
+            ), 400
+
+        if subject_id <= 0:
+            return jsonify(
+                error="subject_id must be a positive integer"
+            ), 400
+
+    # ---------------------------------------------------------------
+    # Validate student_id.
+    # ---------------------------------------------------------------
+    student_id = None
+
+    if student_id_arg is not None:
+        try:
+            student_id = int(student_id_arg)
+        except (TypeError, ValueError):
+            return jsonify(
+                error="student_id must be a positive integer"
+            ), 400
+
+        if student_id <= 0:
+            return jsonify(
+                error="student_id must be a positive integer"
+            ), 400
+
+    # ---------------------------------------------------------------
+    # Validate attendance_date.
+    # ---------------------------------------------------------------
+    attendance_date = None
+
+    if date_arg is not None:
+        attendance_date = parse_date(date_arg)
+
+        if attendance_date is None:
+            return jsonify(
+                error="Invalid date format, expected YYYY-MM-DD"
+            ), 400
+
+    # ---------------------------------------------------------------
+    # Validate status.
+    # ---------------------------------------------------------------
+    if status_arg is not None:
+        status_arg = status_arg.strip()
+
+        if not status_arg:
+            return jsonify(
+                error="status must not be empty"
+            ), 400
+
+    role = current_user["role"]
+    current_user_id = current_user["id"]
+
+    # ---------------------------------------------------------------
+    # Students may view only their own attendance.
+    # ---------------------------------------------------------------
+    if role == "student":
+        if (
+            student_id is not None
+            and student_id != current_user_id
+        ):
+            return jsonify(
+                error=(
+                    "Access denied: "
+                    "students can only view their own attendance"
+                )
+            ), 403
+
+        student_id = current_user_id
+
+    try:
+        # -----------------------------------------------------------
+        # Validate subject and check teacher ownership.
+        # -----------------------------------------------------------
+        if subject_id is not None:
+            subject = db.execute(
+                """
+                SELECT id, teacher_id
+                FROM subjects
+                WHERE id = ?
+                """,
+                (subject_id,)
+            ).fetchone()
+
+            if subject is None:
+                return jsonify(
+                    error="Subject not found"
+                ), 404
+
+            if (
+                role == "teacher"
+                and subject["teacher_id"] != current_user_id
+            ):
+                return jsonify(
+                    error=(
+                        "Access denied: "
+                        "teacher not assigned to this subject"
+                    )
+                ), 403
+
+        # -----------------------------------------------------------
+        # Validate the requested student.
+        # -----------------------------------------------------------
+        if student_id is not None:
+            student = db.execute(
+                """
+                SELECT id
+                FROM users
+                WHERE id = ? AND role = 'student'
+                """,
+                (student_id,)
+            ).fetchone()
+
+            if student is None:
+                return jsonify(
+                    error="Student not found"
+                ), 404
+
+        # -----------------------------------------------------------
+        # Build the attendance query.
+        # -----------------------------------------------------------
+        query = """
+            SELECT
+                a.id AS attendance_id,
+                a.student_id,
+                u.username AS student_name,
+                a.subject_id,
+                s.name AS subject_name,
+                a.attendance_date,
+                a.status
+            FROM attendance AS a
+            JOIN users AS u
+                ON u.id = a.student_id
+            JOIN subjects AS s
+                ON s.id = a.subject_id
+            WHERE 1 = 1
+        """
+
+        params = []
+
+        # Teachers can view only records for their assigned subjects.
+        if role == "teacher":
+            query += " AND s.teacher_id = ?"
+            params.append(current_user_id)
+
+        # Students can view only their own records.
+        if role == "student":
+            query += " AND a.student_id = ?"
+            params.append(current_user_id)
+
+        # Filter by subject.
+        if subject_id is not None:
+            query += " AND a.subject_id = ?"
+            params.append(subject_id)
+
+        # Filter by date.
+        if attendance_date is not None:
+            query += " AND a.attendance_date = ?"
+            params.append(attendance_date)
+
+        # Filter by student.
+        if student_id is not None:
+            query += " AND a.student_id = ?"
+            params.append(student_id)
+
+        # Filter by attendance status.
+        if status_arg is not None:
+            query += " AND a.status = ?"
+            params.append(status_arg)
+
+        # Preserve compatibility with callers passing class_id.
+        # This schema does not have a class_id column in the
+        # attendance table, so class_id is not used as a SQL filter.
+
+        query += """
+            ORDER BY
+                a.attendance_date DESC,
+                u.username ASC
+        """
+
+        rows = db.execute(query, params).fetchall()
+
+    except sqlite3.Error:
+        return jsonify(
+            error="Unable to retrieve attendance records"
+        ), 503
+
+    # ---------------------------------------------------------------
+    # Format response.
+    # Include both ID keys for backward compatibility.
+    # ---------------------------------------------------------------
+    records = [
+        {
+            "id": row["attendance_id"],
+            "attendance_id": row["attendance_id"],
+            "student_id": row["student_id"],
+            "student_name": row["student_name"],
+            "subject_id": row["subject_id"],
+            "subject_name": row["subject_name"],
+            "attendance_date": row["attendance_date"],
+            "status": row["status"]
+        }
+        for row in rows
+    ]
+
+    return jsonify(
+        count=len(records),
+        records=records
+    ), 200
+
+# =====================================================================
+# FR-03: Attendance Record Management & Teacher Helpers
+# =====================================================================
 
 
 
