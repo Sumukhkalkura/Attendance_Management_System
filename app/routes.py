@@ -1,4 +1,4 @@
-"""FR-01: Authentication and FR-03: Attendance Record Management."""
+"""FR-01 authentication, attendance management, and FR-15 logout."""
 
 import sqlite3
 from datetime import datetime
@@ -1389,3 +1389,24 @@ def delete_attendance_record(record_id):
         return jsonify(error="Database temporarily unavailable"), 503
 
     return jsonify(message="Attendance record deleted successfully"), 200
+
+
+# =====================================================================
+# FR-15: User Logout
+# =====================================================================
+
+@api.post("/logout")
+@login_required()
+def logout():
+    """
+    Log out the currently authenticated user.
+
+    Clears the Flask session so the user can no longer access
+    protected endpoints without logging in again.
+    """
+
+    session.clear()
+
+    return jsonify(
+        message="Logged out successfully"
+    ), 200
