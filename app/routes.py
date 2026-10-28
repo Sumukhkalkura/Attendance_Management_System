@@ -2766,6 +2766,103 @@ def delete_attendance_record(record_id):
         return jsonify(error="Database temporarily unavailable"), 503
 
     return jsonify(message="Attendance record deleted successfully"), 200
+# ============================================================
+# FR-09: Student Enrollment in Classes and Subjects
+# ============================================================
+
+@api.post("/enrollments")
+@login_required(["admin"])
+def create_enrollment():
+    """Enroll a student in a class and subject."""
+
+    db = get_db()
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify(error="A JSON request body is required"), 400
+
+    student_id = data.get("student_id")
+    class_id = data.get("class_id")
+    subject_id = data.get("subject_id")
+
+    if (
+        not isinstance(student_id, int)
+        or isinstance(student_id, bool)
+        or not isinstance(class_id, int)
+        or isinstance(class_id, bool)
+        or not isinstance(subject_id, int)
+        or isinstance(subject_id, bool)
+        or student_id <= 0
+        or class_id <= 0
+        or subject_id <= 0
+    ):
+        return jsonify(
+            error="student_id, class_id, and subject_id must be positive integers"
+        ), 400
+
+    try:
+        student = db.execute(
+            "SELECT id, role, active FROM users WHERE id = ?",
+            (student_id,),
+        ).fetchone()
+
+        if student is None or student["role"] != "student":
+            return jsonify(error="Student not found"), 404
+
+        if not student["active"]:
+            return jsonify(error="Student account is inactive"), 400
+
+        class_row = db.execute(
+            "SELECT id FROM classes WHERE id = ?",
+            (class_id,),
+        ).fetchone()
+
+        if class_row is None:
+            return jsonify(error="Class not found"), 404
+
+        subject = db.execute(
+            "SELECT id FROM subjects WHERE id = ?",
+            (subject_id,),
+        ).fetchone()
+
+        if subject is None:
+            return jsonify(error="Subject not found"), 404
+
+        existing = db.execute(
+            """
+            SELECT 1
+            FROM enrollments
+            WHERE student_id = ?
+              AND class_id = ?
+              AND subject_id = ?
+            """,
+            (student_id, class_id, subject_id),
+        ).fetchone()
+
+        if existing is not None:
+            return jsonify(error="Student is already enrolled"), 409
+
+        db.execute(
+            """
+            INSERT INTO enrollments (student_id, class_id, subject_id)
+            VALUES (?, ?, ?)
+            """,
+            (student_id, class_id, subject_id),
+        )
+        db.commit()
+
+        return jsonify(
+            message="Student enrolled successfully",
+            enrollment={
+                "student_id": student_id,
+                "class_id": class_id,
+                "subject_id": subject_id,
+            },
+        ), 201
+
+    except sqlite3.Error:
+        db.rollback()
+        return jsonify(error="Database temporarily unavailable"), 503
 
 
 # =====================================================================
