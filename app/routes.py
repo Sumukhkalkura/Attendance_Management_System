@@ -1,15 +1,16 @@
-"""FR-01: Authentication and FR-03: Attendance Record Management."""
+"""Attendance Management System API routes: FR-01 authentication, FR-07 user management, FR-02/03 attendance records, FR-04 percentages, and FR-15 logout."""
 
 import sqlite3
 from datetime import datetime
 from functools import wraps
 
 from flask import Blueprint, jsonify, request, session, g
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from .db import get_db
 
 VALID_STATUSES = {"Present", "Absent", "Late"}
+VALID_ROLES = {"admin", "teacher", "student"}
 
 
 def normalize_status(status):
@@ -38,10 +39,13 @@ api = Blueprint("api", __name__)
 
 @api.get("/health")
 def health():
+    """Check whether the API is running."""
     return jsonify(status="ok"), 200
 
 
+# =====================================================================
 # FR-01: Role-Based Access Control
+# =====================================================================
 
 def login_required(allowed_roles=None):
     """Allow access only to authenticated, authorized users."""
@@ -211,8 +215,1381 @@ def student_check():
 
 
 # =====================================================================
+# FR-07: User Management
+# =====================================================================
+
+@api.post("/users")
+@login_required(["admin"])
+def create_user():
+    """
+    Create an admin, teacher, or student account.
+
+    Expected JSON:
+    {
+        "username": "student01",
+        "password": "StrongPassword123",
+        "role": "student"
+    }
+    """
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify(
+            error="JSON request body required"
+        ), 400
+
+    username = data.get("username")
+    password = data.get("password")
+    role = data.get("role")
+
+    if (
+        not isinstance(username, str)
+        or not username.strip()
+        or not isinstance(password, str)
+        or not password
+        or role not in VALID_ROLES
+    ):
+        return jsonify(
+            error="Username, password, and valid role are required"
+        ), 400
+
+    active = 1
+    if "active" in data:
+        raw_active = data["active"]
+        if isinstance(raw_active, bool):
+            active = 1 if raw_active else 0
+        elif isinstance(raw_active, int) and raw_active in (0, 1):
+            active = raw_active
+        else:
+            return jsonify(error="Active status must be a boolean or 0/1"), 400
+
+    try:
+        db = get_db()
+        password_hash = generate_password_hash(password)
+
+        cursor = db.execute(
+            """
+            INSERT INTO users (username, password_hash, role, active)
+            VALUES (?, ?, ?, ?)
+            """,
+            (username.strip(), password_hash, role, active),
+        )
+        db.commit()
+
+        return jsonify(
+            message="User created successfully",
+            user={
+                "id": cursor.lastrowid,
+                "username": username.strip(),
+                "role": role,
+                "active": active,
+            },
+        ), 201
+
+    except sqlite3.IntegrityError:
+        get_db().rollback()
+        return jsonify(
+            error="Username already exists"
+        ), 409
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(
+            error="Database temporarily unavailable"
+        ), 503
+
+
+@api.get("/users")
+@login_required(["admin"])
+def list_users():
+    """List user accounts with optional role and active filtering."""
+    db = get_db()
+    role = request.args.get("role")
+    active = request.args.get("active")
+
+    query = "SELECT id, username, role, active FROM users"
+    conditions = []
+    params = []
+
+    if role:
+        cleaned_role = role.strip().lower()
+        if cleaned_role not in VALID_ROLES:
+            return jsonify(error="Invalid role filter"), 400
+        conditions.append("role = ?")
+        params.append(cleaned_role)
+
+    if active is not None:
+        if active.lower() in ("true", "1"):
+            conditions.append("active = 1")
+        elif active.lower() in ("false", "0"):
+            conditions.append("active = 0")
+        else:
+            return jsonify(error="Invalid active filter"), 400
+
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+
+    query += " ORDER BY id"
+
+    try:
+        users = db.execute(query, params).fetchall()
+        return jsonify(
+            users=[
+                {
+                    "id": user["id"],
+                    "username": user["username"],
+                    "role": user["role"],
+                    "active": user["active"],
+                }
+                for user in users
+            ]
+        ), 200
+
+    except sqlite3.Error:
+        return jsonify(
+            error="Database temporarily unavailable"
+        ), 503
+
+
+@api.get("/users/<int:user_id>")
+@login_required(["admin"])
+def get_user(user_id):
+    """Retrieve details for a specific user."""
+    try:
+        user = get_db().execute(
+            """
+            SELECT id, username, role, active
+            FROM users
+            WHERE id = ?
+            """,
+            (user_id,),
+        ).fetchone()
+
+        if user is None:
+            return jsonify(error="User not found"), 404
+
+        return jsonify(
+            user={
+                "id": user["id"],
+                "username": user["username"],
+                "role": user["role"],
+                "active": user["active"],
+            }
+        ), 200
+
+    except sqlite3.Error:
+        return jsonify(
+            error="Database temporarily unavailable"
+        ), 503
+
+
+@api.route("/users/<int:user_id>", methods=["PUT", "PATCH"])
+@login_required(["admin"])
+def update_user(user_id):
+    """
+    Update a user's information (username, role, password, active).
+    """
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict) or not data:
+        return jsonify(
+            error="JSON request body required"
+        ), 400
+
+    allowed_fields = {"username", "role", "password", "active"}
+
+    if not set(data).issubset(allowed_fields):
+        return jsonify(
+            error="Only valid user fields can be updated"
+        ), 400
+
+    username = data.get("username")
+    role = data.get("role")
+    password = data.get("password")
+    active = data.get("active")
+
+    if "username" in data and (
+        not isinstance(username, str)
+        or not username.strip()
+    ):
+        return jsonify(
+            error="Username cannot be empty"
+        ), 400
+
+    if "role" in data and role not in VALID_ROLES:
+        return jsonify(
+            error="Role must be admin, teacher, or student"
+        ), 400
+
+    if "password" in data and (
+        not isinstance(password, str)
+        or not password
+    ):
+        return jsonify(
+            error="Password cannot be empty"
+        ), 400
+
+    if "active" in data:
+        if isinstance(active, bool):
+            active = 1 if active else 0
+        elif isinstance(active, int) and active in (0, 1):
+            pass
+        else:
+            return jsonify(error="Active status must be a boolean or 0/1"), 400
+
+    try:
+        db = get_db()
+
+        user = db.execute(
+            """
+            SELECT id, username, role, active
+            FROM users
+            WHERE id = ?
+            """,
+            (user_id,)
+        ).fetchone()
+
+        if user is None:
+            return jsonify(
+                error="User not found"
+            ), 404
+
+        new_username = (
+            username.strip()
+            if "username" in data
+            else user["username"]
+        )
+
+        new_role = (
+            role
+            if "role" in data
+            else user["role"]
+        )
+
+        new_active = (
+            active
+            if "active" in data
+            else user["active"]
+        )
+
+        if "password" in data:
+            new_password_hash = generate_password_hash(password)
+            db.execute(
+                """
+                UPDATE users
+                SET username = ?, role = ?, active = ?, password_hash = ?
+                WHERE id = ?
+                """,
+                (new_username, new_role, new_active, new_password_hash, user_id),
+            )
+        else:
+            db.execute(
+                """
+                UPDATE users
+                SET username = ?, role = ?, active = ?
+                WHERE id = ?
+                """,
+                (new_username, new_role, new_active, user_id),
+            )
+
+        db.commit()
+
+        return jsonify(
+            message="User updated successfully",
+            user={
+                "id": user_id,
+                "username": new_username,
+                "role": new_role,
+                "active": new_active,
+            }
+        ), 200
+
+    except sqlite3.IntegrityError:
+        get_db().rollback()
+        return jsonify(
+            error="Username already exists"
+        ), 409
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(
+            error="Database temporarily unavailable"
+        ), 503
+
+
+@api.route("/users/<int:user_id>/deactivate", methods=["POST", "PATCH"])
+@login_required(["admin"])
+def deactivate_user(user_id):
+    """
+    Deactivate a user account without deleting records.
+    """
+    try:
+        db = get_db()
+
+        user = db.execute(
+            """
+            SELECT id, username, role, active
+            FROM users
+            WHERE id = ?
+            """,
+            (user_id,)
+        ).fetchone()
+
+        if user is None:
+            return jsonify(
+                error="User not found"
+            ), 404
+
+        if not user["active"]:
+            return jsonify(
+                error="User is already inactive"
+            ), 409
+
+        db.execute(
+            """
+            UPDATE users
+            SET active = 0
+            WHERE id = ?
+            """,
+            (user_id,)
+        )
+        db.commit()
+
+        return jsonify(
+            message="User deactivated successfully",
+            user={
+                "id": user["id"],
+                "username": user["username"],
+                "role": user["role"],
+                "active": 0,
+            }
+        ), 200
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(
+            error="Database temporarily unavailable"
+        ), 503
+
+
+@api.route("/users/<int:user_id>/activate", methods=["POST", "PATCH"])
+@login_required(["admin"])
+def activate_user(user_id):
+    """
+    Activate a user account.
+    """
+    try:
+        db = get_db()
+
+        user = db.execute(
+            """
+            SELECT id, username, role, active
+            FROM users
+            WHERE id = ?
+            """,
+            (user_id,)
+        ).fetchone()
+
+        if user is None:
+            return jsonify(
+                error="User not found"
+            ), 404
+
+        if user["active"]:
+            return jsonify(
+                error="User is already active"
+            ), 409
+
+        db.execute(
+            """
+            UPDATE users
+            SET active = 1
+            WHERE id = ?
+            """,
+            (user_id,)
+        )
+        db.commit()
+
+        return jsonify(
+            message="User activated successfully",
+            user={
+                "id": user["id"],
+                "username": user["username"],
+                "role": user["role"],
+                "active": 1,
+            }
+        ), 200
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(
+            error="Database temporarily unavailable"
+        ), 503
+
+
+# =====================================================================
+# FR-05: Attendance Record Viewing
+# =====================================================================
+
+@api.get("/attendance")
+@login_required(["admin", "teacher", "student"])
+def view_attendance():
+    """View attendance records according to the user's role.
+
+    Optional query parameters:
+        subject_id: Filter records by subject.
+        attendance_date: Filter records by YYYY-MM-DD date.
+        student_id: Filter records by student.
+        status: Filter records by attendance status.
+        class_id: Accepted for backward compatibility.
+    """
+    db = get_db()
+    current_user = g.current_user
+
+    subject_id_arg = request.args.get("subject_id")
+    student_id_arg = request.args.get("student_id")
+    date_arg = request.args.get("attendance_date")
+    status_arg = request.args.get("status")
+
+    # ---------------------------------------------------------------
+    # Validate subject_id.
+    # ---------------------------------------------------------------
+    subject_id = None
+
+    if subject_id_arg is not None:
+        try:
+            subject_id = int(subject_id_arg)
+        except (TypeError, ValueError):
+            return jsonify(
+                error="subject_id must be a positive integer"
+            ), 400
+
+        if subject_id <= 0:
+            return jsonify(
+                error="subject_id must be a positive integer"
+            ), 400
+
+    # ---------------------------------------------------------------
+    # Validate student_id.
+    # ---------------------------------------------------------------
+    student_id = None
+
+    if student_id_arg is not None:
+        try:
+            student_id = int(student_id_arg)
+        except (TypeError, ValueError):
+            return jsonify(
+                error="student_id must be a positive integer"
+            ), 400
+
+        if student_id <= 0:
+            return jsonify(
+                error="student_id must be a positive integer"
+            ), 400
+
+    # ---------------------------------------------------------------
+    # Validate attendance_date.
+    # ---------------------------------------------------------------
+    attendance_date = None
+
+    if date_arg is not None:
+        attendance_date = parse_date(date_arg)
+
+        if attendance_date is None:
+            return jsonify(
+                error="Invalid date format, expected YYYY-MM-DD"
+            ), 400
+
+    # ---------------------------------------------------------------
+    # Validate status.
+    # ---------------------------------------------------------------
+    if status_arg is not None:
+        status_arg = status_arg.strip()
+
+        if not status_arg:
+            return jsonify(
+                error="status must not be empty"
+            ), 400
+
+    role = current_user["role"]
+    current_user_id = current_user["id"]
+
+    # ---------------------------------------------------------------
+    # Students may view only their own attendance.
+    # ---------------------------------------------------------------
+    if role == "student":
+        if (
+            student_id is not None
+            and student_id != current_user_id
+        ):
+            return jsonify(
+                error=(
+                    "Access denied: "
+                    "students can only view their own attendance"
+                )
+            ), 403
+
+        student_id = current_user_id
+
+    try:
+        # -----------------------------------------------------------
+        # Validate subject and check teacher ownership.
+        # -----------------------------------------------------------
+        if subject_id is not None:
+            subject = db.execute(
+                """
+                SELECT id, teacher_id
+                FROM subjects
+                WHERE id = ?
+                """,
+                (subject_id,)
+            ).fetchone()
+
+            if subject is None:
+                return jsonify(
+                    error="Subject not found"
+                ), 404
+
+            if (
+                role == "teacher"
+                and subject["teacher_id"] != current_user_id
+            ):
+                return jsonify(
+                    error=(
+                        "Access denied: "
+                        "teacher not assigned to this subject"
+                    )
+                ), 403
+
+        # -----------------------------------------------------------
+        # Validate the requested student.
+        # -----------------------------------------------------------
+        if student_id is not None:
+            student = db.execute(
+                """
+                SELECT id
+                FROM users
+                WHERE id = ? AND role = 'student'
+                """,
+                (student_id,)
+            ).fetchone()
+
+            if student is None:
+                return jsonify(
+                    error="Student not found"
+                ), 404
+
+        # -----------------------------------------------------------
+        # Build the attendance query.
+        # -----------------------------------------------------------
+        query = """
+            SELECT
+                a.id AS attendance_id,
+                a.student_id,
+                u.username AS student_name,
+                a.subject_id,
+                s.name AS subject_name,
+                a.attendance_date,
+                a.status
+            FROM attendance AS a
+            JOIN users AS u
+                ON u.id = a.student_id
+            JOIN subjects AS s
+                ON s.id = a.subject_id
+            WHERE 1 = 1
+        """
+
+        params = []
+
+        # Teachers can view only records for their assigned subjects.
+        if role == "teacher":
+            query += " AND s.teacher_id = ?"
+            params.append(current_user_id)
+
+        # Students can view only their own records.
+        if role == "student":
+            query += " AND a.student_id = ?"
+            params.append(current_user_id)
+
+        # Filter by subject.
+        if subject_id is not None:
+            query += " AND a.subject_id = ?"
+            params.append(subject_id)
+
+        # Filter by date.
+        if attendance_date is not None:
+            query += " AND a.attendance_date = ?"
+            params.append(attendance_date)
+
+        # Filter by student.
+        if student_id is not None:
+            query += " AND a.student_id = ?"
+            params.append(student_id)
+
+        # Filter by attendance status.
+        if status_arg is not None:
+            query += " AND a.status = ?"
+            params.append(status_arg)
+
+        # Preserve compatibility with callers passing class_id.
+        # This schema does not have a class_id column in the
+        # attendance table, so class_id is not used as a SQL filter.
+
+        query += """
+            ORDER BY
+                a.attendance_date DESC,
+                u.username ASC
+        """
+
+        rows = db.execute(query, params).fetchall()
+
+    except sqlite3.Error:
+        return jsonify(
+            error="Unable to retrieve attendance records"
+        ), 503
+
+    # ---------------------------------------------------------------
+    # Format response.
+    # Include both ID keys for backward compatibility.
+    # ---------------------------------------------------------------
+    records = [
+        {
+            "id": row["attendance_id"],
+            "attendance_id": row["attendance_id"],
+            "student_id": row["student_id"],
+            "student_name": row["student_name"],
+            "subject_id": row["subject_id"],
+            "subject_name": row["subject_name"],
+            "attendance_date": row["attendance_date"],
+            "status": row["status"]
+        }
+        for row in rows
+    ]
+
+    return jsonify(
+        count=len(records),
+        records=records
+    ), 200
+
+# =====================================================================
 # FR-03: Attendance Record Management & Teacher Helpers
 # =====================================================================
+
+
+
+# =====================================================================
+# FR-08: Class and Subject Management
+# =====================================================================
+
+@api.get("/classes")
+@login_required(["admin"])
+def list_classes():
+    """Return all classes with teacher assignment information."""
+    try:
+        rows = get_db().execute(
+            """
+            SELECT
+                c.id,
+                c.name,
+                c.teacher_id,
+                u.username AS teacher_username
+            FROM classes AS c
+            LEFT JOIN users AS u ON c.teacher_id = u.id
+            ORDER BY c.name
+            """
+        ).fetchall()
+
+        return jsonify(
+            classes=[
+                {
+                    "id": row["id"],
+                    "name": row["name"],
+                    "teacher_id": row["teacher_id"],
+                    "teacher_username": row["teacher_username"],
+                }
+                for row in rows
+            ]
+        ), 200
+
+    except sqlite3.Error:
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.post("/classes")
+@login_required(["admin"])
+def create_class():
+    """Create a new class, optionally assigning a teacher."""
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify(error="JSON request body required"), 400
+
+    name = data.get("name")
+    teacher_id = data.get("teacher_id")
+
+    if not isinstance(name, str) or not name.strip():
+        return jsonify(error="Class name is required"), 400
+
+    if teacher_id is not None and (
+        isinstance(teacher_id, bool) or not isinstance(teacher_id, int)
+    ):
+        return jsonify(error="teacher_id must be an integer"), 400
+
+    name = name.strip()
+
+    try:
+        db = get_db()
+
+        if teacher_id is not None:
+            teacher = db.execute(
+                """
+                SELECT id
+                FROM users
+                WHERE id = ? AND role = 'teacher' AND active = 1
+                """,
+                (teacher_id,)
+            ).fetchone()
+
+            if teacher is None:
+                return jsonify(error="Active teacher account not found"), 400
+
+        cursor = db.execute(
+            "INSERT INTO classes (name, teacher_id) VALUES (?, ?)",
+            (name, teacher_id)
+        )
+        db.commit()
+
+        class_dict = {
+            "id": cursor.lastrowid,
+            "name": name,
+            "teacher_id": teacher_id,
+        }
+
+        return jsonify({
+            "message": "Class created successfully",
+            "class_info": class_dict,
+            "class": class_dict,
+        }), 201
+
+    except sqlite3.IntegrityError:
+        get_db().rollback()
+        return jsonify(error="Class name already exists"), 409
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.get("/classes/<int:class_id>")
+@login_required(["admin"])
+def get_class(class_id):
+    """Retrieve details for a specific class."""
+    try:
+        row = get_db().execute(
+            """
+            SELECT
+                c.id,
+                c.name,
+                c.teacher_id,
+                u.username AS teacher_username
+            FROM classes AS c
+            LEFT JOIN users AS u ON c.teacher_id = u.id
+            WHERE c.id = ?
+            """,
+            (class_id,)
+        ).fetchone()
+
+        if row is None:
+            return jsonify(error="Class not found"), 404
+
+        class_dict = {
+            "id": row["id"],
+            "name": row["name"],
+            "teacher_id": row["teacher_id"],
+            "teacher_username": row["teacher_username"],
+        }
+
+        return jsonify({
+            "class_info": class_dict,
+            "class": class_dict,
+        }), 200
+
+    except sqlite3.Error:
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.route("/classes/<int:class_id>", methods=["PUT", "PATCH"])
+@login_required(["admin"])
+def update_class(class_id):
+    """Update an existing class name or teacher assignment."""
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify(error="JSON request body required"), 400
+
+    allowed_fields = {"name", "teacher_id"}
+    if not set(data).issubset(allowed_fields) or not data:
+        return jsonify(error="Valid class update fields required"), 400
+
+    name = data.get("name")
+    teacher_id = data.get("teacher_id")
+
+    if "name" in data and (not isinstance(name, str) or not name.strip()):
+        return jsonify(error="Class name is required"), 400
+
+    if "teacher_id" in data and teacher_id is not None and (
+        isinstance(teacher_id, bool) or not isinstance(teacher_id, int)
+    ):
+        return jsonify(error="teacher_id must be an integer"), 400
+
+    try:
+        db = get_db()
+
+        existing = db.execute(
+            "SELECT id, name, teacher_id FROM classes WHERE id = ?",
+            (class_id,)
+        ).fetchone()
+
+        if existing is None:
+            return jsonify(error="Class not found"), 404
+
+        new_name = name.strip() if "name" in data else existing["name"]
+        new_teacher_id = existing["teacher_id"]
+
+        if "teacher_id" in data:
+            if teacher_id is not None:
+                teacher = db.execute(
+                    """
+                    SELECT id
+                    FROM users
+                    WHERE id = ? AND role = 'teacher' AND active = 1
+                    """,
+                    (teacher_id,)
+                ).fetchone()
+
+                if teacher is None:
+                    return jsonify(error="Active teacher account not found"), 400
+                new_teacher_id = teacher_id
+            else:
+                new_teacher_id = None
+
+        db.execute(
+            "UPDATE classes SET name = ?, teacher_id = ? WHERE id = ?",
+            (new_name, new_teacher_id, class_id)
+        )
+        db.commit()
+
+        class_dict = {
+            "id": class_id,
+            "name": new_name,
+            "teacher_id": new_teacher_id,
+        }
+
+        return jsonify({
+            "message": "Class updated successfully",
+            "class_info": class_dict,
+            "class": class_dict,
+        }), 200
+
+    except sqlite3.IntegrityError:
+        get_db().rollback()
+        return jsonify(error="Class name already exists"), 409
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.route("/classes/<int:class_id>/teacher", methods=["PUT", "PATCH"])
+@login_required(["admin"])
+def assign_class_teacher(class_id):
+    """Assign or reassign an active teacher to a class."""
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify(error="JSON request body required"), 400
+
+    teacher_id = data.get("teacher_id")
+
+    if isinstance(teacher_id, bool) or not isinstance(teacher_id, int):
+        return jsonify(error="teacher_id must be an integer"), 400
+
+    try:
+        db = get_db()
+
+        cls = db.execute("SELECT id FROM classes WHERE id = ?", (class_id,)).fetchone()
+        if cls is None:
+            return jsonify(error="Class not found"), 404
+
+        teacher = db.execute(
+            """
+            SELECT id
+            FROM users
+            WHERE id = ? AND role = 'teacher' AND active = 1
+            """,
+            (teacher_id,)
+        ).fetchone()
+
+        if teacher is None:
+            return jsonify(error="Active teacher account not found"), 400
+
+        db.execute("UPDATE classes SET teacher_id = ? WHERE id = ?", (teacher_id, class_id))
+        db.commit()
+
+        return jsonify(
+            message="Teacher assigned to class successfully",
+            class_id=class_id,
+            teacher_id=teacher_id,
+        ), 200
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.post("/classes/<int:class_id>/subjects")
+@login_required(["admin"])
+def associate_subject_with_class(class_id):
+    """Associate a subject with a class."""
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify(error="JSON request body required"), 400
+
+    subject_id = data.get("subject_id")
+    if isinstance(subject_id, bool) or not isinstance(subject_id, int):
+        return jsonify(error="subject_id must be an integer"), 400
+
+    try:
+        db = get_db()
+
+        cls = db.execute("SELECT id FROM classes WHERE id = ?", (class_id,)).fetchone()
+        if cls is None:
+            return jsonify(error="Class not found"), 404
+
+        subj = db.execute("SELECT id FROM subjects WHERE id = ?", (subject_id,)).fetchone()
+        if subj is None:
+            return jsonify(error="Subject not found"), 404
+
+        exists = db.execute(
+            "SELECT 1 FROM class_subjects WHERE class_id = ? AND subject_id = ?",
+            (class_id, subject_id)
+        ).fetchone()
+
+        if exists is not None:
+            return jsonify(error="Subject already associated with this class"), 409
+
+        db.execute(
+            "INSERT INTO class_subjects (class_id, subject_id) VALUES (?, ?)",
+            (class_id, subject_id)
+        )
+        db.commit()
+
+        return jsonify(
+            message="Subject associated with class successfully",
+            class_id=class_id,
+            subject_id=subject_id,
+        ), 201
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.get("/classes/<int:class_id>/subjects")
+@login_required(["admin"])
+def get_class_subjects(class_id):
+    """List all subjects associated with a specific class."""
+    try:
+        db = get_db()
+
+        cls = db.execute("SELECT id, name FROM classes WHERE id = ?", (class_id,)).fetchone()
+        if cls is None:
+            return jsonify(error="Class not found"), 404
+
+        rows = db.execute(
+            """
+            SELECT DISTINCT
+                s.id,
+                s.name,
+                s.teacher_id,
+                u.username AS teacher_username
+            FROM subjects AS s
+            JOIN class_subjects AS cs ON s.id = cs.subject_id
+            LEFT JOIN users AS u ON s.teacher_id = u.id
+            WHERE cs.class_id = ?
+            ORDER BY s.name
+            """,
+            (class_id,)
+        ).fetchall()
+
+        return jsonify(
+            class_id=class_id,
+            subjects=[
+                {
+                    "id": row["id"],
+                    "name": row["name"],
+                    "teacher_id": row["teacher_id"],
+                    "teacher_username": row["teacher_username"],
+                }
+                for row in rows
+            ]
+        ), 200
+
+    except sqlite3.Error:
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.delete("/classes/<int:class_id>/subjects/<int:subject_id>")
+@login_required(["admin"])
+def remove_subject_from_class(class_id, subject_id):
+    """Dissociate a subject from a class."""
+    try:
+        db = get_db()
+
+        cls = db.execute("SELECT id FROM classes WHERE id = ?", (class_id,)).fetchone()
+        if cls is None:
+            return jsonify(error="Class not found"), 404
+
+        subj = db.execute("SELECT id FROM subjects WHERE id = ?", (subject_id,)).fetchone()
+        if subj is None:
+            return jsonify(error="Subject not found"), 404
+
+        cursor = db.execute(
+            "DELETE FROM class_subjects WHERE class_id = ? AND subject_id = ?",
+            (class_id, subject_id)
+        )
+        db.commit()
+
+        return jsonify(message="Subject dissociated from class successfully"), 200
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.get("/subjects")
+@login_required(["admin"])
+def list_subjects():
+    """Return all subjects and their assigned teachers, with optional class_id filter."""
+    class_id = request.args.get("class_id", type=int)
+
+    try:
+        db = get_db()
+
+        if class_id is not None:
+            rows = db.execute(
+                """
+                SELECT DISTINCT
+                    s.id,
+                    s.name,
+                    s.teacher_id,
+                    u.username AS teacher_username
+                FROM subjects AS s
+                LEFT JOIN class_subjects AS cs ON s.id = cs.subject_id
+                LEFT JOIN users AS u ON s.teacher_id = u.id
+                WHERE cs.class_id = ?
+                ORDER BY s.name
+                """,
+                (class_id,)
+            ).fetchall()
+        else:
+            rows = db.execute(
+                """
+                SELECT
+                    s.id,
+                    s.name,
+                    s.teacher_id,
+                    u.username AS teacher_username
+                FROM subjects AS s
+                LEFT JOIN users AS u ON s.teacher_id = u.id
+                ORDER BY s.name
+                """
+            ).fetchall()
+
+        return jsonify(
+            subjects=[
+                {
+                    "id": row["id"],
+                    "name": row["name"],
+                    "teacher_id": row["teacher_id"],
+                    "teacher_username": row["teacher_username"],
+                }
+                for row in rows
+            ]
+        ), 200
+
+    except sqlite3.Error:
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.post("/subjects")
+@login_required(["admin"])
+def create_subject():
+    """Create a subject, optionally assigning a teacher and associating with a class."""
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify(error="JSON request body required"), 400
+
+    name = data.get("name")
+    teacher_id = data.get("teacher_id")
+    class_id = data.get("class_id")
+
+    if not isinstance(name, str) or not name.strip():
+        return jsonify(error="Subject name is required"), 400
+
+    if teacher_id is not None and (
+        isinstance(teacher_id, bool) or not isinstance(teacher_id, int)
+    ):
+        return jsonify(error="teacher_id must be an integer"), 400
+
+    if class_id is not None and (
+        isinstance(class_id, bool) or not isinstance(class_id, int)
+    ):
+        return jsonify(error="class_id must be an integer"), 400
+
+    try:
+        db = get_db()
+
+        if teacher_id is not None:
+            teacher = db.execute(
+                """
+                SELECT id
+                FROM users
+                WHERE id = ? AND role = 'teacher' AND active = 1
+                """,
+                (teacher_id,)
+            ).fetchone()
+
+            if teacher is None:
+                return jsonify(error="Active teacher account not found"), 400
+
+        if class_id is not None:
+            cls = db.execute("SELECT id FROM classes WHERE id = ?", (class_id,)).fetchone()
+            if cls is None:
+                return jsonify(error="Class not found"), 404
+
+        name = name.strip()
+
+        cursor = db.execute(
+            "INSERT INTO subjects (name, teacher_id) VALUES (?, ?)",
+            (name, teacher_id)
+        )
+        subject_id = cursor.lastrowid
+
+        if class_id is not None:
+            db.execute(
+                "INSERT OR IGNORE INTO class_subjects (class_id, subject_id) VALUES (?, ?)",
+                (class_id, subject_id)
+            )
+
+        db.commit()
+
+        resp_dict = {
+            "id": subject_id,
+            "name": name,
+            "teacher_id": teacher_id,
+        }
+        if class_id is not None:
+            resp_dict["class_id"] = class_id
+
+        return jsonify(
+            message="Subject created successfully",
+            subject=resp_dict,
+        ), 201
+
+    except sqlite3.IntegrityError:
+        get_db().rollback()
+        return jsonify(error="Subject name already exists"), 409
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.get("/subjects/<int:subject_id>")
+@login_required(["admin"])
+def get_subject(subject_id):
+    """Retrieve details for a specific subject."""
+    try:
+        row = get_db().execute(
+            """
+            SELECT
+                s.id,
+                s.name,
+                s.teacher_id,
+                u.username AS teacher_username
+            FROM subjects AS s
+            LEFT JOIN users AS u ON s.teacher_id = u.id
+            WHERE s.id = ?
+            """,
+            (subject_id,)
+        ).fetchone()
+
+        if row is None:
+            return jsonify(error="Subject not found"), 404
+
+        return jsonify(
+            subject={
+                "id": row["id"],
+                "name": row["name"],
+                "teacher_id": row["teacher_id"],
+                "teacher_username": row["teacher_username"],
+            }
+        ), 200
+
+    except sqlite3.Error:
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.route("/subjects/<int:subject_id>", methods=["PUT", "PATCH"])
+@login_required(["admin"])
+def update_subject(subject_id):
+    """Update a subject name or teacher assignment."""
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify(error="JSON request body required"), 400
+
+    allowed_fields = {"name", "teacher_id", "class_id"}
+    if not set(data).issubset(allowed_fields) or not data:
+        return jsonify(error="Valid subject update fields required"), 400
+
+    name = data.get("name")
+    teacher_id = data.get("teacher_id")
+    class_id = data.get("class_id")
+
+    if "name" in data and (not isinstance(name, str) or not name.strip()):
+        return jsonify(error="Subject name is required"), 400
+
+    if "teacher_id" in data and teacher_id is not None and (
+        isinstance(teacher_id, bool) or not isinstance(teacher_id, int)
+    ):
+        return jsonify(error="teacher_id must be an integer"), 400
+
+    if "class_id" in data and class_id is not None and (
+        isinstance(class_id, bool) or not isinstance(class_id, int)
+    ):
+        return jsonify(error="class_id must be an integer"), 400
+
+    try:
+        db = get_db()
+
+        existing = db.execute(
+            "SELECT id, name, teacher_id FROM subjects WHERE id = ?",
+            (subject_id,)
+        ).fetchone()
+
+        if existing is None:
+            return jsonify(error="Subject not found"), 404
+
+        new_name = name.strip() if "name" in data else existing["name"]
+        new_teacher_id = existing["teacher_id"]
+
+        if "teacher_id" in data:
+            if teacher_id is not None:
+                teacher = db.execute(
+                    """
+                    SELECT id
+                    FROM users
+                    WHERE id = ? AND role = 'teacher' AND active = 1
+                    """,
+                    (teacher_id,)
+                ).fetchone()
+
+                if teacher is None:
+                    return jsonify(error="Active teacher account not found"), 400
+                new_teacher_id = teacher_id
+            else:
+                new_teacher_id = None
+
+        if "class_id" in data and class_id is not None:
+            cls = db.execute("SELECT id FROM classes WHERE id = ?", (class_id,)).fetchone()
+            if cls is None:
+                return jsonify(error="Class not found"), 404
+            db.execute(
+                "INSERT OR IGNORE INTO class_subjects (class_id, subject_id) VALUES (?, ?)",
+                (class_id, subject_id)
+            )
+
+        db.execute(
+            "UPDATE subjects SET name = ?, teacher_id = ? WHERE id = ?",
+            (new_name, new_teacher_id, subject_id)
+        )
+        db.commit()
+
+        return jsonify(
+            message="Subject updated successfully",
+            subject={
+                "id": subject_id,
+                "name": new_name,
+                "teacher_id": new_teacher_id,
+            }
+        ), 200
+
+    except sqlite3.IntegrityError:
+        get_db().rollback()
+        return jsonify(error="Subject name already exists"), 409
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(error="Database temporarily unavailable"), 503
+
+
+@api.route("/subjects/<int:subject_id>/teacher", methods=["PUT", "PATCH"])
+@login_required(["admin"])
+def assign_teacher(subject_id):
+    """Assign or reassign an active teacher to a subject."""
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify(error="JSON request body required"), 400
+
+    teacher_id = data.get("teacher_id")
+
+    if isinstance(teacher_id, bool) or not isinstance(teacher_id, int):
+        return jsonify(error="teacher_id must be an integer"), 400
+
+    try:
+        db = get_db()
+
+        subject = db.execute(
+            "SELECT id FROM subjects WHERE id = ?",
+            (subject_id,)
+        ).fetchone()
+
+        if subject is None:
+            return jsonify(error="Subject not found"), 404
+
+        teacher = db.execute(
+            """
+            SELECT id
+            FROM users
+            WHERE id = ? AND role = 'teacher' AND active = 1
+            """,
+            (teacher_id,)
+        ).fetchone()
+
+        if teacher is None:
+            return jsonify(error="Active teacher account not found"), 400
+
+        db.execute(
+            "UPDATE subjects SET teacher_id = ? WHERE id = ?",
+            (teacher_id, subject_id)
+        )
+        db.commit()
+
+        return jsonify(
+            message="Teacher assigned successfully",
+            subject_id=subject_id,
+            teacher_id=teacher_id,
+        ), 200
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(error="Database temporarily unavailable"), 503
+
 
 @api.get("/teacher/classes")
 @login_required(["teacher", "admin"])
@@ -766,7 +2143,135 @@ def mark_attendance():
         }
     ), status_code
 
+# =====================================================================
+# FR-04: Attendance Percentage Calculation
+# =====================================================================
 
+@api.get("/attendance/percentages")
+@login_required(["admin", "teacher"])
+def attendance_percentages():
+    """Calculate attendance percentages with role-based subject access."""
+
+    db = get_db()
+    current_user = g.current_user
+    subject_id = request.args.get("subject_id", type=int)
+    role = current_user["role"]
+
+    # Validate an explicitly supplied subject ID.
+    if request.args.get("subject_id") is not None:
+        if subject_id is None or subject_id <= 0:
+            return jsonify(
+                error="subject_id must be a positive integer"
+            ), 400
+
+        try:
+            subject = db.execute(
+                "SELECT id, teacher_id FROM subjects WHERE id = ?",
+                (subject_id,)
+            ).fetchone()
+        except sqlite3.Error:
+            return jsonify(
+                error="Unable to retrieve attendance records"
+            ), 503
+
+        if subject is None:
+            return jsonify(error="Subject not found"), 404
+
+        # Teachers cannot access another teacher's subject.
+        if (
+            role == "teacher"
+            and subject["teacher_id"] != current_user["id"]
+        ):
+            return jsonify(
+                error="Access denied: teacher not assigned to this subject"
+            ), 403
+
+    # Scope attendance records to the requested subject or teacher.
+    if role == "teacher":
+        if subject_id is not None:
+            join_condition = """
+                a.student_id = u.id
+                AND a.subject_id = ?
+            """
+            params = (subject_id,)
+        else:
+            join_condition = """
+                a.student_id = u.id
+                AND a.subject_id IN (
+                    SELECT id
+                    FROM subjects
+                    WHERE teacher_id = ?
+                )
+            """
+            params = (current_user["id"],)
+    elif subject_id is not None:
+        join_condition = """
+            a.student_id = u.id
+            AND a.subject_id = ?
+        """
+        params = (subject_id,)
+    else:
+        join_condition = "a.student_id = u.id"
+        params = ()
+
+    try:
+        rows = db.execute(
+            f"""
+            SELECT
+                u.id AS student_id,
+                u.username AS student_name,
+                COUNT(a.id) AS total_classes,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN a.status = 'Present' THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS classes_attended
+            FROM users AS u
+            LEFT JOIN attendance AS a
+                ON {join_condition}
+            WHERE u.role = 'student'
+            GROUP BY u.id, u.username
+            ORDER BY u.username
+            """,
+            params
+        ).fetchall()
+
+    except sqlite3.Error:
+        return jsonify(
+            error="Unable to retrieve attendance records"
+        ), 503
+
+    results = []
+
+    for row in rows:
+        total_classes = row["total_classes"]
+        classes_attended = row["classes_attended"]
+
+        percentage = (
+            0.0
+            if total_classes == 0
+            else round(
+                (classes_attended / total_classes) * 100,
+                2
+            )
+        )
+
+        results.append({
+            "student_id": row["student_id"],
+            "student_name": row["student_name"],
+            "classes_attended": classes_attended,
+            "total_classes": total_classes,
+            "attendance_percentage": percentage
+        })
+
+    return jsonify(
+        count=len(results),
+        students=results
+    ), 200
 # =====================================================================
 # FR-03: Attendance Record Retrieval, Updating, and Deletion
 # =====================================================================
@@ -1358,3 +2863,24 @@ def create_enrollment():
     except sqlite3.Error:
         db.rollback()
         return jsonify(error="Database temporarily unavailable"), 503
+
+
+# =====================================================================
+# FR-15: User Logout
+# =====================================================================
+
+@api.post("/logout")
+@login_required()
+def logout():
+    """
+    Log out the currently authenticated user.
+
+    Clears the Flask session so the user can no longer access
+    protected endpoints without logging in again.
+    """
+
+    session.clear()
+
+    return jsonify(
+        message="Logged out successfully"
+    ), 200
