@@ -16,7 +16,6 @@ def reliability_data(client):
     with sqlite3.connect(database_path) as db:
         db.execute("PRAGMA foreign_keys = ON")
 
-        # Create a student account.
         db.execute(
             """
             INSERT INTO users (
@@ -36,33 +35,20 @@ def reliability_data(client):
         )
 
         student_id = db.execute(
-            """
-            SELECT id
-            FROM users
-            WHERE username = ?
-            """,
+            "SELECT id FROM users WHERE username = ?",
             ("nfr03_student",),
         ).fetchone()[0]
 
-        # Create a subject.
         db.execute(
-            """
-            INSERT INTO subjects (name)
-            VALUES (?)
-            """,
+            "INSERT INTO subjects (name) VALUES (?)",
             ("NFR03 Mathematics",),
         )
 
         subject_id = db.execute(
-            """
-            SELECT id
-            FROM subjects
-            WHERE name = ?
-            """,
+            "SELECT id FROM subjects WHERE name = ?",
             ("NFR03 Mathematics",),
         ).fetchone()[0]
 
-        # Create an attendance record.
         db.execute(
             """
             INSERT INTO attendance (
@@ -90,7 +76,9 @@ def reliability_data(client):
     }
 
 
-def test_nfr03_backup_is_created(client, reliability_data, tmp_path):
+def test_nfr03_backup_is_created(
+    client, reliability_data, tmp_path
+):
     """Verify that a backup file is created successfully."""
 
     backup_dir = tmp_path / "backups"
@@ -106,9 +94,7 @@ def test_nfr03_backup_is_created(client, reliability_data, tmp_path):
 
 
 def test_nfr03_backup_preserves_attendance_records(
-    client,
-    reliability_data,
-    tmp_path,
+    client, reliability_data, tmp_path
 ):
     """Verify that attendance records are preserved in the backup."""
 
@@ -140,18 +126,15 @@ def test_nfr03_backup_preserves_attendance_records(
 
 
 def test_nfr03_backup_survives_original_data_changes(
-    client,
-    reliability_data,
-    tmp_path,
+    client, reliability_data, tmp_path
 ):
-    """Verify that the backup remains intact if source data changes."""
+    """Verify that the backup survives changes to the original database."""
 
     backup_path = create_backup(
         reliability_data["database_path"],
         tmp_path / "backups",
     )
 
-    # Delete the attendance record from the original database.
     with sqlite3.connect(
         reliability_data["database_path"]
     ) as original_db:
@@ -159,7 +142,6 @@ def test_nfr03_backup_survives_original_data_changes(
         original_db.execute("DELETE FROM attendance")
         original_db.commit()
 
-    # The backup must still contain the original record.
     with sqlite3.connect(backup_path) as backup_db:
         count = backup_db.execute(
             "SELECT COUNT(*) FROM attendance"
@@ -169,9 +151,7 @@ def test_nfr03_backup_survives_original_data_changes(
 
 
 def test_nfr03_backup_contains_valid_database_schema(
-    client,
-    reliability_data,
-    tmp_path,
+    client, reliability_data, tmp_path
 ):
     """Verify that the backup contains the application tables."""
 
@@ -217,38 +197,4 @@ def test_nfr03_missing_database_fails_safely(tmp_path):
             backup_dir,
         )
 
-    # The script must not create an empty backup.
     assert not backup_dir.exists()
-"""
-
-### Why these five tests matter
-
-| Test | What it verifies |
-|---|---|
-| `test_nfr03_backup_is_created` | A backup file is successfully created. |
-| `test_nfr03_backup_preserves_attendance_records` | Attendance information is copied correctly. |
-| `test_nfr03_backup_survives_original_data_changes` | The backup remains usable if the original data changes. |
-| `test_nfr03_backup_contains_valid_database_schema` | The backup is a valid database containing the required tables. |
-| `test_nfr03_missing_database_fails_safely` | A missing database does not result in an accidental empty backup. |
-
-These tests use your existing Flask fixture, so the actual application schema is initialized in a temporary database for testing.
-
-The test records are isolated from your real database.
-
----
-
-# 5. Step 4 — Update `.gitignore`
-
-Your repository already ignores local SQLite database files.
-
-We should also ignore backup files and backup logs so they do not get accidentally pushed to your public GitHub repository.
-
-Open `.gitignore`.
-
-Add the following lines at the end of the existing file:
-
-```gitignore
-# NFR-03: Database backups and backup logs
-backups/
-backup.log
-"""
