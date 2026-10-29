@@ -5,10 +5,13 @@ import os
 import secrets
 from datetime import timedelta
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 from .db import init_db
+from .pages import pages
 from .routes import api
+
+STATE_CHANGING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
 
 def create_app(test_config=None):
@@ -46,6 +49,29 @@ def create_app(test_config=None):
 
     # Register REST API
     app.register_blueprint(api, url_prefix="/api")
+    
+    # Frontend pages: login and role-based dashboards
+    app.register_blueprint(pages)
+
+    # NFR-01: CSRF protection for cookie-authenticated API calls.
+    # Browsers attach an Origin (or Referer) header to cross-site requests;
+    # reject state-changing requests that come from another site.
+    @app.before_request
+    def reject_cross_site_requests():
+        if request.method not in STATE_CHANGING_METHODS:
+            return None
+
+        source = request.headers.get("Origin") or request.headers.get("Referer")
+
+        if source is None:
+            return None
+
+        own_origin = request.host_url.rstrip("/")
+
+        if source != own_origin and not source.startswith(own_origin + "/"):
+            return jsonify(error="Cross-site request rejected"), 403
+
+        return None
 
     @app.get("/")
     def home():

@@ -1,0 +1,80 @@
+{% from "_icons.html" import icon %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in | Attendance Management System</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+
+    <div class="auth-page">
+        <section class="auth-hero">
+            <div class="brand">
+                <span class="brand-mark">{{ icon("logo") }}</span>
+                <span class="brand-name">
+                    Attendance
+                    <small>Management System</small>
+                </span>
+            </div>
+
+            <div>
+                <h1>Attendance tracking for classes, subjects and students.</h1>
+                <p>
+                    Mark attendance, manage enrollments and follow each student's
+                    progress, all in one place.
+                </p>
+            </div>
+
+            <ul class="auth-features">
+                <li>{{ icon("check-square") }} Fast attendance marking for teachers</li>
+                <li>{{ icon("chart") }} Live attendance percentages</li>
+                <li>{{ icon("shield") }} Role-based access for admins, teachers and students</li>
+            </ul>
+        </section>
+
+        <section class="auth-panel">
+            <main class="auth-card">
+                <h2>Welcome back</h2>
+                <p class="subtitle">Sign in to continue to your dashboard.</p>
+
+                <form id="loginForm" class="form-grid" novalidate>
+                    <div class="alert alert-error" id="loginError" role="alert" hidden>
+                        {{ icon("alert") }}
+                        <span id="loginErrorText"></span>
+                    </div>
+
+                    <label class="field">
+                        <span class="field-label">Username</span>
+                        <input class="input" type="text" id="username" name="username"
+                               placeholder="Enter your username" autocomplete="username" required autofocus>
+                    </label>
+
+                    <div class="field">
+                        <label class="field-label" for="password">Password</label>
+                        <div class="password-field">
+                            <input class="input" type="password" id="password" name="password"
+                                   placeholder="Enter your password" autocomplete="current-password" required>
+                            <button type="button" class="password-toggle" id="passwordToggle"
+                                    aria-label="Show password" aria-pressed="false">
+                                <span id="eyeShow">{{ icon("eye") }}</span>
+                                <span id="eyeHide" hidden>{{ icon("eye-off") }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" id="loginButton">
+                        Sign in
+                    </button>
+                </form>
+
+                <p class="auth-footer">Attendance Management System &middot; Sprint 1</p>
+            </main>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+
+{% block nav %}
+<a class="nav-link" href="#overview" data-section="overview">{{ icon("dashboard") }} Overview</a>
+<a class="nav-link" href="#users" data-section="users">{{ icon("users") }} Users</a>
+<a class="nav-link" href="#classes" data-section="classes">{{ icon("class") }} Classes</a>
+<a class="nav-link" href="#subjects" data-section="subjects">{{ icon("book") }} Subjects</a>
+<a class="nav-link" href="#enrollments" data-section="enrollments">{{ icon("enroll") }} Enrollments</a>
+<a class="nav-link" href="#attendance" data-section="attendance">{{ icon("chart") }} Attendance</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- Overview -->
+<section class="section" id="section-overview" hidden>
+    <div class="stats">
+        <div class="card stat">
+            <span class="stat-icon">{{ icon("user") }}</span>
+            <div><div class="stat-label">Students</div><div class="stat-value" id="statStudents"><span class="skeleton"></span></div></div>
+        </div>
+        <div class="card stat">
+            <span class="stat-icon amber">{{ icon("teacher") }}</span>
+            <div><div class="stat-label">Teachers</div><div class="stat-value" id="statTeachers"><span class="skeleton"></span></div></div>
+        </div>
+        <div class="card stat">
+            <span class="stat-icon navy">{{ icon("class") }}</span>
+            <div><div class="stat-label">Classes</div><div class="stat-value" id="statClasses"><span class="skeleton"></span></div></div>
+        </div>
+        <div class="card stat">
+            <span class="stat-icon navy">{{ icon("book") }}</span>
+            <div><div class="stat-label">Subjects</div><div class="stat-value" id="statSubjects"><span class="skeleton"></span></div></div>
+        </div>
+        <div class="card stat">
+            <span class="stat-icon green">{{ icon("check-square") }}</span>
+            <div>
+                <div class="stat-label">Overall attendance</div>
+                <div class="stat-value" id="statOverall"><span class="skeleton"></span></div>
+                <div class="stat-sub" id="statOverallSub"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-3-1">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2>Students needing attention</h2>
+                    <p>Students below 75% attendance, lowest first.</p>
+                </div>
+                <a class="btn btn-secondary btn-sm" href="#attendance">View all</a>
+            </div>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>Student</th><th class="num">Attended</th><th>Attendance</th></tr></thead>
+                    <tbody id="lowAttendanceTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h2>Quick actions</h2></div>
+            <div class="card-body">
+                <div class="form-grid">
+                    <a class="btn btn-secondary" href="#users" data-action="new-user">{{ icon("plus") }} Add a user</a>
+                    <a class="btn btn-secondary" href="#classes" data-action="new-class">{{ icon("class") }} Create a class</a>
+                    <a class="btn btn-secondary" href="#subjects" data-action="new-subject">{{ icon("book") }} Create a subject</a>
+                    <a class="btn btn-secondary" href="#enrollments">{{ icon("enroll") }} Enroll a student</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Users (FR-07) -->
+<section class="section" id="section-users" hidden>
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>User accounts</h2>
+                <p>Create, edit, activate and deactivate administrator, teacher and student accounts.</p>
+            </div>
+            <button type="button" class="btn btn-primary" id="newUserButton">{{ icon("plus") }} New user</button>
+        </div>
+        <div class="toolbar">
+            <label class="search">
+                {{ icon("search") }}
+                <input class="input" type="search" id="userSearch" placeholder="Search by username" aria-label="Search users">
+            </label>
+            <label class="field">
+                <span class="field-label">Role</span>
+                <select class="input" id="userRoleFilter">
+                    <option value="">All roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="student">Student</option>
+                </select>
+            </label>
+            <label class="field">
+                <span class="field-label">Status</span>
+                <select class="input" id="userStatusFilter">
+                    <option value="">Any status</option>
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                </select>
+            </label>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>User</th><th>Role</th><th>Status</th><th class="num">Actions</th></tr></thead>
+                <tbody id="usersTable"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Classes (FR-08) -->
+<section class="section" id="section-classes" hidden>
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Classes</h2>
+                <p>Classes, their class teacher and the subjects taught in each.</p>
+            </div>
+            <button type="button" class="btn btn-primary" id="newClassButton">{{ icon("plus") }} New class</button>
+        </div>
+        <div class="toolbar">
+            <label class="search">
+                {{ icon("search") }}
+                <input class="input" type="search" id="classSearch" placeholder="Search classes" aria-label="Search classes">
+            </label>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Class</th><th>Class teacher</th><th>Subjects</th><th class="num">Actions</th></tr></thead>
+                <tbody id="classesTable"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Subjects (FR-08) -->
+<section class="section" id="section-subjects" hidden>
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Subjects</h2>
+                <p>Subjects and the teacher responsible for marking their attendance.</p>
+            </div>
+            <button type="button" class="btn btn-primary" id="newSubjectButton">{{ icon("plus") }} New subject</button>
+        </div>
+        <div class="toolbar">
+            <label class="search">
+                {{ icon("search") }}
+                <input class="input" type="search" id="subjectSearch" placeholder="Search subjects" aria-label="Search subjects">
+            </label>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Subject</th><th>Teacher</th><th class="num">Actions</th></tr></thead>
+                <tbody id="subjectsTable"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Enrollments (FR-09) -->
+<section class="section" id="section-enrollments" hidden>
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Enroll a student</h2>
+                <p>Students must be enrolled in a class and subject before attendance can be marked.</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="enrollForm" class="form-grid cols-2">
+                <label class="field">
+                    <span class="field-label">Student</span>
+                    <select class="input" id="enrollStudent" required></select>
+                </label>
+                <label class="field">
+                    <span class="field-label">Class</span>
+                    <select class="input" id="enrollClass" required></select>
+                </label>
+                <label class="field">
+                    <span class="field-label">Subject</span>
+                    <select class="input" id="enrollSubject" required></select>
+                    <span class="field-hint" id="enrollSubjectHint">Choose a class to see its subjects.</span>
+                </label>
+                <div class="field">
+                    <span class="field-label">&nbsp;</span>
+                    <button type="submit" class="btn btn-primary" id="enrollButton">{{ icon("enroll") }} Enroll student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Current enrollments</h2>
+                <p id="enrollmentCount"></p>
+            </div>
+        </div>
+        <div class="toolbar">
+            <label class="search">
+                {{ icon("search") }}
+                <input class="input" type="search" id="enrollmentSearch" placeholder="Search student, class or subject" aria-label="Search enrollments">
+            </label>
+            <label class="field">
+                <span class="field-label">Class</span>
+                <select class="input" id="enrollmentClassFilter"></select>
+            </label>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Student</th><th>Class</th><th>Subject</th><th class="num">Actions</th></tr></thead>
+                <tbody id="enrollmentsTable"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Attendance (FR-04 / FR-05) -->
+<section class="section" id="section-attendance" hidden>
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Attendance percentages</h2>
+                <p>Calculated by the backend: classes marked Present divided by all marked classes.</p>
+            </div>
+        </div>
+        <div class="toolbar">
+            <label class="search">
+                {{ icon("search") }}
+                <input class="input" type="search" id="percentSearch" placeholder="Search students" aria-label="Search students">
+            </label>
+            <label class="field">
+                <span class="field-label">Subject</span>
+                <select class="input" id="percentSubject"></select>
+            </label>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Student</th><th class="num">Attended</th><th class="num">Total</th><th>Attendance</th></tr></thead>
+                <tbody id="percentTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Attendance records</h2>
+                <p id="recordCount"></p>
+            </div>
+        </div>
+        <div class="toolbar">
+            <label class="field">
+                <span class="field-label">Subject</span>
+                <select class="input" id="recordSubject"></select>
+            </label>
+            <label class="field">
+                <span class="field-label">Date</span>
+                <input class="input" type="date" id="recordDate">
+            </label>
+            <label class="field">
+                <span class="field-label">Status</span>
+                <select class="input" id="recordStatus">
+                    <option value="">Any status</option>
+                    <option>Present</option>
+                    <option>Absent</option>
+                    <option>Late</option>
+                </select>
+            </label>
+            <button type="button" class="btn btn-secondary" id="recordClear">Clear filters</button>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Date</th><th>Student</th><th>Subject</th><th>Status</th></tr></thead>
+                <tbody id="recordsTable"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block dialogs %}
+<dialog class="dialog" id="userDialog">
+    <form novalidate>
+        <div class="dialog-header">
+            <h2 id="userDialogTitle">New user</h2>
+            <button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Close">{{ icon("x") }}</button>
+        </div>
+        <div class="dialog-body form-grid">
+            <label class="field">
+                <span class="field-label">Username</span>
+                <input class="input" name="username" required maxlength="50" autocomplete="off">
+            </label>
+            <label class="field">
+                <span class="field-label">Role</span>
+                <select class="input" name="role">
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </label>
+            <label class="field">
+                <span class="field-label" id="userPasswordLabel">Password</span>
+                <input class="input" type="password" name="password" minlength="8" autocomplete="new-password">
+                <span class="field-hint" id="userPasswordHint">At least 8 characters.</span>
+            </label>
+            <p class="form-error" role="alert"></p>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" data-close>Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </form>
+</dialog>
+
+<dialog class="dialog" id="classDialog">
+    <form novalidate>
+        <div class="dialog-header">
+            <h2 id="classDialogTitle">New class</h2>
+            <button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Close">{{ icon("x") }}</button>
+        </div>
+        <div class="dialog-body form-grid">
+            <label class="field">
+                <span class="field-label">Class name</span>
+                <input class="input" name="name" required maxlength="80" placeholder="e.g. BSc Computer Science Year 2">
+            </label>
+            <label class="field">
+                <span class="field-label">Class teacher</span>
+                <select class="input" name="teacher_id"></select>
+            </label>
+            <p class="form-error" role="alert"></p>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" data-close>Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </form>
+</dialog>
+
+<dialog class="dialog" id="classSubjectsDialog">
+    <form novalidate>
+        <div class="dialog-header">
+            <h2 id="classSubjectsTitle">Class subjects</h2>
+            <button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Close">{{ icon("x") }}</button>
+        </div>
+        <div class="dialog-body">
+            <p>Subjects taught in this class:</p>
+            <div class="chips" id="classSubjectChips"></div>
+            <div class="form-grid">
+                <label class="field">
+                    <span class="field-label">Add a subject</span>
+                    <select class="input" name="subject_id" required></select>
+                </label>
+                <p class="form-error" role="alert"></p>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" data-close>Done</button>
+                    <button type="submit" class="btn btn-primary">{{ icon("plus") }} Add subject</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</dialog>
+
+<dialog class="dialog" id="subjectDialog">
+    <form novalidate>
+        <div class="dialog-header">
+            <h2 id="subjectDialogTitle">New subject</h2>
+            <button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Close">{{ icon("x") }}</button>
+        </div>
+        <div class="dialog-body form-grid">
+            <label class="field">
+                <span class="field-label">Subject name</span>
+                <input class="input" name="name" required maxlength="80" placeholder="e.g. Databases">
+            </label>
+            <label class="field">
+                <span class="field-label">Teacher</span>
+                <select class="input" name="teacher_id"></select>
+                <span class="field-hint">Only this teacher can mark attendance for the subject.</span>
+            </label>
+            <label class="field" id="subjectClassField">
+                <span class="field-label">Add to class (optional)</span>
+                <select class="input" name="class_id"></select>
+            </label>
+            <p class="form-error" role="alert"></p>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" data-close>Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </form>
+</dialog>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}
