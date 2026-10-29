@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Student{% endblock %}
+
+{% block nav %}
+<a class="nav-link" href="#overview" data-section="overview">{{ icon("dashboard") }} My attendance</a>
+<a class="nav-link" href="#history" data-section="history">{{ icon("calendar") }} Attendance history</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- Overview -->
+<section class="section" id="section-overview" hidden>
+    <div class="card">
+        <div class="card-body overview-hero">
+            <div class="ring" id="overallRing">
+                <svg viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+                    <circle class="ring-value" id="ringValue" cx="60" cy="60" r="52"
+                            stroke-dasharray="326.73" stroke-dashoffset="326.73"></circle>
+                </svg>
+                <div class="ring-label">
+                    <strong id="overallPercent">–</strong>
+                    <span>overall</span>
+                </div>
+            </div>
+            <div class="overview-hero-text">
+                <h2 id="overallHeadline">Loading your attendance...</h2>
+                <p id="overallMessage"></p>
+                <div class="legend">
+                    <div><strong id="countPresent">–</strong>Present</div>
+                    <div><strong id="countAbsent">–</strong>Absent</div>
+                    <div><strong id="countLate">–</strong>Late</div>
+                    <div><strong id="countTotal">–</strong>Total classes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-3-1">
+        <div class="card">
+            <div class="card-header">
+                <div><h2>By subject</h2><p>Your attendance percentage in each subject.</p></div>
+            </div>
+            <div class="card-body"><div class="subject-list" id="subjectBreakdown"></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div><h2>Recent classes</h2><p>Your latest attendance records.</p></div>
+                <a class="btn btn-secondary btn-sm" href="#history">View all</a>
+            </div>
+            <div class="card-body"><ul class="list-plain" id="recentList"></ul></div>
+        </div>
+    </div>
+
+    <p class="note">{{ icon("info") }} Percentages count classes marked Present. Late and Absent count as not attended, matching how the school system calculates attendance.</p>
+</section>
+
+<!-- History (FR-05) -->
+<section class="section" id="section-history" hidden>
+    <div class="card">
+        <div class="card-header">
+            <div><h2>Attendance history</h2><p id="historyCount"></p></div>
+        </div>
+        <div class="toolbar">
+            <label class="field">
+                <span class="field-label">Subject</span>
+                <select class="input" id="historySubject"></select>
+            </label>
+            <label class="field">
+                <span class="field-label">Status</span>
+                <select class="input" id="historyStatus">
+                    <option value="">Any status</option>
+                    <option>Present</option>
+                    <option>Absent</option>
+                    <option>Late</option>
+                </select>
+            </label>
+            <label class="field">
+                <span class="field-label">Date</span>
+                <input class="input" type="date" id="historyDate">
+            </label>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Date</th><th>Subject</th><th>Status</th></tr></thead>
+                <tbody id="historyTable"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/student.js') }}"></script>
+{% endblock %}

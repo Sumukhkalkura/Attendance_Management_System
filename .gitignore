@@ -33,3 +33,6 @@ htmlcov/
 backups/
 
 backup.log
+
+# Local demo account credentials (scripts/seed_demo_data.py)
+demo_credentials.txt
