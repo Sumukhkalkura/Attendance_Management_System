@@ -641,13 +641,15 @@ def view_attendance():
         attendance_date: Filter records by YYYY-MM-DD date.
         student_id: Filter records by student.
         status: Filter records by attendance status.
-        class_id: Accepted for backward compatibility.
+        class_id: Filter records by the student's enrollment in a class
+            for the record's subject.
     """
     db = get_db()
     current_user = g.current_user
 
     subject_id_arg = request.args.get("subject_id")
     student_id_arg = request.args.get("student_id")
+    class_id_arg = request.args.get("class_id")
     date_arg = request.args.get("attendance_date")
     status_arg = request.args.get("status")
 
@@ -685,6 +687,25 @@ def view_attendance():
         if student_id <= 0:
             return jsonify(
                 error="student_id must be a positive integer"
+            ), 400
+
+    # ---------------------------------------------------------------
+    # Validate class_id.
+    # ---------------------------------------------------------------
+    class_id = None
+
+    if class_id_arg is not None:
+        try:
+            class_id = int(class_id_arg)
+        except (TypeError, ValueError):
+            return jsonify(
+                error="class_id must be a positive integer"
+            ), 400
+
+        # SQLite integers are 64-bit; larger values cannot be bound.
+        if class_id <= 0 or class_id >= 2 ** 63:
+            return jsonify(
+                error="class_id must be a positive integer"
             ), 400
 
     # ---------------------------------------------------------------
@@ -804,6 +825,24 @@ def view_attendance():
                 ), 404
 
         # -----------------------------------------------------------
+        # Validate the requested class.
+        # -----------------------------------------------------------
+        if class_id is not None:
+            cls = db.execute(
+                """
+                SELECT id
+                FROM classes
+                WHERE id = ?
+                """,
+                (class_id,)
+            ).fetchone()
+
+            if cls is None:
+                return jsonify(
+                    error="Class not found"
+                ), 404
+
+        # -----------------------------------------------------------
         # Build the attendance query.
         # -----------------------------------------------------------
         query = """
@@ -863,9 +902,20 @@ def view_attendance():
             query += " AND a.status = ?"
             params.append(status_arg)
 
-        # Preserve compatibility with callers passing class_id.
-        # This schema does not have a class_id column in the
-        # attendance table, so class_id is not used as a SQL filter.
+        # Filter by class. Attendance has no class_id column, so match
+        # enrollments. EXISTS keeps one row per attendance record even
+        # if a student is enrolled in several classes for the subject.
+        if class_id is not None:
+            query += """
+                AND EXISTS (
+                    SELECT 1
+                    FROM enrollments AS e
+                    WHERE e.student_id = a.student_id
+                      AND e.subject_id = a.subject_id
+                      AND e.class_id = ?
+                )
+            """
+            params.append(class_id)
 
         query += """
             ORDER BY
