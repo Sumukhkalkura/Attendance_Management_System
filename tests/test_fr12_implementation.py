@@ -623,3 +623,233 @@ def test_export_reflects_updated_records(client, fr12_setup):
     res2 = client.get(f"/api/reports/attendance/export?student_id={student1_id}&subject_id={math_id}&format=csv")
     rows2 = {r["Date"]: r["Status"] for r in csv.DictReader(io.StringIO(res2.get_data(as_text=True)))}
     assert rows2["2026-10-15"] == "Present"
+
+
+# =====================================================================
+# 7. Additional Hardening: CSV Security, JSON Consistency & PDF Formatting
+# =====================================================================
+
+def test_csv_formula_injection_prevention(client, fr12_setup):
+    """Names or text starting with '=', '+', '-', '@', '\\t', or '\\r' are sanitized to prevent CSV injection (CWE-1236)."""
+    login(client, "admin_fr12")
+    app = client.application
+
+    with sqlite3.connect(app.config["DATABASE"]) as db:
+        # Create users with formula characters in username
+        cur = db.execute(
+            "INSERT INTO users (username, password_hash, role, active) VALUES (?, ?, 'student', 1)",
+            ("=1+2_calc", generate_password_hash("pass")),
+        )
+        s_calc_id = cur.lastrowid
+
+        cur = db.execute(
+            "INSERT INTO users (username, password_hash, role, active) VALUES (?, ?, 'student', 1)",
+            ("+plus_user", generate_password_hash("pass")),
+        )
+        s_plus_id = cur.lastrowid
+
+        cur = db.execute(
+            "INSERT INTO users (username, password_hash, role, active) VALUES (?, ?, 'student', 1)",
+            ("@at_user", generate_password_hash("pass")),
+        )
+        s_at_id = cur.lastrowid
+
+        cur = db.execute(
+            "INSERT INTO users (username, password_hash, role, active) VALUES (?, ?, 'student', 1)",
+            ("-minus_user", generate_password_hash("pass")),
+        )
+        s_minus_id = cur.lastrowid
+
+        cur = db.execute(
+            "INSERT INTO users (username, password_hash, role, active) VALUES (?, ?, 'student', 1)",
+            ("  =tab_user", generate_password_hash("pass")),
+        )
+        s_tab_id = cur.lastrowid
+
+        # Create subject with leading formula trigger
+        cur = db.execute("INSERT INTO subjects (name) VALUES ('=HYPERLINK(\"http://evil.com\")')")
+        formula_subj_id = cur.lastrowid
+
+        # Insert attendance records
+        for sid in [s_calc_id, s_plus_id, s_at_id, s_minus_id, s_tab_id]:
+            db.execute(
+                "INSERT INTO attendance (student_id, subject_id, attendance_date, status) VALUES (?, ?, '2026-10-31', 'Present')",
+                (sid, formula_subj_id),
+            )
+        db.commit()
+
+    res = client.get(f"/api/reports/attendance/export?subject_id={formula_subj_id}&format=csv")
+    assert res.status_code == 200
+    csv_raw = res.get_data(as_text=True)
+
+    # Check raw CSV output: formula triggers MUST be prefixed with single quote (')
+    assert "'=1+2_calc" in csv_raw
+    assert "'+plus_user" in csv_raw
+    assert "'@at_user" in csv_raw
+    assert "'-minus_user" in csv_raw
+    assert "'  =tab_user" in csv_raw
+    assert "'=HYPERLINK" in csv_raw
+
+    # Verify parsed CSV rows using csv.reader have the sanitized formula strings
+    rows = list(csv.reader(io.StringIO(csv_raw)))
+    subject_names = [r[7] for r in rows[1:]]
+    assert all(s == '\'=HYPERLINK("http://evil.com")' for s in subject_names)
+
+    # Verify standard names do NOT get prepended with single quotes
+    res_normal = client.get("/api/reports/attendance/export?format=csv")
+    csv_normal = res_normal.get_data(as_text=True)
+    assert ",student1_fr12," in csv_normal
+    assert ",'student1_fr12," not in csv_normal
+
+
+def test_json_export_consistency_and_download_headers(client, fr12_setup):
+    """JSON exports work consistently with documented endpoints and download headers."""
+    login(client, "admin_fr12")
+    s1_id = fr12_setup["users"]["student1_fr12"]
+    c1_id = fr12_setup["classes"]["10A"]
+    m1_id = fr12_setup["subjects"]["math"]
+
+    endpoints_to_test = [
+        # (URL, expected_filename_part)
+        ("/api/reports/attendance/export?format=json", "attendance_report.json"),
+        ("/api/reports/attendance/export/json", "attendance_report.json"),
+        (f"/api/reports/attendance/student/{s1_id}/export?format=json", "attendance_report_student_student1_fr12.json"),
+        (f"/api/reports/attendance/student/{s1_id}/export/json", "attendance_report_student_student1_fr12.json"),
+        (f"/api/reports/attendance/class/{c1_id}/export?format=json", "attendance_report_class_Class_10-A.json"),
+        (f"/api/reports/attendance/class/{c1_id}/export/json", "attendance_report_class_Class_10-A.json"),
+        (f"/api/reports/attendance/subject/{m1_id}/export?format=json", "attendance_report_subject_Mathematics.json"),
+        (f"/api/reports/attendance/subject/{m1_id}/export/json", "attendance_report_subject_Mathematics.json"),
+        ("/api/reports/attendance?format=json", "attendance_report.json"),
+        ("/api/reports/attendance?export=json", "attendance_report.json"),
+        ("/api/attendance/report/export?format=json", "attendance_report.json"),
+        ("/api/attendance/report/export/json", "attendance_report.json"),
+        ("/api/reports/export?format=json", "attendance_report.json"),
+        ("/api/reports/export/json", "attendance_report.json"),
+    ]
+
+    for url, exp_filename in endpoints_to_test:
+        res = client.get(url)
+        assert res.status_code == 200, f"Failed for {url}"
+        assert "application/json" in res.headers.get("Content-Type", "")
+        disp = res.headers.get("Content-Disposition", "")
+        assert "attachment" in disp, f"Missing attachment disposition for {url}"
+        assert exp_filename in disp, f"Filename '{exp_filename}' not in '{disp}' for {url}"
+
+        data = res.get_json()
+        assert data is not None
+        assert data.get("report_type") == "attendance_report"
+        assert "summary" in data
+        assert "records" in data
+        assert isinstance(data["records"], list)
+
+    # Base report without format/export should return 200 JSON WITHOUT Content-Disposition attachment (FR-06 UI)
+    res_base = client.get("/api/reports/attendance")
+    assert res_base.status_code == 200
+    assert "application/json" in res_base.headers.get("Content-Type", "")
+    assert "Content-Disposition" not in res_base.headers
+
+
+def test_pdf_long_text_no_cutoff_or_overlap(client, fr12_setup):
+    """Long student names, subject names, and class names do not get cut off or overlap in PDF export."""
+    login(client, "admin_fr12")
+    app = client.application
+
+    long_student_name = "Alexander Bartholomew Montgomery-Cunningham"
+    long_subject_name = "Advanced Microprocessors and System Architecture"
+    long_class_name = "Class 10-A Special Advanced Honours"
+
+    with sqlite3.connect(app.config["DATABASE"]) as db:
+        cur = db.execute(
+            "INSERT INTO users (username, password_hash, role, active) VALUES (?, ?, 'student', 1)",
+            (long_student_name, generate_password_hash("pass")),
+        )
+        long_stu_id = cur.lastrowid
+
+        cur = db.execute("INSERT INTO classes (name) VALUES (?)", (long_class_name,))
+        long_cls_id = cur.lastrowid
+
+        cur = db.execute("INSERT INTO subjects (name) VALUES (?)", (long_subject_name,))
+        long_sub_id = cur.lastrowid
+
+        db.execute(
+            "INSERT INTO enrollments (student_id, class_id, subject_id) VALUES (?, ?, ?)",
+            (long_stu_id, long_cls_id, long_sub_id),
+        )
+
+        db.execute(
+            "INSERT INTO attendance (student_id, subject_id, attendance_date, status) VALUES (?, ?, '2026-10-31', 'Present')",
+            (long_stu_id, long_sub_id),
+        )
+        db.commit()
+
+    res = client.get(f"/api/reports/attendance/export?student_id={long_stu_id}&format=pdf")
+    assert res.status_code == 200
+    assert "application/pdf" in res.headers.get("Content-Type", "")
+    pdf_bytes = res.data
+    assert pdf_bytes.startswith(b"%PDF-1.")
+    assert b"%%EOF" in pdf_bytes
+
+    if pypdf is not None:
+        reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
+        full_text = "\n".join(page.extract_text() for page in reader.pages)
+
+        # Verify that long student name was NOT bluntly cut off
+        assert "Alexander" in full_text
+        assert "Montgomery-" in full_text
+        assert "Cunningham" in full_text
+
+        # Verify that long subject name was NOT bluntly cut off
+        assert "Advanced" in full_text
+        assert "Microprocessors" in full_text
+        assert "System Architecture" in full_text
+
+        # Verify that long class name was NOT bluntly cut off
+        assert "Class 10-A" in full_text
+        assert "Special" in full_text
+
+
+def test_pdf_large_report_pagination_and_repeated_headers(client, fr12_setup):
+    """Large reports spanning multiple pages include repeated headers and format cleanly."""
+    login(client, "admin_fr12")
+    app = client.application
+
+    with sqlite3.connect(app.config["DATABASE"]) as db:
+        cur = db.execute(
+            "INSERT INTO users (username, password_hash, role, active) VALUES ('bulk_stu', ?, 'student', 1)",
+            (generate_password_hash("pass"),),
+        )
+        bulk_stu_id = cur.lastrowid
+
+        cur = db.execute("INSERT INTO subjects (name) VALUES ('BulkSubject')")
+        bulk_sub_id = cur.lastrowid
+
+        for d in range(1, 90):
+            month = (d // 28) + 1
+            day = (d % 28) + 1
+            db.execute(
+                "INSERT INTO attendance (student_id, subject_id, attendance_date, status) VALUES (?, ?, ?, 'Present')",
+                (bulk_stu_id, bulk_sub_id, f"2026-{month:02d}-{day:02d}"),
+            )
+        db.commit()
+
+    res = client.get(f"/api/reports/attendance/export?student_id={bulk_stu_id}&format=pdf")
+    assert res.status_code == 200
+    pdf_bytes = res.data
+
+    if pypdf is not None:
+        reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
+        assert len(reader.pages) >= 3
+
+        # Every page should have column headers
+        for i, page in enumerate(reader.pages):
+            page_text = page.extract_text()
+            assert "Date" in page_text
+            assert "Student" in page_text
+            assert "Subject" in page_text
+            assert "Status" in page_text
+            assert f"Page {i+1} of {len(reader.pages)}" in page_text
+
+        # Final page must have End of Attendance Report
+        last_page_text = reader.pages[-1].extract_text()
+        assert "End of Attendance Report" in last_page_text
+

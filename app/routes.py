@@ -6,6 +6,7 @@ from functools import wraps
 
 import csv
 import io
+import textwrap
 from flask import Blueprint, jsonify, request, session, g, Response
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -3118,6 +3119,21 @@ def _get_export_filename(report_payload, file_ext):
     return f"attendance_report.{file_ext}"
 
 
+def _sanitize_csv_cell(value):
+    """Sanitize cell value to prevent CSV Formula Injection (CWE-1236).
+
+    Prepend a single quote (') if the text begins with '=', '+', '-', '@', '\t', or '\r',
+    or begins with whitespace followed by one of those formula triggers.
+    """
+    if value is None:
+        return ""
+    val_str = str(value)
+    stripped = val_str.lstrip(" \t\r\n")
+    if val_str and (val_str[0] in ("=", "+", "-", "@", "\t", "\r") or (stripped and stripped[0] in ("=", "+", "-", "@"))):
+        return f"'{val_str}"
+    return val_str
+
+
 def _generate_csv_report(report_payload):
     """Generate a clean, RFC 4180 compliant CSV string for the attendance report."""
     output = io.StringIO()
@@ -3137,28 +3153,41 @@ def _generate_csv_report(report_payload):
 
     for rec in report_payload.get("records", []):
         writer.writerow([
-            rec.get("attendance_id") or rec.get("id"),
-            rec.get("attendance_date") or rec.get("date"),
-            rec.get("student_id"),
-            rec.get("student_name") or rec.get("student_username"),
-            rec.get("class_id") or "",
-            rec.get("class_name") or "",
-            rec.get("subject_id") or "",
-            rec.get("subject_name") or "",
-            rec.get("status"),
+            _sanitize_csv_cell(rec.get("attendance_id") or rec.get("id")),
+            _sanitize_csv_cell(rec.get("attendance_date") or rec.get("date")),
+            _sanitize_csv_cell(rec.get("student_id")),
+            _sanitize_csv_cell(rec.get("student_name") or rec.get("student_username")),
+            _sanitize_csv_cell(rec.get("class_id") or ""),
+            _sanitize_csv_cell(rec.get("class_name") or ""),
+            _sanitize_csv_cell(rec.get("subject_id") or ""),
+            _sanitize_csv_cell(rec.get("subject_name") or ""),
+            _sanitize_csv_cell(rec.get("status")),
         ])
 
     return output.getvalue()
 
 
 def _generate_pdf_report(report_payload, title="Attendance Report"):
-    """Generate a clean, valid PDF 1.4 document for the attendance report."""
+    """Generate a clean, valid PDF 1.4 document for the attendance report.
+
+    Formats text properly without truncating or overlapping long student names,
+    subject names, or class names, and paginates large reports cleanly.
+    """
     summary = report_payload.get("summary", {})
     filters = report_payload.get("filters", {})
     records = report_payload.get("records", [])
 
-    lines = []
-    lines.append(f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC")
+    w_date = 12
+    w_student = 20
+    w_class = 14
+    w_subject = 22
+    w_status = 10
+    table_width = 82
+    table_sep = "-" * table_width
+    table_header = f"{'Date':<12} {'Student':<20} {'Class':<14} {'Subject':<22} {'Status':<10}"
+
+    meta_lines = []
+    meta_lines.append(f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC")
 
     filter_parts = []
     if report_payload.get("student"):
@@ -3190,48 +3219,73 @@ def _generate_pdf_report(report_payload, title="Attendance Report"):
     if filters.get("status"):
         filter_parts.append(f"Status Filter: {filters['status']}")
 
-    if filter_parts:
-        lines.append("Filters: " + " | ".join(filter_parts))
-    else:
-        lines.append("Filters: All Records")
+    filter_text = "Filters: " + (" | ".join(filter_parts) if filter_parts else "All Records")
+    for f_line in textwrap.wrap(filter_text, width=table_width):
+        meta_lines.append(f_line)
 
-    lines.append(
+    summary_text = (
         f"Summary: Total: {summary.get('total_records', len(records))} | "
         f"Present: {summary.get('present_count', 0)} | "
         f"Absent: {summary.get('absent_count', 0)} | "
         f"Late: {summary.get('late_count', 0)} | "
         f"Attendance Rate: {summary.get('attendance_percentage', 0.0)}%"
     )
-    lines.append("-" * 75)
-    lines.append(f"{'Date':<12} {'Student':<16} {'Class':<14} {'Subject':<18} {'Status':<10}")
-    lines.append("-" * 75)
+    for s_line in textwrap.wrap(summary_text, width=table_width):
+        meta_lines.append(s_line)
+
+    MAX_PAGE_LINES = 38
+    pages = []
+    current_page = list(meta_lines)
+    current_page.append(table_sep)
+    current_page.append(table_header)
+    current_page.append(table_sep)
+
+    def start_new_page():
+        nonlocal current_page
+        pages.append(current_page)
+        current_page = [table_sep, table_header, table_sep]
 
     if not records:
-        lines.append("No attendance records found matching the specified criteria.")
+        current_page.append("No attendance records found matching the specified criteria.")
+        current_page.append(table_sep)
+        current_page.append("End of Attendance Report")
+        pages.append(current_page)
     else:
         for r in records:
-            r_date = str(r.get("attendance_date") or r.get("date") or "")[:10]
-            r_student = str(r.get("student_name") or r.get("student_username") or "")[:15]
-            r_class = str(r.get("class_name") or "N/A")[:13]
-            r_subject = str(r.get("subject_name") or "")[:17]
-            r_status = str(r.get("status") or "")[:9]
-            lines.append(f"{r_date:<12} {r_student:<16} {r_class:<14} {r_subject:<18} {r_status:<10}")
+            r_date = str(r.get("attendance_date") or r.get("date") or "")
+            r_student = str(r.get("student_name") or r.get("student_username") or "")
+            r_class = str(r.get("class_name") or "N/A")
+            r_subject = str(r.get("subject_name") or "")
+            r_status = str(r.get("status") or "")
 
-    lines.append("-" * 75)
-    lines.append("End of Attendance Report")
+            d_lines = textwrap.wrap(r_date, width=w_date, break_long_words=True) or [""]
+            st_lines = textwrap.wrap(r_student, width=w_student, break_long_words=True) or [""]
+            c_lines = textwrap.wrap(r_class, width=w_class, break_long_words=True) or [""]
+            su_lines = textwrap.wrap(r_subject, width=w_subject, break_long_words=True) or [""]
+            stat_lines = textwrap.wrap(r_status, width=w_status, break_long_words=True) or [""]
 
-    # Chunk lines into pages (34 lines per page)
-    pages_data = []
-    chunk = []
-    for line in lines:
-        chunk.append(line)
-        if len(chunk) >= 34:
-            pages_data.append(chunk)
-            chunk = []
-    if chunk or not pages_data:
-        pages_data.append(chunk)
+            row_height = max(len(d_lines), len(st_lines), len(c_lines), len(su_lines), len(stat_lines))
+            row_lines = []
+            for i in range(row_height):
+                d = d_lines[i] if i < len(d_lines) else ""
+                st = st_lines[i] if i < len(st_lines) else ""
+                c = c_lines[i] if i < len(c_lines) else ""
+                su = su_lines[i] if i < len(su_lines) else ""
+                stat = stat_lines[i] if i < len(stat_lines) else ""
+                row_lines.append(f"{d:<12} {st:<20} {c:<14} {su:<22} {stat:<10}".rstrip())
 
-    num_pages = len(pages_data)
+            if len(current_page) + row_height > MAX_PAGE_LINES and len(current_page) > 3:
+                start_new_page()
+
+            current_page.extend(row_lines)
+
+        if len(current_page) + 2 > MAX_PAGE_LINES and len(current_page) > 3:
+            start_new_page()
+        current_page.append(table_sep)
+        current_page.append("End of Attendance Report")
+        pages.append(current_page)
+
+    num_pages = len(pages)
     font_obj_num = 3
     page_obj_nums = [4 + 2 * i for i in range(num_pages)]
     content_obj_nums = [5 + 2 * i for i in range(num_pages)]
@@ -3243,7 +3297,7 @@ def _generate_pdf_report(report_payload, title="Attendance Report"):
     obj_dict[2] = f"<< /Type /Pages /Kids [{kids_str}] /Count {num_pages} >>".encode("ascii")
     obj_dict[3] = b"<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>"
 
-    for i, p_lines in enumerate(pages_data):
+    for i, p_lines in enumerate(pages):
         page_num = i + 1
         stream_cmds = ["BT", "/F1 12 Tf", "40 750 Td"]
         page_title = title if num_pages == 1 else f"{title} (Page {page_num} of {num_pages})"
@@ -3255,7 +3309,7 @@ def _generate_pdf_report(report_payload, title="Attendance Report"):
         for line_item in p_lines:
             escaped = line_item.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
             stream_cmds.append(f"({escaped}) Tj")
-            stream_cmds.append("0 -15 Td")
+            stream_cmds.append("0 -14 Td")
         stream_cmds.append("ET")
         stream_bytes = "\n".join(stream_cmds).encode("latin1", errors="replace")
 
@@ -3324,6 +3378,7 @@ def _format_export_response(report_payload, fmt):
     elif clean_fmt == "json":
         filename = _get_export_filename(report_payload, "json")
         response = jsonify(report_payload)
+        response.headers["Content-Type"] = "application/json"
         response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response, 200
 
@@ -3637,7 +3692,7 @@ def generate_attendance_report(student_id=None, class_id=None, subject_id=None):
         return error_resp, status_code
 
     export_fmt = request.args.get("export") or request.args.get("format")
-    if export_fmt and export_fmt.lower().strip() != "json":
+    if export_fmt:
         return _format_export_response(payload, export_fmt)
 
     return jsonify(payload), 200
@@ -3650,10 +3705,15 @@ def generate_attendance_report(student_id=None, class_id=None, subject_id=None):
 @api.get("/reports/attendance/export")
 @api.get("/reports/attendance/export/<string:format_name>")
 @api.get("/reports/attendance/student/<int:student_id>/export")
+@api.get("/reports/attendance/student/<int:student_id>/export/<string:format_name>")
 @api.get("/reports/attendance/class/<int:class_id>/export")
+@api.get("/reports/attendance/class/<int:class_id>/export/<string:format_name>")
 @api.get("/reports/attendance/subject/<int:subject_id>/export")
+@api.get("/reports/attendance/subject/<int:subject_id>/export/<string:format_name>")
 @api.get("/attendance/report/export")
+@api.get("/attendance/report/export/<string:format_name>")
 @api.get("/reports/export")
+@api.get("/reports/export/<string:format_name>")
 @login_required()
 def export_attendance_report(student_id=None, class_id=None, subject_id=None, format_name=None):
     """Export attendance reports in a supported file format (CSV, PDF, JSON).
