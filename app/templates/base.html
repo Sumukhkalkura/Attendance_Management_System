@@ -32,6 +32,9 @@
                     <div class="sidebar-user-role">{{ user.role }}</div>
                 </div>
             </div>
+            <button type="button" class="btn logout" id="changePasswordButton">
+                {{ icon("shield") }} Change password
+            </button>
             <button type="button" class="btn logout" id="logoutButton">
                 {{ icon("logout") }} Log out
             </button>
@@ -69,6 +72,35 @@
                 <div class="form-actions">
                     <button class="btn btn-secondary" value="cancel">Cancel</button>
                     <button class="btn btn-danger" value="confirm" id="confirmButton">Confirm</button>
+                </div>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog class="dialog" id="passwordDialog">
+        <form novalidate>
+            <div class="dialog-header">
+                <h2>Change password</h2>
+                <button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Close">{{ icon("x") }}</button>
+            </div>
+            <div class="dialog-body form-grid">
+                <label class="field">
+                    <span class="field-label">Current password</span>
+                    <input class="input" type="password" name="current_password" required autocomplete="current-password">
+                </label>
+                <label class="field">
+                    <span class="field-label">New password</span>
+                    <input class="input" type="password" name="new_password" required minlength="8" autocomplete="new-password">
+                    <span class="field-hint">At least 8 characters.</span>
+                </label>
+                <label class="field">
+                    <span class="field-label">Confirm new password</span>
+                    <input class="input" type="password" name="confirm_password" required autocomplete="new-password">
+                </label>
+                <p class="form-error" role="alert"></p>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" data-close>Cancel</button>
+                    <button type="submit" class="btn btn-primary">Change password</button>
                 </div>
             </div>
         </form>

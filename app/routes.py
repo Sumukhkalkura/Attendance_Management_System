@@ -1,5 +1,7 @@
-"""Attendance Management System API routes: FR-01 authentication, FR-07 user management, FR-02/03 attendance records, FR-04 percentages, FR-05 viewing, FR-06 reporting, FR-08 classes/subjects, FR-09 enrollments, FR-12 report export, and FR-15 logout."""
+"""Attendance Management System API routes: FR-01 authentication, FR-07 user management, FR-02/03 attendance records, FR-04 percentages, FR-05 viewing, FR-06 reporting, FR-08 classes/subjects, FR-09 enrollments, FR-12 report export, FR-13 password management, and FR-15 logout."""
 
+import hashlib
+import hmac
 import sqlite3
 from datetime import datetime
 from functools import wraps
@@ -7,13 +9,14 @@ from functools import wraps
 import csv
 import io
 import textwrap
-from flask import Blueprint, jsonify, request, session, g, Response
+from flask import Blueprint, current_app, jsonify, request, session, g, Response
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .db import get_db
 
 VALID_STATUSES = {"Present", "Absent", "Late"}
 VALID_ROLES = {"admin", "teacher", "student"}
+MIN_PASSWORD_LENGTH = 8
 
 
 def normalize_status(status):
@@ -47,6 +50,46 @@ def health():
 
 
 # =====================================================================
+# FR-13: Session binding to the account password
+# =====================================================================
+
+def _password_fingerprint(password_hash):
+    """
+    Derive a value that changes whenever the stored password hash changes.
+
+    Flask session cookies are signed but readable by the client, so the hash
+    itself must never be placed in the session.
+    """
+    return hmac.new(
+        str(current_app.secret_key).encode(),
+        password_hash.encode(),
+        hashlib.sha256,
+    ).hexdigest()
+
+
+def start_user_session(user_id, password_hash):
+    """Start a fresh login session bound to the current password."""
+    session.clear()
+    session.permanent = True
+    session["user_id"] = user_id
+    session["password_fingerprint"] = _password_fingerprint(password_hash)
+
+
+def session_matches_password(password_hash):
+    """
+    Return False unless the session was issued for the current password.
+
+    A session with no fingerprint is rejected: it cannot be shown to postdate
+    the last password change, and activity would keep renewing it indefinitely.
+    """
+    fingerprint = session.get("password_fingerprint")
+
+    return isinstance(fingerprint, str) and hmac.compare_digest(
+        fingerprint.encode(), _password_fingerprint(password_hash).encode()
+    )
+
+
+# =====================================================================
 # FR-01: Role-Based Access Control
 # =====================================================================
 
@@ -68,7 +111,7 @@ def login_required(allowed_roles=None):
             try:
                 user = get_db().execute(
                     """
-                    SELECT id, username, role, active
+                    SELECT id, username, password_hash, role, active
                     FROM users
                     WHERE id = ?
                     """,
@@ -80,7 +123,11 @@ def login_required(allowed_roles=None):
                     error="Database temporarily unavailable"
                 ), 503
 
-            if user is None or not user["active"]:
+            if (
+                user is None
+                or not user["active"]
+                or not session_matches_password(user["password_hash"])
+            ):
                 session.clear()
                 return jsonify(
                     error="Authentication required"
@@ -155,9 +202,7 @@ def login():
             error="Authentication temporarily unavailable"
         ), 503
 
-    session.clear()
-    session.permanent = True
-    session["user_id"] = user["id"]
+    start_user_session(user["id"], user["password_hash"])
 
     return jsonify(
         message="Login successful",
@@ -184,6 +229,121 @@ def current_user():
             "username": user["username"],
             "role": user["role"]
         }
+    ), 200
+
+
+# FR-13: Change Own Password
+
+def _is_encodable(text):
+    """Reject strings the password hasher cannot encode (lone surrogates)."""
+    try:
+        text.encode("utf-8")
+    except UnicodeEncodeError:
+        return False
+    return True
+
+
+@api.post("/me/password")
+@login_required()
+def change_password():
+    """
+    Change the logged-in user's own password.
+
+    The account always comes from the session; the request cannot name one.
+
+    Expected JSON:
+    {
+        "current_password": "OldPassword123",
+        "new_password": "NewPassword123"
+    }
+
+    An incorrect current password returns 400, not 401: the user is still
+    authenticated, and the frontend treats 401 as an expired session.
+    """
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify(
+            error="JSON request body required"
+        ), 400
+
+    if not set(data).issubset({"current_password", "new_password"}):
+        return jsonify(
+            error="Only current_password and new_password are accepted"
+        ), 400
+
+    current_password = data.get("current_password")
+    new_password = data.get("new_password")
+
+    if (
+        not isinstance(current_password, str)
+        or not current_password
+        or not isinstance(new_password, str)
+        or not new_password
+    ):
+        return jsonify(
+            error="Current password and new password are required"
+        ), 400
+
+    if (
+        len(new_password) < MIN_PASSWORD_LENGTH
+        or not _is_encodable(new_password)
+    ):
+        return jsonify(
+            error=(
+                "New password must be a valid password of at least "
+                f"{MIN_PASSWORD_LENGTH} characters"
+            )
+        ), 400
+
+    user = g.current_user
+
+    try:
+        if (
+            not _is_encodable(current_password)
+            or not check_password_hash(
+                user["password_hash"], current_password
+            )
+        ):
+            return jsonify(
+                error="Current password is incorrect"
+            ), 400
+
+        if check_password_hash(user["password_hash"], new_password):
+            return jsonify(
+                error="New password must be different from the current password"
+            ), 400
+
+        new_password_hash = generate_password_hash(new_password)
+
+        db = get_db()
+        db.execute(
+            """
+            UPDATE users
+            SET password_hash = ?
+            WHERE id = ?
+            """,
+            (new_password_hash, user["id"]),
+        )
+        db.commit()
+
+    except sqlite3.Error:
+        get_db().rollback()
+        return jsonify(
+            error="Database temporarily unavailable"
+        ), 503
+
+    except ValueError:
+        return jsonify(
+            error="Password change temporarily unavailable"
+        ), 503
+
+    # Every other session for this account now fails its fingerprint check;
+    # this one is reissued so the user stays signed in.
+    start_user_session(user["id"], new_password_hash)
+
+    return jsonify(
+        message="Password changed successfully"
     ), 200
 
 
@@ -485,6 +645,10 @@ def update_user(user_id):
                 """,
                 (new_username, new_role, new_active, new_password_hash, user_id),
             )
+
+            # An admin editing their own account stays signed in.
+            if user_id == g.current_user["id"]:
+                start_user_session(user_id, new_password_hash)
         else:
             db.execute(
                 """
