@@ -43,7 +43,11 @@ async function showOverview() {
     stateRow(lowTable, 2, "loading");
 
     try {
-        const [, percentages] = await Promise.all([loadAssignments(), api("/api/attendance/percentages")]);
+        const [, percentages, alertsData] = await Promise.all([
+            loadAssignments(),
+            api("/api/attendance/percentages"),
+            api("/api/attendance/alerts")
+        ]);
 
         // Only students with records in this teacher's subjects are relevant.
         const tracked = percentages.students.filter((s) => s.total_classes > 0);
@@ -60,13 +64,11 @@ async function showOverview() {
             ? state.subjects.map((s) => el("li", {}, el("strong", { text: s.name }), App.badge("Assigned", "blue")))
             : [App.stateBlock("empty", "No subjects assigned", "Ask an administrator to assign you a subject.")]));
 
-        const low = tracked
-            .filter((s) => s.attendance_percentage < 75)
-            .sort((a, b) => a.attendance_percentage - b.attendance_percentage)
-            .slice(0, 6);
+        const low = alertsData.alerts.slice(0, 6);
+        const threshold = alertsData.threshold;
 
         fillRows(lowTable, 2, low.map((s) => [avatarCell(s.student_name), progress(s.attendance_percentage)]),
-            "Everyone is on track", "No student is below 75% in your subjects.");
+            "Everyone is on track", `No student is below ${threshold}% in your subjects.`);
 
     } catch (error) {
         list.replaceChildren(App.stateBlock("error", "Could not load overview", error.message));

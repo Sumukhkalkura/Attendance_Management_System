@@ -24,6 +24,7 @@ def create_app(test_config=None):
         SECRET_KEY=os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(32),
         DATABASE="attendance.db",
         TESTING=False,
+        DEFAULT_ATTENDANCE_THRESHOLD=75.0,
 
         # Automatically expire an inactive login session
         PERMANENT_SESSION_LIFETIME=timedelta(minutes=30),

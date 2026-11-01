@@ -140,3 +140,151 @@ python -m pytest tests/test_fr06_attendance_reporting.py -v
 # Run the complete test suite:
 python -m pytest
 ```
+
+
+## FR-11: Attendance Alert API
+
+The Attendance Alert system identifies students whose attendance percentage falls strictly below a specified attendance threshold. It enables teachers and administrators to proactively track students who require attendance intervention.
+
+### Acceptance Criteria
+
+1. **Threshold Specification:** An attendance threshold can be specified via application configuration, runtime API, or dynamic request parameters (defaulting to 75.0%).
+2. **Student Identification:** The system calculates attendance percentages using the established data model and accurately identifies students whose percentage is strictly below the threshold (`percentage < threshold`).
+3. **Clear Indication:** Students below the threshold are clearly distinguished with explicit alert flags (`below_threshold: true`, `is_alert: true`, `alert_status: "BELOW_THRESHOLD"`), and prioritized by lowest percentage first.
+
+### Attendance Percentage Formula
+
+The calculation strictly reuses the FR-04 attendance data model:
+
+$$\\text{Attendance Percentage} = \\left(\\frac{\\text{Present Attendance}}{\\text{Total Eligible Attendance}}\\right) \\times 100$$
+
+- **Eligible Attendance:** Total records with status `Present`, `Absent`, or `Late`.
+- **Present Attendance:** Records with status `Present`.
+- **Late Policy:** Consistent with FR-04, records marked `Late` count toward total eligible classes conducted, but do not count toward present attendance.
+- **Zero Eligible Attendance:** If a student has zero attendance records (`total_classes == 0`), the percentage evaluates safely to `0.0%` without division-by-zero errors. By default, untracked students without attendance are not flagged as false-positive alerts (`alert_status: "NO_RECORDS"`).
+- **Strict Inequality:** A student must be strictly below the threshold. A student with 75.0% attendance when the threshold is 75.0% is not flagged as an alert; a student with 74.99% is flagged.
+
+### Threshold Configuration
+
+The attendance alert threshold can be configured at multiple levels:
+- **Application Default:** Configured via `DEFAULT_ATTENDANCE_THRESHOLD` in Flask application settings (default: `75.0%`).
+- **Dynamic Request Parameter:** Overridden on any alert query using the `threshold` parameter (e.g., `?threshold=80`).
+- **Threshold API:** Retrieved and updated dynamically by administrators and teachers:
+  - `GET /api/attendance/threshold`: Returns current threshold and system default.
+  - `POST /api/attendance/threshold` or `PUT /api/attendance/threshold`: Sets the system default threshold (`{"threshold": 80.0}`).
+
+#### Threshold Validation Rules
+- Accepted values: Numeric values (integers or floats) between `0.0` and `100.0` inclusive.
+- Rejected values: Negative numbers (`< 0`), values greater than `100`, non-numeric strings, empty values, booleans, nulls, and malformed payloads return `HTTP 400 Bad Request`.
+
+### Endpoints
+
+- `GET /api/attendance/alerts` (canonical alerts endpoint)
+- `GET /api/attendance/alerts/student/<int:student_id>`
+- `GET /api/attendance/alerts/class/<int:class_id>`
+- `GET /api/attendance/alerts/subject/<int:subject_id>`
+- `POST /api/attendance/alerts` (supports JSON body parameter overrides)
+- Aliases: `GET /api/attendance/alert`, `GET /api/alerts/attendance`
+- Configuration: `GET /api/attendance/threshold`, `POST /api/attendance/threshold`, `PUT /api/attendance/threshold`
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `threshold` | float | `75.0` | Attendance threshold percentage (0.0 to 100.0) |
+| `student_id` | integer | `None` | Filter alerts for a specific student (validated; students restricted to own ID) |
+| `class_id` | integer | `None` | Filter alerts for students enrolled in a specific class |
+| `subject_id` | integer | `None` | Filter alerts for a specific subject (teachers restricted to assigned subjects) |
+| `only_alerts` | boolean | `false` | If true, returns only students below threshold in `students` list |
+| `include_zero` | boolean | `false` | If true, treats students with 0 eligible classes as alerts |
+
+### Sample Request
+
+```http
+GET /api/attendance/alerts?subject_id=2&threshold=75.0
+```
+
+### Sample Response (HTTP 200 OK)
+
+```json
+{
+  "threshold": 75.0,
+  "count": 1,
+  "alerts_count": 1,
+  "total_students": 3,
+  "alerts": [
+    {
+      "student_id": 6,
+      "student_name": "student3",
+      "username": "student3",
+      "classes_attended": 2,
+      "total_classes": 4,
+      "attendance_percentage": 50.0,
+      "threshold": 75.0,
+      "below_threshold": true,
+      "is_alert": true,
+      "alert_status": "BELOW_THRESHOLD"
+    }
+  ],
+  "students": [
+    {
+      "student_id": 4,
+      "student_name": "student1",
+      "username": "student1",
+      "classes_attended": 4,
+      "total_classes": 4,
+      "attendance_percentage": 100.0,
+      "threshold": 75.0,
+      "below_threshold": false,
+      "is_alert": false,
+      "alert_status": "NORMAL"
+    },
+    {
+      "student_id": 5,
+      "student_name": "student2",
+      "username": "student2",
+      "classes_attended": 3,
+      "total_classes": 4,
+      "attendance_percentage": 75.0,
+      "threshold": 75.0,
+      "below_threshold": false,
+      "is_alert": false,
+      "alert_status": "NORMAL"
+    },
+    {
+      "student_id": 6,
+      "student_name": "student3",
+      "username": "student3",
+      "classes_attended": 2,
+      "total_classes": 4,
+      "attendance_percentage": 50.0,
+      "threshold": 75.0,
+      "below_threshold": true,
+      "is_alert": true,
+      "alert_status": "BELOW_THRESHOLD"
+    }
+  ],
+  "filters": {
+    "threshold": 75.0,
+    "student_id": null,
+    "class_id": null,
+    "subject_id": 2,
+    "include_zero": false,
+    "only_alerts": false
+  },
+  "subject": {
+    "id": 2,
+    "name": "Mathematics"
+  }
+}
+```
+
+### Running Tests
+
+```bash
+# Run FR-11 specific tests:
+python -m pytest tests/test_fr11_attendance_alert.py -v
+
+# Run the complete test suite:
+python -m pytest
+```

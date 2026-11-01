@@ -55,8 +55,8 @@ async function showOverview() {
     stateRow(lowTable, 3, "loading");
 
     try {
-        const [, , , percentages] = await Promise.all([
-            loadUsers(), loadClasses(), loadSubjects(), api("/api/attendance/percentages")
+        const [, , , percentages, alertsData] = await Promise.all([
+            loadUsers(), loadClasses(), loadSubjects(), api("/api/attendance/percentages"), api("/api/attendance/alerts")
         ]);
 
         const countRole = (role) => state.users.filter((u) => u.role === role).length;
@@ -72,16 +72,14 @@ async function showOverview() {
         $("#statOverall").textContent = total ? App.formatPercent(Math.round(attended / total * 1000) / 10) : "–";
         $("#statOverallSub").textContent = total ? `${attended} of ${total} marked classes` : "No attendance marked yet";
 
-        const low = students
-            .filter((s) => s.total_classes > 0 && s.attendance_percentage < 75)
-            .sort((a, b) => a.attendance_percentage - b.attendance_percentage)
-            .slice(0, 8);
+        const low = alertsData.alerts.slice(0, 8);
+        const threshold = alertsData.threshold;
 
         fillRows(lowTable, 3, low.map((s) => [
             avatarCell(s.student_name),
             el("td", { className: "num", text: `${s.classes_attended} / ${s.total_classes}` }),
             progress(s.attendance_percentage)
-        ]), "Everyone is on track", "No student with attendance records is below 75%.");
+        ]), "Everyone is on track", `No student with attendance records is below ${threshold}%.`);
 
     } catch (error) {
         stateRow(lowTable, 3, "error", "Could not load overview", error.message);
