@@ -2,6 +2,7 @@
 """Attendance Management System application factory."""
 
 import os
+import sqlite3
 import secrets
 from datetime import timedelta
 
@@ -24,6 +25,7 @@ def create_app(test_config=None):
         SECRET_KEY=os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(32),
         DATABASE="attendance.db",
         TESTING=False,
+        DEFAULT_ATTENDANCE_THRESHOLD=75.0,
 
         # Automatically expire an inactive login session
         PERMANENT_SESSION_LIFETIME=timedelta(minutes=30),
@@ -46,6 +48,20 @@ def create_app(test_config=None):
 
     # Initialize database
     init_db(app)
+
+    # FR-11: Load persisted settings if available in the database
+    with app.app_context():
+        try:
+            conn = sqlite3.connect(app.config["DATABASE"])
+            conn.row_factory = sqlite3.Row
+            row = conn.execute(
+                "SELECT value FROM settings WHERE key = 'attendance_threshold'"
+            ).fetchone()
+            if row is not None:
+                app.config["DEFAULT_ATTENDANCE_THRESHOLD"] = float(row["value"])
+            conn.close()
+        except Exception:
+            pass
 
     # Register REST API
     app.register_blueprint(api, url_prefix="/api")

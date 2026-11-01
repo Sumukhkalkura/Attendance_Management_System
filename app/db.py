@@ -39,6 +39,10 @@ CREATE TABLE IF NOT EXISTS attendance (
  status TEXT NOT NULL CHECK (status IN ('Present','Absent','Late')),
  UNIQUE (student_id, subject_id, attendance_date)
 );
+CREATE TABLE IF NOT EXISTS settings (
+ key TEXT PRIMARY KEY,
+ value TEXT NOT NULL
+);
 '''
 
 
@@ -70,6 +74,12 @@ def init_db(app):
                     subject_id INTEGER NOT NULL REFERENCES subjects(id)
                         ON DELETE CASCADE,
                     PRIMARY KEY (class_id, subject_id)
+                )
+            ''')
+            connection.execute('''
+                CREATE TABLE IF NOT EXISTS settings (
+                    key TEXT PRIMARY KEY,
+                    value TEXT NOT NULL
                 )
             ''')
             connection.commit()
