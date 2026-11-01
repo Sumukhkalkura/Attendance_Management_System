@@ -158,6 +158,95 @@ def test_successful_threshold_configuration(client, fr11_data):
     assert "student3_fr11" in alert_names
 
 
+def test_threshold_modification_is_admin_only(client, fr11_data):
+    """Review fix: Only admins can update the threshold; teachers/students get 403, unauthenticated gets 401."""
+    # 1. Unauthenticated gets 401
+    res_unauth = client.post("/api/attendance/threshold", json={"threshold": 80.0})
+    assert res_unauth.status_code == 401
+
+    res_unauth_put = client.put("/api/attendance/threshold", json={"threshold": 80.0})
+    assert res_unauth_put.status_code == 401
+
+    # 2. Teacher gets 403 Forbidden
+    login(client, "teacher1_fr11")
+    res_teacher = client.post("/api/attendance/threshold", json={"threshold": 80.0})
+    assert res_teacher.status_code == 403
+    assert res_teacher.get_json()["error"] == "Access denied"
+
+    res_teacher_put = client.put("/api/attendance/threshold", json={"threshold": 80.0})
+    assert res_teacher_put.status_code == 403
+    assert res_teacher_put.get_json()["error"] == "Access denied"
+
+    # 3. Student gets 403 Forbidden
+    login(client, "student1_fr11")
+    res_student = client.put("/api/attendance/threshold", json={"threshold": 80.0})
+    assert res_student.status_code == 403
+    assert res_student.get_json()["error"] == "Access denied"
+
+    # 4. Admin gets 200 OK
+    login(client, "admin_fr11")
+    res_admin = client.put("/api/attendance/threshold", json={"threshold": 80.0})
+    assert res_admin.status_code == 200
+    assert res_admin.get_json()["threshold"] == 80.0
+
+
+def test_threshold_persisted_in_database(client, fr11_data):
+    """Review fix: Threshold update is persisted in SQLite settings table and avoids duplicates."""
+    login(client, "admin_fr11")
+
+    res = client.put("/api/attendance/threshold", json={"threshold": 82.5})
+    assert res.status_code == 200
+
+    db_path = client.application.config["DATABASE"]
+    with sqlite3.connect(db_path) as db:
+        row = db.execute("SELECT value FROM settings WHERE key = 'attendance_threshold'").fetchone()
+        assert row is not None
+        assert row[0] == "82.5"
+
+        # Check no duplicate records on subsequent update
+        client.put("/api/attendance/threshold", json={"threshold": 83.0})
+        count = db.execute("SELECT COUNT(*) FROM settings WHERE key = 'attendance_threshold'").fetchone()[0]
+        assert count == 1
+        updated_row = db.execute("SELECT value FROM settings WHERE key = 'attendance_threshold'").fetchone()
+        assert updated_row[0] == "83.0"
+
+
+def test_threshold_persists_across_application_restart(client, fr11_data):
+    """Review fix: Saved threshold remains available after creating a new Flask application instance."""
+    from app import create_app
+
+    db_path = client.application.config["DATABASE"]
+
+    # Set threshold to 88.0 as admin on current client
+    login(client, "admin_fr11")
+    res = client.put("/api/attendance/threshold", json={"threshold": 88.0})
+    assert res.status_code == 200
+    assert res.get_json()["threshold"] == 88.0
+
+    # Simulate restart by creating a brand-new application instance connected to the same database
+    new_app = create_app({"TESTING": True, "DATABASE": db_path, "SECRET_KEY": "test-only"})
+    new_client = new_app.test_client()
+
+    # Log in on new application instance
+    login(new_client, "admin_fr11")
+
+    # Verify GET /api/attendance/threshold returns 88.0
+    get_res = new_client.get("/api/attendance/threshold")
+    assert get_res.status_code == 200
+    assert get_res.get_json()["threshold"] == 88.0
+
+    # Verify alert calculation on new application instance uses the persisted 88.0 threshold
+    sub_id = fr11_data["subject_math"]
+    alert_res = new_client.get(f"/api/attendance/alerts?subject_id={sub_id}")
+    assert alert_res.status_code == 200
+    alert_data = alert_res.get_json()
+    assert alert_data["threshold"] == 88.0
+
+    # student2 (75%) is below 88%
+    alert_names = [a["student_name"] for a in alert_data["alerts"]]
+    assert "student2_fr11" in alert_names
+
+
 def test_query_parameter_threshold_override(client, fr11_data):
     """Scenario 1: Specify threshold dynamically via query parameter."""
     login(client, "admin_fr11")

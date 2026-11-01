@@ -169,9 +169,10 @@ $$\\text{Attendance Percentage} = \\left(\\frac{\\text{Present Attendance}}{\\te
 The attendance alert threshold can be configured at multiple levels:
 - **Application Default:** Configured via `DEFAULT_ATTENDANCE_THRESHOLD` in Flask application settings (default: `75.0%`).
 - **Dynamic Request Parameter:** Overridden on any alert query using the `threshold` parameter (e.g., `?threshold=80`).
-- **Threshold API:** Retrieved and updated dynamically by administrators and teachers:
-  - `GET /api/attendance/threshold`: Returns current threshold and system default.
-  - `POST /api/attendance/threshold` or `PUT /api/attendance/threshold`: Sets the system default threshold (`{"threshold": 80.0}`).
+- **Threshold API:** Retrieved by authenticated users and updated dynamically by administrators (`admin` role only):
+  - `GET /api/attendance/threshold`: Returns current persisted threshold and system default.
+  - `POST /api/attendance/threshold` or `PUT /api/attendance/threshold`: Admin-only endpoint that persists the global threshold in the database `settings` table (`{"threshold": 80.0}`). Non-admin users (e.g. teachers and students) receive `HTTP 403 Forbidden`, and unauthenticated requests receive `HTTP 401 Unauthorized`.
+- **Database Persistence:** The global threshold is persisted in the SQLite `settings` table under key `attendance_threshold`, surviving server restarts and read upon application factory instantiation.
 
 #### Threshold Validation Rules
 - Accepted values: Numeric values (integers or floats) between `0.0` and `100.0` inclusive.

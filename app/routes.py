@@ -3910,6 +3910,60 @@ def export_attendance_report(student_id=None, class_id=None, subject_id=None, fo
 # =====================================================================
 
 DEFAULT_ATTENDANCE_THRESHOLD = 75.0
+SETTING_KEY_THRESHOLD = "attendance_threshold"
+
+
+def get_persisted_threshold(db=None):
+    """
+    Retrieve the persisted global attendance threshold from the database.
+    Falls back to current_app.config["DEFAULT_ATTENDANCE_THRESHOLD"] or
+    DEFAULT_ATTENDANCE_THRESHOLD if not found.
+    """
+    if db is None:
+        try:
+            db = get_db()
+        except RuntimeError:
+            db = None
+
+    default_val = current_app.config.get(
+        "DEFAULT_ATTENDANCE_THRESHOLD", DEFAULT_ATTENDANCE_THRESHOLD
+    )
+
+    if db is None:
+        return default_val
+
+    try:
+        row = db.execute(
+            "SELECT value FROM settings WHERE key = ?",
+            (SETTING_KEY_THRESHOLD,),
+        ).fetchone()
+        if row is not None:
+            val, err = validate_threshold(row["value"])
+            if not err and val is not None:
+                return val
+    except sqlite3.Error:
+        pass
+
+    return default_val
+
+
+def set_persisted_threshold(val, db=None):
+    """
+    Persist the global attendance threshold in the database and update app.config.
+    """
+    if db is None:
+        db = get_db()
+
+    db.execute(
+        """
+        INSERT INTO settings (key, value)
+        VALUES (?, ?)
+        ON CONFLICT(key) DO UPDATE SET value = excluded.value
+        """,
+        (SETTING_KEY_THRESHOLD, str(val)),
+    )
+    db.commit()
+    current_app.config["DEFAULT_ATTENDANCE_THRESHOLD"] = val
 
 
 def validate_threshold(raw_value, default=None):
@@ -3995,13 +4049,7 @@ def _calculate_attendance_alerts(
                 return None, jsonify(error=err), 400
             threshold = threshold_val
         else:
-            default_val = current_app.config.get(
-                "DEFAULT_ATTENDANCE_THRESHOLD", DEFAULT_ATTENDANCE_THRESHOLD
-            )
-            threshold_val, err = validate_threshold(
-                default_val, default=DEFAULT_ATTENDANCE_THRESHOLD
-            )
-            threshold = threshold_val if not err else DEFAULT_ATTENDANCE_THRESHOLD
+            threshold = get_persisted_threshold(db)
     else:
         threshold_val, err = validate_threshold(threshold)
         if err:
@@ -4254,10 +4302,8 @@ def _calculate_attendance_alerts(
 @login_required()
 def get_attendance_threshold():
     """Retrieve the current configured attendance alert threshold."""
-    thresh = current_app.config.get(
-        "DEFAULT_ATTENDANCE_THRESHOLD", DEFAULT_ATTENDANCE_THRESHOLD
-    )
-    val, _ = validate_threshold(thresh, default=DEFAULT_ATTENDANCE_THRESHOLD)
+    db = get_db()
+    val = get_persisted_threshold(db)
     return jsonify(
         threshold=val,
         default_threshold=DEFAULT_ATTENDANCE_THRESHOLD,
@@ -4265,9 +4311,9 @@ def get_attendance_threshold():
 
 
 @api.route("/attendance/threshold", methods=["POST", "PUT"])
-@login_required(["admin", "teacher"])
+@login_required(["admin"])
 def set_attendance_threshold():
-    """Configure the default attendance alert threshold."""
+    """Configure the global attendance alert threshold (Admin only)."""
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         return jsonify(error="A JSON request body is required"), 400
@@ -4279,7 +4325,13 @@ def set_attendance_threshold():
     if err:
         return jsonify(error=err), 400
 
-    current_app.config["DEFAULT_ATTENDANCE_THRESHOLD"] = val
+    db = get_db()
+    try:
+        set_persisted_threshold(val, db)
+    except sqlite3.Error:
+        db.rollback()
+        return jsonify(error="Database temporarily unavailable"), 503
+
     return jsonify(
         message="Attendance threshold updated successfully",
         threshold=val,
