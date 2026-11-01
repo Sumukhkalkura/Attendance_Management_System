@@ -18,6 +18,7 @@ Covers:
 from uuid import uuid4
 from werkzeug.security import generate_password_hash
 from app.db import get_db
+from session_helpers import plant_session
 
 
 def unique_name(prefix="fr08"):
@@ -39,9 +40,7 @@ def insert_user(client, role, active=1):
 
 def login_as(client, role="admin"):
     user_id = insert_user(client, role)
-    with client.session_transaction() as session:
-        session.clear()
-        session["user_id"] = user_id
+    plant_session(client, user_id)
     return user_id
 
 
@@ -678,9 +677,7 @@ def test_assigned_teacher_visibility_in_teacher_routes(client):
     assert subj_resp.status_code == 201
 
     # 2. Login as that teacher
-    with client.session_transaction() as session:
-        session.clear()
-        session["user_id"] = teacher_id
+    plant_session(client, teacher_id)
 
     # 3. Call /api/teacher/subjects
     resp = client.get("/api/teacher/subjects")

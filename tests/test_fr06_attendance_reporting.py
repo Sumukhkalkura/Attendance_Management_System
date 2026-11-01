@@ -19,6 +19,7 @@ Covers:
 import sqlite3
 import pytest
 from werkzeug.security import generate_password_hash
+from session_helpers import plant_session
 
 
 @pytest.fixture
@@ -686,8 +687,7 @@ def test_no_duplicate_records_on_multiple_enrollments(client):
         db.commit()
 
     # Login as admin
-    with client.session_transaction() as sess:
-        sess["user_id"] = admin_id
+    plant_session(client, admin_id)
 
     # Report without class filter: should have exactly 1 record, not 2
     res = client.get(f"/api/reports/attendance?student_id={student_id}")

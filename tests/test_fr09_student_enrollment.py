@@ -3,6 +3,7 @@
 import pytest
 
 from app.db import get_db
+from session_helpers import plant_session
 
 
 def create_user(client, role, username):
@@ -42,9 +43,7 @@ def create_subject(client, name="Test Subject"):
 
 
 def login_as(client, user_id):
-    with client.session_transaction() as session:
-        session.clear()
-        session["user_id"] = user_id
+    plant_session(client, user_id)
 
 
 @pytest.fixture

@@ -9,6 +9,7 @@ import pytest
 from werkzeug.security import generate_password_hash
 
 from app.db import get_db
+from session_helpers import plant_session
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES = PROJECT_ROOT / "app" / "templates"
@@ -26,9 +27,7 @@ def create_user(client, role, username, active=1):
 
 
 def login_as(client, user_id):
-    with client.session_transaction() as session:
-        session.clear()
-        session["user_id"] = user_id
+    plant_session(client, user_id)
 
 
 @pytest.fixture

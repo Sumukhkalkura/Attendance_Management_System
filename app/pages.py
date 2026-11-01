@@ -9,6 +9,7 @@ import sqlite3
 from flask import Blueprint, redirect, render_template, session, url_for
 
 from .db import get_db
+from .routes import session_matches_password
 
 pages = Blueprint("pages", __name__)
 
@@ -28,13 +29,17 @@ def current_page_user():
 
     try:
         user = get_db().execute(
-            "SELECT id, username, role, active FROM users WHERE id = ?",
+            "SELECT id, username, password_hash, role, active FROM users WHERE id = ?",
             (user_id,)
         ).fetchone()
     except sqlite3.Error:
         return None
 
-    if user is None or not user["active"]:
+    if (
+        user is None
+        or not user["active"]
+        or not session_matches_password(user["password_hash"])
+    ):
         session.clear()
         return None
 

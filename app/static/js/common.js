@@ -321,6 +321,33 @@ const App = (() => {
     }
 
     // -----------------------------------------------------------------
+    // Change password (FR-13)
+    // -----------------------------------------------------------------
+
+    const changePasswordButton = $("#changePasswordButton");
+
+    if (changePasswordButton) {
+        const passwordDialog = formDialog($("#passwordDialog"), async (form) => {
+            if (form.new_password.value !== form.confirm_password.value) {
+                throw new Error("The new passwords do not match.");
+            }
+
+            await api("/api/me/password", {
+                method: "POST",
+                body: {
+                    current_password: form.current_password.value,
+                    new_password: form.new_password.value
+                }
+            });
+
+            form.reset();
+            toast("Your password has been changed.");
+        });
+
+        changePasswordButton.addEventListener("click", () => passwordDialog.open());
+    }
+
+    // -----------------------------------------------------------------
     // Logout (FR-15)
     // -----------------------------------------------------------------
 
