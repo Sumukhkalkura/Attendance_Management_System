@@ -27,8 +27,14 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-      - name: Install Playwright Chromium
-        run: python -m playwright install --with-deps chromium
+      - name: Install Playwright Chromium and Firefox
+        run: python -m playwright install --with-deps chromium firefox
+
+      # NFR-05 tests run in branded Chrome and Edge; runner images usually ship both.
+      - name: Ensure Google Chrome and Microsoft Edge are available
+        run: |
+          google-chrome --version || python -m playwright install chrome
+          microsoft-edge --version || python -m playwright install msedge
 
       - name: Run automated tests
         run: |

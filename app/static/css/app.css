@@ -46,6 +46,7 @@
 
 html {
     -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
@@ -56,6 +57,7 @@ body {
     color: var(--ink-900);
     background: var(--canvas);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 [hidden] {
@@ -591,6 +593,7 @@ select.input {
     gap: 14px;
     padding: 16px 32px;
     background: rgba(244, 246, 251, 0.85);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
 }
@@ -1342,6 +1345,7 @@ select.input {
 
 .dialog::backdrop {
     background: rgba(10, 23, 51, 0.5);
+    -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
 }
 
