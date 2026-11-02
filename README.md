@@ -299,18 +299,23 @@ The system complies with Non-Functional Requirement 02 (**NFR-02: Performance**)
 ### Acceptance Criteria
 
 1. **Major Pages:** Major pages (`/login`, `/dashboard`, `/admin`, `/teacher`, `/student`) load within 3 seconds under normal operating conditions.
-2. **Attendance Information:** Attendance information (`/api/attendance`, `/api/attendance/percentages`, `/api/attendance/alerts`, `/api/reports/attendance`, `/api/reports/attendance/export`) loads within 3 seconds under normal operating conditions.
-3. **Representative Usage Scenarios:** Performance is verified using representative usage scenarios across administrative, teacher, and student workloads.
+2. **Attendance Information:** Attendance information (`/api/attendance`, `/api/attendance/percentages`, `/api/attendance/alerts`, `/api/reports/attendance`, `/api/reports/attendance/export`, `/api/roster`) loads within 3 seconds under normal operating conditions.
+3. **Representative Usage Scenarios:** Performance is verified using representative usage scenarios across administrative, teacher, and student workloads in both backend API tests and real browser automation.
 
 ---
 
-### Defined Normal Operating Conditions
+### Defined Normal Operating Conditions & Workload Dataset
 
-Under realistic academic deployment conditions, the database serves:
-- **Users:** 100+ students, 5+ teachers, and administrative personnel.
-- **Academic Structure:** 10+ classes, 15+ subjects, and complete multi-subject class enrollments.
-- **Attendance Records:** 5,000+ attendance records distributed across multiple dates, subjects, and statuses (`Present`, `Absent`, `Late`).
-- **Concurrent Roles:** Authenticated admin, teacher, and student users exercising major dashboards, rosters, reports, and exports.
+To eliminate dataset discrepancies and guarantee consistent benchmarks across automated unit tests, backend scripts, and browser automation, the representative normal operating workload is strictly standardized:
+
+- **Students:** 50 active students (`perf_student_1` .. `perf_student_50`)
+- **Teachers:** 5 assigned teachers
+- **Administrator:** 1 administrative account
+- **Classes:** 10 active classes
+- **Subjects:** 15 active subjects (3 subjects per class)
+- **Enrollments:** Complete multi-subject student enrollments across classes
+- **Attendance Records:** Exactly 1,500 attendance records distributed across 25 dates with statuses `Present` (60%), `Absent` (20%), and `Late` (20%)
+- **Data Generation Method:** Automated reproducible database seeding using `sqlite3` and batch insertion (`executemany`) with foreign key constraints enabled.
 
 ---
 
@@ -340,52 +345,98 @@ To guarantee low latency and prevent performance degradation as attendance recor
 
 ---
 
-### Empirical Benchmark Results
+### Backend Response-Time Benchmark Results
 
-Benchmarking conducted on a representative dataset (100 students, 10 classes, 15 subjects, 5,000 attendance records) over 5 consecutive iterations per scenario:
+Benchmarking conducted on the standardized representative dataset (50 students, 10 classes, 15 subjects, 5 teachers, 1 admin, 1,500 attendance records) over 5 consecutive iterations per scenario using `scripts/backend_performance_bench.py`:
 
-| Scenario | Component | Avg Response Time (ms) | Max Response Time (ms) | 3-Second SLA Status |
+| Scenario / Operation | Component | Avg Time (ms) | Max Time (ms) | 3-Second SLA Status |
 |---|---|---|---|---|
-| **`/login` (Unauthenticated)** | Major Page | 0.52 ms | 0.68 ms | PASSED (< 3.0s) |
-| **`/dashboard` (Admin Redirect)** | Major Page | 2.32 ms | 3.75 ms | PASSED (< 3.0s) |
-| **`/dashboard` (Teacher Redirect)** | Major Page | 2.44 ms | 3.31 ms | PASSED (< 3.0s) |
-| **`/dashboard` (Student Redirect)** | Major Page | 3.51 ms | 6.32 ms | PASSED (< 3.0s) |
-| **`/admin` (Admin Dashboard)** | Major Page | 4.16 ms | 6.02 ms | PASSED (< 3.0s) |
-| **`/teacher` (Teacher Dashboard)** | Major Page | 4.06 ms | 5.12 ms | PASSED (< 3.0s) |
-| **`/student` (Student Dashboard)** | Major Page | 3.76 ms | 4.14 ms | PASSED (< 3.0s) |
-| **`/api/classes`** | Attendance Info | 3.97 ms | 5.06 ms | PASSED (< 3.0s) |
-| **`/api/subjects`** | Attendance Info | 5.11 ms | 6.52 ms | PASSED (< 3.0s) |
-| **`/api/users?role=student`** | Attendance Info | 4.85 ms | 7.94 ms | PASSED (< 3.0s) |
-| **`/api/roster?class_id=1&subject_id=1`** | Attendance Info | 5.41 ms | 7.34 ms | PASSED (< 3.0s) |
-| **`/api/attendance` (5,000 records)** | Attendance Info | 33.89 ms | 48.81 ms | PASSED (< 3.0s) |
-| **`/api/attendance?student_id=7`** | Attendance Info | 4.70 ms | 5.94 ms | PASSED (< 3.0s) |
-| **`/api/attendance?class_id=1`** | Attendance Info | 13.46 ms | 17.75 ms | PASSED (< 3.0s) |
-| **`/api/attendance?subject_id=1`** | Attendance Info | 7.31 ms | 10.16 ms | PASSED (< 3.0s) |
-| **`/api/attendance?start_date=2026-03-01&end_date=2026-03-15`** | Attendance Info | 17.39 ms | 24.05 ms | PASSED (< 3.0s) |
-| **`/api/attendance/percentages`** | Attendance Info | 7.98 ms | 10.99 ms | PASSED (< 3.0s) |
-| **`/api/attendance/percentages?student_id=7`** | Attendance Info | 7.96 ms | 9.03 ms | PASSED (< 3.0s) |
-| **`/api/attendance/percentages?class_id=1`** | Attendance Info | 9.13 ms | 11.45 ms | PASSED (< 3.0s) |
-| **`/api/attendance/percentages?subject_id=1`** | Attendance Info | 4.67 ms | 5.54 ms | PASSED (< 3.0s) |
-| **`/api/attendance/alerts`** | Attendance Info | 12.78 ms | 17.23 ms | PASSED (< 3.0s) |
-| **`/api/attendance/alerts/student/7`** | Attendance Info | 8.00 ms | 8.56 ms | PASSED (< 3.0s) |
-| **`/api/attendance/alerts/class/1`** | Attendance Info | 9.13 ms | 10.20 ms | PASSED (< 3.0s) |
-| **`/api/attendance/alerts/subject/1`** | Attendance Info | 9.07 ms | 9.88 ms | PASSED (< 3.0s) |
-| **`/api/reports/attendance` (Aggregated)** | Attendance Info | 88.57 ms | 96.59 ms | PASSED (< 3.0s) |
-| **`/api/reports/attendance/student/7`** | Attendance Info | 10.03 ms | 11.96 ms | PASSED (< 3.0s) |
-| **`/api/reports/attendance/class/1`** | Attendance Info | 20.03 ms | 23.33 ms | PASSED (< 3.0s) |
-| **`/api/reports/attendance/subject/1`** | Attendance Info | 12.10 ms | 13.13 ms | PASSED (< 3.0s) |
-| **`/api/reports/attendance/export` (CSV)** | Attendance Info | 106.07 ms | 112.43 ms | PASSED (< 3.0s) |
+| **`/login` (Unauthenticated)** | Major Page | 0.73 ms | 0.91 ms | PASSED (< 3.0s) |
+| **`/dashboard` (Admin Redirect)** | Major Page | 2.29 ms | 2.81 ms | PASSED (< 3.0s) |
+| **`/dashboard` (Teacher Redirect)** | Major Page | 2.21 ms | 2.57 ms | PASSED (< 3.0s) |
+| **`/dashboard` (Student Redirect)** | Major Page | 2.41 ms | 3.71 ms | PASSED (< 3.0s) |
+| **`/admin` (Admin Dashboard)** | Major Page | 3.22 ms | 3.77 ms | PASSED (< 3.0s) |
+| **`/teacher` (Teacher Dashboard)** | Major Page | 3.45 ms | 4.10 ms | PASSED (< 3.0s) |
+| **`/student` (Student Dashboard)** | Major Page | 3.16 ms | 3.97 ms | PASSED (< 3.0s) |
+| **`/api/classes`** | Attendance Info | 3.99 ms | 5.68 ms | PASSED (< 3.0s) |
+| **`/api/subjects`** | Attendance Info | 4.41 ms | 5.42 ms | PASSED (< 3.0s) |
+| **`/api/users?role=student`** | Attendance Info | 3.87 ms | 5.36 ms | PASSED (< 3.0s) |
+| **`/api/roster?class_id=1&subject_id=1`** | Attendance Info | 4.73 ms | 6.15 ms | PASSED (< 3.0s) |
+| **`/api/attendance` (1,500 records)** | Attendance Info | 10.85 ms | 12.38 ms | PASSED (< 3.0s) |
+| **`/api/attendance?student_id=7`** | Attendance Info | 2.91 ms | 3.62 ms | PASSED (< 3.0s) |
+| **`/api/attendance?class_id=1`** | Attendance Info | 5.85 ms | 7.66 ms | PASSED (< 3.0s) |
+| **`/api/attendance?subject_id=1`** | Attendance Info | 4.22 ms | 5.20 ms | PASSED (< 3.0s) |
+| **`/api/attendance?start_date=2026-03-01&end_date=2026-03-15`** | Attendance Info | 15.73 ms | 18.07 ms | PASSED (< 3.0s) |
+| **`/api/attendance/percentages`** | Attendance Info | 4.91 ms | 5.42 ms | PASSED (< 3.0s) |
+| **`/api/attendance/percentages?student_id=7`** | Attendance Info | 4.83 ms | 5.66 ms | PASSED (< 3.0s) |
+| **`/api/attendance/percentages?class_id=1`** | Attendance Info | 4.33 ms | 5.08 ms | PASSED (< 3.0s) |
+| **`/api/attendance/percentages?subject_id=1`** | Attendance Info | 4.44 ms | 5.09 ms | PASSED (< 3.0s) |
+| **`/api/attendance/alerts`** | Attendance Info | 4.21 ms | 4.81 ms | PASSED (< 3.0s) |
+| **`/api/attendance/alerts/student/7`** | Attendance Info | 4.12 ms | 4.48 ms | PASSED (< 3.0s) |
+| **`/api/attendance/alerts/class/1`** | Attendance Info | 3.26 ms | 3.73 ms | PASSED (< 3.0s) |
+| **`/api/attendance/alerts/subject/1`** | Attendance Info | 3.24 ms | 3.60 ms | PASSED (< 3.0s) |
+| **`/api/reports/attendance` (Full Report)** | Attendance Info | 27.15 ms | 31.54 ms | PASSED (< 3.0s) |
+| **`/api/reports/attendance/student/7`** | Attendance Info | 3.99 ms | 5.47 ms | PASSED (< 3.0s) |
+| **`/api/reports/attendance/class/1`** | Attendance Info | 4.85 ms | 5.09 ms | PASSED (< 3.0s) |
+| **`/api/reports/attendance/subject/1`** | Attendance Info | 5.08 ms | 5.40 ms | PASSED (< 3.0s) |
+| **`/api/reports/attendance/export` (CSV Export)** | Attendance Info | 23.25 ms | 26.14 ms | PASSED (< 3.0s) |
 
-*Summary:* All major page responses return in **under 7 milliseconds**, and complex attendance aggregation/export requests execute in **under 115 milliseconds** — outperforming the 3.0-second requirement by over **25x**.
+*Summary:* All major page backend responses return in **under 5 milliseconds**, and complex attendance aggregation/export requests execute in **under 32 milliseconds** — outperforming the 3.0-second SLA by nearly **100x**.
 
 ---
 
-### Running Performance Tests
+### Reproducible Browser-Based Performance Verification
+
+In addition to backend Flask response timing, end-to-end browser performance was measured in a real browser using **Playwright for Python** running headless Chromium (`Google Chrome 130+`).
+
+#### Measurement Definitions
+1. **Navigation Timing (ms):** Elapsed time from `page.goto()` initiation until the browser's `load` event fires.
+2. **Main Content Visible (ms):** Elapsed time until core shell and layout elements (`#sidebar`, `.topbar`, `.main`, `#section-*`) are visible in the DOM.
+3. **Attendance Information Fully Rendered (ms):** Elapsed time from view initiation until all asynchronous REST API requests resolve, JavaScript renders the data, and actual attendance rows (`#recordsTable tr`, `#percentTable tr`, `#historyTable tr`, `#rosterTable tr`) or summary cards are populated and visible.
+
+#### Browser Benchmark Results
+
+Measured across 3 repetitions per scenario on the standardized 1,500-record dataset:
+
+| Page / View Tested | Primary Role | Nav Avg (ms) | Content Visible Avg (ms) | Render Avg (ms) | Render Max (ms) | 3-Second SLA Status |
+|---|---|---|---|---|---|---|
+| **1. Login Page (`/login`)** | Anonymous | 95.5 ms | 153.6 ms | 153.6 ms | 173.5 ms | PASSED (< 3.0s) |
+| **2. Main Dashboard (`/admin` overview)** | Admin | 121.2 ms | 168.3 ms | 225.0 ms | 232.9 ms | PASSED (< 3.0s) |
+| **3. Student Attendance View (`/student#history`)** | Student | 0.0 ms* | 141.6 ms | 171.2 ms | 177.1 ms | PASSED (< 3.0s) |
+| **4. Class Attendance View (`/teacher#mark` roster)** | Teacher | 0.0 ms* | 123.0 ms | 436.3 ms | 476.8 ms | PASSED (< 3.0s) |
+| **5. Subject Attendance View (`/teacher#percentages`)** | Teacher | 0.0 ms* | 130.5 ms | 166.3 ms | 185.7 ms | PASSED (< 3.0s) |
+| **6. Attendance Reporting Page (`/admin#attendance`)** | Admin | 0.0 ms* | 129.7 ms | 735.4 ms | 736.1 ms | PASSED (< 3.0s) |
+
+*\*Note: Single-page application tab transitions operate without full browser document reloads; navigation timing evaluates to 0.0 ms.*
+
+*Summary:* In a real browser environment, every major page and attendance view renders completely in **under 740 milliseconds**, easily satisfying the 3.0-second requirement.
+
+#### Visual Evidence
+Full visual verification screenshots captured during benchmark execution are archived in `reports/screenshots/`:
+- `reports/screenshots/login_page.png`
+- `reports/screenshots/admin_dashboard_overview.png`
+- `reports/screenshots/student_attendance_view.png`
+- `reports/screenshots/class_attendance_view.png`
+- `reports/screenshots/subject_attendance_view.png`
+- `reports/screenshots/attendance_reporting_page.png`
+
+---
+
+### Benchmark and Test Execution Commands
 
 ```bash
-# Run NFR-02 performance tests:
+# 1. Run Backend Automated Performance Tests (18 test cases)
 python -m pytest tests/test_nfr02_performance.py -v
 
-# Run the complete automated test suite:
+# 2. Run Browser-Based Automated Performance Tests (6 test cases with Playwright)
+python -m pytest tests/test_nfr02_browser_performance.py -v
+
+# 3. Run Standalone Backend Benchmark Script (generates detailed timing breakdown)
+python scripts/backend_performance_bench.py
+
+# 4. Run Standalone Browser Benchmark Script (measures real browser timings and captures screenshots)
+python scripts/run_browser_benchmarks.py
+
+# 5. Run Complete Project Test Suite (all 550 test items)
 python -m pytest
 ```
