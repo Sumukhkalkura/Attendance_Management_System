@@ -12,10 +12,18 @@ from .db import init_db
 from .pages import pages
 from .api import api as api_blueprint
 
-# Ensure JavaScript files are served with the modern MIME type expected by browsers
-# and by the NFR-05 static asset checks.
-mimetypes.add_type("application/javascript", ".js")
-mimetypes.add_type("application/javascript", ".mjs")
+
+# Flask/WSGI can keep a stale JS MIME mapping depending on the runtime, so
+# force the modern JavaScript Content-Type in both the global registry and the
+# per-response headers. This satisfies the static asset checks across browsers.
+def register_js_mime_types():
+    for ext in (".js", ".mjs"):
+        mimetypes.add_type("application/javascript", ext, strict=True)
+        mimetypes.types_map[ext] = "application/javascript"
+        mimetypes.common_types[ext] = "application/javascript"
+
+
+register_js_mime_types()
 
 STATE_CHANGING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -73,6 +81,14 @@ def create_app(test_config=None):
 
     # Frontend pages: login and role-based dashboards
     app.register_blueprint(pages)
+
+    @app.after_request
+    def force_js_content_type(response):
+        path = request.path.lower()
+        if path.endswith(".js") or path.endswith(".mjs"):
+            response.headers["Content-Type"] = "application/javascript; charset=utf-8"
+            response.mimetype = "application/javascript"
+        return response
 
     # NFR-01: CSRF protection for cookie-authenticated API calls.
     # Browsers attach an Origin (or Referer) header to cross-site requests;
