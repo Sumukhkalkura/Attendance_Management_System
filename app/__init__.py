@@ -1,7 +1,6 @@
 
 """Attendance Management System application factory."""
 
-import mimetypes
 import os
 import sqlite3
 import secrets
@@ -15,16 +14,15 @@ from .api import api as api_blueprint
 
 STATE_CHANGING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
+# NFR-05: Standard types for scripts and styles. Flask otherwise takes them
+# from the host's MIME table (/etc/mime.types, the Windows registry), which
+# differs between machines; with "nosniff" a browser refuses a script or
+# stylesheet served with the wrong type.
+STATIC_MIME_TYPES = {".js": "text/javascript", ".css": "text/css"}
+
 
 def create_app(test_config=None):
     """Create and configure the Flask application."""
-
-    # NFR-05: Serve scripts and styles with their standard types on every host.
-    # Python otherwise takes them from the OS (/etc/mime.types or the Windows
-    # registry), and with "nosniff" browsers refuse a script or stylesheet
-    # served with the wrong type.
-    mimetypes.add_type("text/javascript", ".js")
-    mimetypes.add_type("text/css", ".css")
 
     app = Flask(__name__)
 
@@ -115,6 +113,11 @@ def create_app(test_config=None):
         response.headers["Cache-Control"] = "no-store"
         # NFR-05: Standards mode directive for Microsoft Edge and Chromium
         response.headers["X-UA-Compatible"] = "IE=edge"
+        # NFR-05: Same script and style types on every host
+        if request.endpoint == "static":
+            mimetype = STATIC_MIME_TYPES.get(os.path.splitext(request.path)[1].lower())
+            if mimetype:
+                response.mimetype = mimetype
         return response
     
     return app

@@ -13,7 +13,6 @@ from pathlib import Path
 import pytest
 from werkzeug.security import generate_password_hash
 
-from app import create_app
 from session_helpers import plant_session
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -147,23 +146,27 @@ def test_nfr05_static_assets_serve_correct_mime_types(
         assert expected_charset in response.headers.get("Content-Type", "").lower()
 
 
-def test_nfr05_static_types_do_not_depend_on_host_mime_table(tmp_path):
+def test_nfr05_static_types_do_not_depend_on_host_mime_table(client, monkeypatch):
     """A host mapping .js/.css to text/plain (e.g. a Windows registry entry) must not reach browsers."""
-    mimetypes.add_type("text/plain", ".js")
-    mimetypes.add_type("text/plain", ".css")
-    try:
-        app = create_app({"TESTING": True, "DATABASE": str(tmp_path / "mime.db"), "SECRET_KEY": "test-only"})
-        client = app.test_client()
+    real_guess_type = mimetypes.guess_type
 
-        script = client.get("/static/js/common.js")
-        style = client.get("/static/css/app.css")
+    def broken_host_table(url, strict=True):
+        if str(url).endswith((".js", ".css")):
+            return "text/plain", None
+        return real_guess_type(url, strict)
 
-        assert script.mimetype == "text/javascript"
-        assert style.mimetype == "text/css"
-        assert script.headers["X-Content-Type-Options"] == "nosniff"
-    finally:
-        mimetypes.add_type("text/javascript", ".js")
-        mimetypes.add_type("text/css", ".css")
+    monkeypatch.setattr(mimetypes, "guess_type", broken_host_table)
+
+    script = client.get("/static/js/common.js")
+    style = client.get("/static/css/app.css")
+    icon = client.get("/static/favicon.svg")
+
+    assert script.mimetype == "text/javascript"
+    assert "charset=utf-8" in script.headers["Content-Type"].lower()
+    assert script.headers["X-Content-Type-Options"] == "nosniff"
+    assert style.mimetype == "text/css"
+    # Other static files still use the normal lookup.
+    assert icon.mimetype == "image/svg+xml"
 
 
 # -----------------------------------------------------------------------------
