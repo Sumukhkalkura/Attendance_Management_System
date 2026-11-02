@@ -128,8 +128,8 @@ def test_nfr05_security_headers_consistent_across_browsers(
     "asset_path, expected_mimetype, expected_charset",
     [
         ("/static/css/app.css", "text/css", "utf-8"),
-        ("/static/js/common.js", "text/javascript", "utf-8"),
-        ("/static/js/login.js", "text/javascript", "utf-8"),
+        ("/static/js/common.js", "application/javascript", "utf-8"),
+        ("/static/js/login.js", "application/javascript", "utf-8"),
         ("/static/favicon.svg", "image/svg+xml", "utf-8"),
     ],
 )
@@ -161,7 +161,7 @@ def test_nfr05_static_types_do_not_depend_on_host_mime_table(client, monkeypatch
     style = client.get("/static/css/app.css")
     icon = client.get("/static/favicon.svg")
 
-    assert script.mimetype == "text/javascript"
+    assert script.mimetype == "application/javascript"
     assert "charset=utf-8" in script.headers["Content-Type"].lower()
     assert script.headers["X-Content-Type-Options"] == "nosniff"
     assert style.mimetype == "text/css"

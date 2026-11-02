@@ -60,7 +60,7 @@ claimed.
 ### 3.4 HTTP Headers & Security Alignment
 - **Content-Security-Policy (CSP)**: `default-src 'self'; frame-ancestors 'none'` ensures that all JavaScript, CSS, SVGs, and fonts load from the application origin, eliminating cross-origin script blocking or mixed-content errors in strict browsers.
 - **MIME Sniffing Protection**: `X-Content-Type-Options: nosniff` enforces strict MIME type parsing across Chrome, Edge, Firefox, and Firefox.
-- **Fixed script and style types**: the app's `after_request` hook sets static `.js` responses to `text/javascript` (RFC 9239) and `.css` to `text/css` (`STATIC_MIME_TYPES` in `app/__init__.py`). Without this, Flask takes these types from the host's MIME table (`/etc/mime.types` or the Windows registry), which differs between machines: GitHub Actions served `application/javascript` while the tests expect `text/javascript`. A host that maps `.js` to `text/plain` would make every browser refuse the scripts because of `nosniff`. `test_nfr05_static_types_do_not_depend_on_host_mime_table` simulates that broken mapping.
+- **Fixed script and style types**: Flask takes the type of a static file from the host's MIME table, which differs between machines (Python's built-in table and the Windows registry give `application/javascript` for `.js`, Ubuntu's `/etc/mime.types` gives `text/javascript`). A host that maps `.js` or `.css` to `text/plain` would make every browser refuse the file because of `nosniff`. The app therefore sets both itself: `force_js_content_type` serves `.js` as `application/javascript`, and the security-header hook serves static `.css` as `text/css`. `test_nfr05_static_types_do_not_depend_on_host_mime_table` simulates a `text/plain` host mapping.
 - **Cookie Security**: Active sessions utilize `SameSite=Lax` and `HttpOnly` attributes, ensuring full cross-browser compatibility with current browser cookie privacy standards (such as Chrome Privacy Sandbox and Safari ITP).
 - **File Export Headers (FR-12)**: Downloads for CSV, PDF, and JSON reports emit RFC 6266 `Content-Disposition: attachment; filename="..."` headers with explicit MIME types (`text/csv; charset=utf-8`, `application/pdf`, `application/json`), ensuring seamless handling by native browser download managers.
 
@@ -117,5 +117,5 @@ API through Flask's test client, covering:
   SRS or backlog criteria and are not tested here. The 375px test checks the
   responsive layout in desktop engines, not on real phones.
 - No browser-specific defects were found in the real-browser runs. One
-  host-specific issue was found and fixed: the served type of `.js` files
-  depended on the host's MIME table (see section 3.4).
+  host-specific issue was found and fixed: the served types of `.js` and
+  `.css` files depended on the host's MIME table (see section 3.4).
