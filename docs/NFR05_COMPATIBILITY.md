@@ -7,21 +7,26 @@
 - **Priority**: Medium
 - **SRS Description**: *The system shall function correctly on commonly used modern web browsers.*
 - **Backlog User Story (US-26)**: *As a user, I want the system to work in common browsers so that I can use my own device.*
-- **Acceptance Criteria**:
-  1. Major functions are tested on commonly used modern browsers (Chrome, Edge, Firefox, and Safari).
+- **Backlog acceptance criterion (US-26)**: *Works correctly in current Chrome, Edge and Firefox.*
+- **GitHub issue #20 acceptance criteria**:
+  1. Major functions are tested on commonly used modern browsers.
   2. Core features work correctly on the browsers tested.
   3. Any browser-specific issues are documented and resolved.
 
 ## 2. Supported Browsers Matrix
 
-The Attendance Management System is engineered and verified to support the current and recent versions of the following modern web browsers across desktop and mobile platforms:
+US-26 names the target browsers: current Chrome, Edge and Firefox. Each one is
+exercised in its real engine by `tests/test_nfr05_browser_compatibility.py`.
 
-| Browser | Engine | Operating Systems | Status | Minimum Tested Baseline |
-| :--- | :--- | :--- | :--- | :--- |
-| **Google Chrome** | Blink / Chromium | Windows, macOS, Linux, Android | Verified | Chrome 100+ |
-| **Microsoft Edge** | Blink / Chromium | Windows, macOS | Verified | Edge 100+ |
-| **Mozilla Firefox** | Gecko / SpiderMonkey | Windows, macOS, Linux, Android | Verified | Firefox 100+ |
-| **Apple Safari** | WebKit | macOS, iOS, iPadOS | Verified | Safari 15.4+ |
+| Browser | Engine | How it is tested | Where it runs |
+| :--- | :--- | :--- | :--- |
+| **Google Chrome** (current stable) | Blink | Playwright channel `chrome` | Locally and in GitHub Actions |
+| **Microsoft Edge** (current stable) | Blink | Playwright channel `msedge` | Locally and in GitHub Actions |
+| **Mozilla Firefox** (current, Playwright build) | Gecko | Playwright `firefox` | GitHub Actions (and locally where it can be installed) |
+
+Safari is not part of the SRS or backlog criteria and is not tested. The CSS
+`-webkit-` prefixes below are kept for WebKit, but Safari support is not
+claimed.
 
 ## 3. Compatibility Design & Implementation Standards
 
@@ -60,8 +65,40 @@ The Attendance Management System is engineered and verified to support the curre
 
 ## 4. Verification and Testing
 
-Automated verification is implemented in `tests/test_nfr05_implementation.py`, covering:
-1. Multi-browser User-Agent simulation (Chrome, Edge, Firefox, Safari on Windows, macOS, Linux, Android, iOS).
+### 4.1 Real-browser tests (primary evidence)
+
+`tests/test_nfr05_browser_compatibility.py` starts the real application on a
+local port and drives Chrome, Edge and Firefox through Playwright. The same
+tests run in every browser:
+
+| Test | Major function exercised |
+| :--- | :--- |
+| `test_login_page_validation_and_role_redirect` | Standards mode, UTF-8, empty-form validation, password toggle, wrong-password error, `fetch` login and role redirect |
+| `test_teacher_marks_corrects_attendance_and_logs_out` | Hash navigation, `<select>` and `<input type="date">`, marking a roster, saving (checked in SQLite), correcting a record in a `<dialog>`, logging out through the confirm dialog, protected page after logout |
+| `test_student_views_own_attendance` | Overview percentage (3 of 4 = 75%), counts and history table |
+| `test_admin_creates_user_through_dialog` | New-user form dialog and the stored user |
+| `test_dashboard_layout_has_no_horizontal_overflow` | 1280px desktop and 375px phone widths, mobile menu toggle |
+| `test_report_tested_browser_versions` | Confirms every selected browser actually ran and prints its version |
+
+Every test also fails if the page throws an uncaught JavaScript error or logs a
+console error in that browser.
+
+```bash
+python -m playwright install chromium firefox chrome msedge
+python -m pytest tests/test_nfr05_browser_compatibility.py -v -s
+# Run a subset, e.g. where one browser cannot be installed:
+NFR05_BROWSERS=chrome,edge python -m pytest tests/test_nfr05_browser_compatibility.py -v -s
+```
+
+GitHub Actions installs Firefox and uses the Chrome and Edge builds on the
+runner (installing them if missing), so all three browsers run on every push
+and pull request.
+
+### 4.2 HTTP-level checks
+
+`tests/test_nfr05_implementation.py` checks the markup, headers, assets and
+API through Flask's test client, covering:
+1. Requests sent with different browser User-Agent strings get the same responses. These are simulations, not real browsers.
 2. HTML5 doctype, viewport, and `X-UA-Compatible` metadata inspection.
 3. HTTP security and compatibility header delivery.
 4. CSS vendor property verification (`-webkit-backdrop-filter`, `-moz-osx-font-smoothing`, `text-size-adjust`).
@@ -69,3 +106,15 @@ Automated verification is implemented in `tests/test_nfr05_implementation.py`, c
 6. Cookie security and `SameSite` flags.
 7. Export format download headers and MIME types.
 8. End-to-end user workflows executed under each browser persona.
+
+## 5. Assumptions and Limitations
+
+- "Current" Chrome, Edge and Firefox means the stable releases available when
+  the tests run. The tests print the exact versions, and older versions are
+  not covered.
+- Safari, mobile browser apps and assistive technology are not covered by the
+  SRS or backlog criteria and are not tested here. The 375px test checks the
+  responsive layout in desktop engines, not on real phones.
+- No browser-specific defects were found in the real-browser runs, so no
+  browser-specific workarounds were needed beyond the defensive polyfills and
+  prefixes in section 3.

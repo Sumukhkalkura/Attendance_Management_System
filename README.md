@@ -46,6 +46,20 @@ architecture tests.
 python -m pytest tests/test_nfr06_maintainability.py -v
 ```
 
+## NFR-05: Compatibility
+
+The system is tested in current Chrome, Edge and Firefox (US-26). The browser
+tests drive each real browser through Playwright and run the main admin,
+teacher and student workflows. See
+[docs/NFR05_COMPATIBILITY.md](docs/NFR05_COMPATIBILITY.md).
+
+```bash
+python -m playwright install chromium firefox chrome msedge
+python -m pytest tests/test_nfr05_browser_compatibility.py tests/test_nfr05_implementation.py -v
+```
+
+Set `NFR05_BROWSERS` (for example `chrome,edge`) to run a subset of browsers.
+
 ## Important limitations
 
 Authentication, authorization, session handling, admin workflows, attendance operations,
