@@ -10,7 +10,7 @@ from flask import Flask, jsonify, request
 
 from .db import init_db
 from .pages import pages
-from .routes import api
+from .api import api as api_blueprint
 
 STATE_CHANGING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -64,7 +64,7 @@ def create_app(test_config=None):
             pass
 
     # Register REST API
-    app.register_blueprint(api, url_prefix="/api")
+    app.register_blueprint(api_blueprint, url_prefix="/api")
     
     # Frontend pages: login and role-based dashboards
     app.register_blueprint(pages)
