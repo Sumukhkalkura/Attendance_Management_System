@@ -1,6 +1,6 @@
-
 """Attendance Management System application factory."""
 
+import mimetypes
 import os
 import sqlite3
 import secrets
@@ -11,6 +11,11 @@ from flask import Flask, jsonify, request
 from .db import init_db
 from .pages import pages
 from .api import api as api_blueprint
+
+# Ensure JavaScript files are served with the modern MIME type expected by browsers
+# and by the NFR-05 static asset checks.
+mimetypes.add_type("application/javascript", ".js")
+mimetypes.add_type("application/javascript", ".mjs")
 
 STATE_CHANGING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -65,7 +70,7 @@ def create_app(test_config=None):
 
     # Register REST API
     app.register_blueprint(api_blueprint, url_prefix="/api")
-    
+
     # Frontend pages: login and role-based dashboards
     app.register_blueprint(pages)
 
@@ -106,5 +111,5 @@ def create_app(test_config=None):
         response.headers["Content-Security-Policy"] = "default-src 'self'; frame-ancestors 'none'"
         response.headers["Cache-Control"] = "no-store"
         return response
-    
+
     return app
