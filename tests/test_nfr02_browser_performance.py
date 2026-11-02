@@ -1,4 +1,4 @@
-"""Browser-based performance tests for NFR-02 using Playwright and headless Chrome.
+"""Browser-based performance tests for NFR-02 using Playwright managed Chromium.
 
 Verifies that major pages and attendance views load and render within the 3.0-second SLA
 under normal operating conditions:
@@ -22,20 +22,12 @@ from werkzeug.security import generate_password_hash
 
 try:
     from playwright.sync_api import sync_playwright
-    PLAYWRIGHT_INSTALLED = True
-except ImportError:
-    PLAYWRIGHT_INSTALLED = False
+except ImportError as err:
+    sync_playwright = None
 
 from app import create_app
 
 PERFORMANCE_SLA_SECONDS = 3.0
-
-CHROME_PATHS = [
-    r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-    r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-    r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
-]
-AVAILABLE_BROWSER = next((p for p in CHROME_PATHS if os.path.exists(p)), None)
 
 
 def find_free_port():
@@ -47,9 +39,6 @@ def find_free_port():
 @pytest.fixture(scope="module")
 def browser_server(tmp_path_factory):
     """Start a background Flask test server seeded with normal operating data."""
-    if not PLAYWRIGHT_INSTALLED or not AVAILABLE_BROWSER:
-        pytest.skip("Playwright or system browser not available in this test environment.")
-
     temp_dir = tmp_path_factory.mktemp("browser_perf_db")
     db_path = str(temp_dir / "browser_perf.db")
 
@@ -125,7 +114,8 @@ def browser_server(tmp_path_factory):
         conn.close()
 
     port = find_free_port()
-    server = make_server("127.0.0.1", port, app)
+    server = make_server("127.0.0.1", port, app, threaded=True)
+    server.daemon_threads = True
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     time.sleep(0.3)
@@ -134,22 +124,34 @@ def browser_server(tmp_path_factory):
     yield base_url
 
     server.shutdown()
+    server.server_close()
 
 
 @pytest.fixture(scope="module")
 def browser_instance():
-    """Manage a headless browser instance."""
-    if not PLAYWRIGHT_INSTALLED or not AVAILABLE_BROWSER:
-        pytest.skip("Playwright or system browser not available in this test environment.")
+    """Manage a cross-platform Playwright Chromium browser instance."""
+    if sync_playwright is None:
+        raise RuntimeError(
+            "The 'playwright' package is not installed. Install it with: "
+            "pip install playwright"
+        )
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(executable_path=AVAILABLE_BROWSER, headless=True)
-        # Warmup page
-        warm = browser.new_page()
-        warm.goto("about:blank")
-        warm.close()
-        yield browser
-        browser.close()
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            # Warmup page
+            warm = browser.new_page()
+            warm.goto("about:blank")
+            warm.close()
+            yield browser
+            browser.close()
+    except Exception as err:
+        raise RuntimeError(
+            "Failed to launch Playwright managed Chromium. Ensure browser binaries "
+            "are installed with: 'python -m playwright install chromium' "
+            "(or on Linux: 'python -m playwright install --with-deps chromium'). "
+            f"Original error: {err}"
+        ) from err
 
 
 def test_browser_login_page_renders_within_threshold(browser_instance, browser_server):
@@ -159,7 +161,6 @@ def test_browser_login_page_renders_within_threshold(browser_instance, browser_s
     try:
         t0 = time.perf_counter()
         resp = page.goto(f"{browser_server}/login", wait_until="load")
-        nav_elapsed = time.perf_counter() - t0
 
         page.wait_for_selector("#loginForm", state="visible")
         render_elapsed = time.perf_counter() - t0
@@ -296,4 +297,3 @@ def test_browser_attendance_reporting_page_renders_within_threshold(browser_inst
         assert render_elapsed < PERFORMANCE_SLA_SECONDS, f"Attendance reporting took {render_elapsed:.3f}s"
     finally:
         ctx.close()
-
