@@ -97,7 +97,7 @@ def create_app(test_config=None):
             note="Sprint 1 features under development",
         )
 
-        # NFR-01: Security response headers
+    # NFR-01 & NFR-05: Security and browser compatibility response headers
     @app.after_request
     def add_security_headers(response):
         response.headers["X-Content-Type-Options"] = "nosniff"
@@ -105,6 +105,8 @@ def create_app(test_config=None):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Content-Security-Policy"] = "default-src 'self'; frame-ancestors 'none'"
         response.headers["Cache-Control"] = "no-store"
+        # NFR-05: Standards mode directive for Microsoft Edge and Chromium
+        response.headers["X-UA-Compatible"] = "IE=edge"
         return response
     
     return app

@@ -1,5 +1,15 @@
 "use strict";
 
+// NFR-05: Cross-browser polyfill for Element.prototype.toggleAttribute
+if (typeof Element !== "undefined" && !Element.prototype.toggleAttribute) {
+    Element.prototype.toggleAttribute = function(name, force) {
+        if (force === undefined) force = !this.hasAttribute(name);
+        if (force) this.setAttribute(name, "");
+        else this.removeAttribute(name);
+        return force;
+    };
+}
+
 const form = document.getElementById("loginForm");
 const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");

@@ -3,6 +3,26 @@
 
 "use strict";
 
+// NFR-05: Cross-browser polyfills for modern DOM APIs across Chrome, Edge, Firefox, and Safari
+if (typeof Element !== "undefined") {
+    if (!Element.prototype.replaceChildren) {
+        Element.prototype.replaceChildren = function(...nodes) {
+            while (this.firstChild) {
+                this.removeChild(this.firstChild);
+            }
+            this.append(...nodes);
+        };
+    }
+    if (!Element.prototype.toggleAttribute) {
+        Element.prototype.toggleAttribute = function(name, force) {
+            if (force === undefined) force = !this.hasAttribute(name);
+            if (force) this.setAttribute(name, "");
+            else this.removeAttribute(name);
+            return force;
+        };
+    }
+}
+
 const App = (() => {
     // -----------------------------------------------------------------
     // API
@@ -229,7 +249,11 @@ const App = (() => {
         button.className = `btn ${danger ? "btn-danger" : "btn-primary"}`;
 
         dialog.returnValue = "";
-        dialog.showModal();
+        if (typeof dialog.showModal === "function") {
+            dialog.showModal();
+        } else {
+            dialog.setAttribute("open", "");
+        }
 
         return new Promise((resolve) => {
             dialog.addEventListener("close", () => resolve(dialog.returnValue === "confirm"), { once: true });
@@ -245,7 +269,14 @@ const App = (() => {
         const submit = $("button[type=submit]", dialog);
 
         dialog.querySelectorAll("[data-close]").forEach((button) =>
-            button.addEventListener("click", () => dialog.close())
+            button.addEventListener("click", () => {
+                if (typeof dialog.close === "function") {
+                    dialog.close();
+                } else {
+                    dialog.removeAttribute("open");
+                    dialog.dispatchEvent(new Event("close"));
+                }
+            })
         );
 
         form.addEventListener("submit", async (event) => {
@@ -256,7 +287,14 @@ const App = (() => {
 
             try {
                 const result = await withLoading(submit, () => onSubmit(form));
-                if (result !== "keep-open") dialog.close();
+                if (result !== "keep-open") {
+                    if (typeof dialog.close === "function") {
+                        dialog.close();
+                    } else {
+                        dialog.removeAttribute("open");
+                        dialog.dispatchEvent(new Event("close"));
+                    }
+                }
             } catch (error) {
                 errorBox.textContent = error.message;
             }
@@ -267,7 +305,11 @@ const App = (() => {
                 form.reset();
                 errorBox.textContent = "";
                 if (prepare) prepare(form);
-                dialog.showModal();
+                if (typeof dialog.showModal === "function") {
+                    dialog.showModal();
+                } else {
+                    dialog.setAttribute("open", "");
+                }
             }
         };
     }
