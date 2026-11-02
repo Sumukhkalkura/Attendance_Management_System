@@ -9,7 +9,7 @@ import sqlite3
 from flask import Blueprint, redirect, render_template, session, url_for
 
 from .db import get_db
-from .routes import session_matches_password
+from .auth import session_matches_password
 
 pages = Blueprint("pages", __name__)
 

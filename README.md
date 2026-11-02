@@ -17,12 +17,34 @@ Open http://127.0.0.1:5000/ and http://127.0.0.1:5000/api/health.
 
 ## Architecture
 
-- `app/routes.py`: REST API and business-feature entry points
+- `app/api/`: REST API, one module per feature, on a shared `api` blueprint
+- `app/auth.py`, `app/validation.py`: shared authentication and validation helpers
+- `app/routes.py`: backward-compatible re-exports of the old API module (no logic)
 - `app/db.py`: SQLite data layer
 - `app/__init__.py`: Flask application factory
 - `tests/test_foundation.py`: implemented scaffold checks
 - `tests/test_sprint1_requirements.py`: **skipped** requirements checklist; implement tests with each feature
 - `.github/workflows/tests.yml`: run pytest on pushes and pull requests
+
+## NFR-06: Maintainability
+
+The backend is split into small modules with one responsibility each. API
+routes live in feature modules under `app/api/` (users, attendance viewing,
+records, percentages, enrollments, reports, alerts, and so on), all attached
+to one shared `api` blueprint. Session and access-control helpers are in
+`app/auth.py` and validation helpers in `app/validation.py`. `app/routes.py`
+keeps old imports working.
+
+The import order in `app/api/__init__.py` defines the URL registration order,
+so append new modules at the end and never reorder existing imports.
+
+See [docs/NFR06_MAINTAINABILITY.md](docs/NFR06_MAINTAINABILITY.md) for the
+module map, how routes are registered, where to add new features, and the
+architecture tests.
+
+```bash
+python -m pytest tests/test_nfr06_maintainability.py -v
+```
 
 ## Important limitations
 
@@ -437,6 +459,6 @@ python scripts/backend_performance_bench.py
 # 4. Run Standalone Browser Benchmark Script (measures real browser timings and captures screenshots)
 python scripts/run_browser_benchmarks.py
 
-# 5. Run Complete Project Test Suite (all 550 test items)
+# 5. Run the complete project test suite
 python -m pytest
 ```
