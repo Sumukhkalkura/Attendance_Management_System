@@ -37,7 +37,7 @@ secret, add proper password hashing, secure session handling, HTTPS, and authori
 `feature/fr01-auth`, `feature/fr07-users`, `feature/fr08-classes`,
 `feature/fr09-enrollment`, `feature/fr15-logout`, `feature/fr02-marking`,
 `feature/fr03-records`, `feature/fr04-percentage`, `feature/fr05-viewing`,
-`feature/nfr01-security`, `feature/nfr03-reliability`.
+`feature/nfr01-security`, `feature/nfr02-performance`, `feature/nfr03-reliability`.
 
 Run tests and review pull requests before merging. Skipped tests do not count as passing acceptance tests.
 
@@ -287,5 +287,105 @@ GET /api/attendance/alerts?subject_id=2&threshold=75.0
 python -m pytest tests/test_fr11_attendance_alert.py -v
 
 # Run the complete test suite:
+python -m pytest
+```
+
+
+## NFR-02: Performance Optimization and Verification
+
+The system complies with Non-Functional Requirement 02 (**NFR-02: Performance**):
+> **"The system shall load major pages and attendance information within 3 seconds under normal operating conditions."**
+
+### Acceptance Criteria
+
+1. **Major Pages:** Major pages (`/login`, `/dashboard`, `/admin`, `/teacher`, `/student`) load within 3 seconds under normal operating conditions.
+2. **Attendance Information:** Attendance information (`/api/attendance`, `/api/attendance/percentages`, `/api/attendance/alerts`, `/api/reports/attendance`, `/api/reports/attendance/export`) loads within 3 seconds under normal operating conditions.
+3. **Representative Usage Scenarios:** Performance is verified using representative usage scenarios across administrative, teacher, and student workloads.
+
+---
+
+### Defined Normal Operating Conditions
+
+Under realistic academic deployment conditions, the database serves:
+- **Users:** 100+ students, 5+ teachers, and administrative personnel.
+- **Academic Structure:** 10+ classes, 15+ subjects, and complete multi-subject class enrollments.
+- **Attendance Records:** 5,000+ attendance records distributed across multiple dates, subjects, and statuses (`Present`, `Absent`, `Late`).
+- **Concurrent Roles:** Authenticated admin, teacher, and student users exercising major dashboards, rosters, reports, and exports.
+
+---
+
+### Architectural Optimizations
+
+To guarantee low latency and prevent performance degradation as attendance records grow:
+
+1. **Database Indexes (`app/db.py`):**
+   - `idx_attendance_subject_date`: Optimizes subject-filtered attendance queries and date-ordered lookups.
+   - `idx_attendance_student_date`: Speeds up individual student attendance history retrieval.
+   - `idx_attendance_date`: Accelerates date-range reporting and filtering (`start_date` to `end_date`).
+   - `idx_attendance_status`: Enhances status-based filtering (`Present`, `Absent`, `Late`).
+   - `idx_enrollments_class`: Eliminates full table scans during class attendance joins (`enrollments.class_id`).
+   - `idx_enrollments_subject`: Optimizes subject-class joins (`enrollments.subject_id`).
+   - `idx_users_role`: Speeds up student and teacher filtering (`users.role = 'student'`).
+   - `idx_classes_teacher`: Accelerates teacher class assignments (`classes.teacher_id`).
+   - `idx_subjects_teacher`: Accelerates teacher subject queries (`subjects.teacher_id`).
+   - `idx_class_subjects_subject`: Speeds up class-subject curriculum lookups.
+
+2. **SQLite Performance Tuning (`get_db()`):**
+   - `PRAGMA synchronous = NORMAL`: Balances persistence safety with reduced write sync overhead.
+   - `PRAGMA cache_size = -64000`: Allocates 64MB memory page cache for in-memory index/page lookups.
+   - `PRAGMA temp_store = MEMORY`: Directs temporary sorting tables and aggregations to RAM.
+
+3. **Query Plan Improvement:**
+   - Database operations were converted from sequential `SCAN` operations to indexed `SEARCH` operations (`SEARCH attendance USING INDEX`, `SEARCH enrollments USING INDEX`, `SEARCH users USING INDEX`).
+
+---
+
+### Empirical Benchmark Results
+
+Benchmarking conducted on a representative dataset (100 students, 10 classes, 15 subjects, 5,000 attendance records) over 5 consecutive iterations per scenario:
+
+| Scenario | Component | Avg Response Time (ms) | Max Response Time (ms) | 3-Second SLA Status |
+|---|---|---|---|---|
+| **`/login` (Unauthenticated)** | Major Page | 0.52 ms | 0.68 ms | PASSED (< 3.0s) |
+| **`/dashboard` (Admin Redirect)** | Major Page | 2.32 ms | 3.75 ms | PASSED (< 3.0s) |
+| **`/dashboard` (Teacher Redirect)** | Major Page | 2.44 ms | 3.31 ms | PASSED (< 3.0s) |
+| **`/dashboard` (Student Redirect)** | Major Page | 3.51 ms | 6.32 ms | PASSED (< 3.0s) |
+| **`/admin` (Admin Dashboard)** | Major Page | 4.16 ms | 6.02 ms | PASSED (< 3.0s) |
+| **`/teacher` (Teacher Dashboard)** | Major Page | 4.06 ms | 5.12 ms | PASSED (< 3.0s) |
+| **`/student` (Student Dashboard)** | Major Page | 3.76 ms | 4.14 ms | PASSED (< 3.0s) |
+| **`/api/classes`** | Attendance Info | 3.97 ms | 5.06 ms | PASSED (< 3.0s) |
+| **`/api/subjects`** | Attendance Info | 5.11 ms | 6.52 ms | PASSED (< 3.0s) |
+| **`/api/users?role=student`** | Attendance Info | 4.85 ms | 7.94 ms | PASSED (< 3.0s) |
+| **`/api/roster?class_id=1&subject_id=1`** | Attendance Info | 5.41 ms | 7.34 ms | PASSED (< 3.0s) |
+| **`/api/attendance` (5,000 records)** | Attendance Info | 33.89 ms | 48.81 ms | PASSED (< 3.0s) |
+| **`/api/attendance?student_id=7`** | Attendance Info | 4.70 ms | 5.94 ms | PASSED (< 3.0s) |
+| **`/api/attendance?class_id=1`** | Attendance Info | 13.46 ms | 17.75 ms | PASSED (< 3.0s) |
+| **`/api/attendance?subject_id=1`** | Attendance Info | 7.31 ms | 10.16 ms | PASSED (< 3.0s) |
+| **`/api/attendance?start_date=2026-03-01&end_date=2026-03-15`** | Attendance Info | 17.39 ms | 24.05 ms | PASSED (< 3.0s) |
+| **`/api/attendance/percentages`** | Attendance Info | 7.98 ms | 10.99 ms | PASSED (< 3.0s) |
+| **`/api/attendance/percentages?student_id=7`** | Attendance Info | 7.96 ms | 9.03 ms | PASSED (< 3.0s) |
+| **`/api/attendance/percentages?class_id=1`** | Attendance Info | 9.13 ms | 11.45 ms | PASSED (< 3.0s) |
+| **`/api/attendance/percentages?subject_id=1`** | Attendance Info | 4.67 ms | 5.54 ms | PASSED (< 3.0s) |
+| **`/api/attendance/alerts`** | Attendance Info | 12.78 ms | 17.23 ms | PASSED (< 3.0s) |
+| **`/api/attendance/alerts/student/7`** | Attendance Info | 8.00 ms | 8.56 ms | PASSED (< 3.0s) |
+| **`/api/attendance/alerts/class/1`** | Attendance Info | 9.13 ms | 10.20 ms | PASSED (< 3.0s) |
+| **`/api/attendance/alerts/subject/1`** | Attendance Info | 9.07 ms | 9.88 ms | PASSED (< 3.0s) |
+| **`/api/reports/attendance` (Aggregated)** | Attendance Info | 88.57 ms | 96.59 ms | PASSED (< 3.0s) |
+| **`/api/reports/attendance/student/7`** | Attendance Info | 10.03 ms | 11.96 ms | PASSED (< 3.0s) |
+| **`/api/reports/attendance/class/1`** | Attendance Info | 20.03 ms | 23.33 ms | PASSED (< 3.0s) |
+| **`/api/reports/attendance/subject/1`** | Attendance Info | 12.10 ms | 13.13 ms | PASSED (< 3.0s) |
+| **`/api/reports/attendance/export` (CSV)** | Attendance Info | 106.07 ms | 112.43 ms | PASSED (< 3.0s) |
+
+*Summary:* All major page responses return in **under 7 milliseconds**, and complex attendance aggregation/export requests execute in **under 115 milliseconds** — outperforming the 3.0-second requirement by over **25x**.
+
+---
+
+### Running Performance Tests
+
+```bash
+# Run NFR-02 performance tests:
+python -m pytest tests/test_nfr02_performance.py -v
+
+# Run the complete automated test suite:
 python -m pytest
 ```

@@ -43,6 +43,16 @@ CREATE TABLE IF NOT EXISTS settings (
  key TEXT PRIMARY KEY,
  value TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_attendance_subject_date ON attendance(subject_id, attendance_date);
+CREATE INDEX IF NOT EXISTS idx_attendance_student_date ON attendance(student_id, attendance_date);
+CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(attendance_date);
+CREATE INDEX IF NOT EXISTS idx_attendance_status ON attendance(status);
+CREATE INDEX IF NOT EXISTS idx_enrollments_class ON enrollments(class_id, student_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_subject ON enrollments(subject_id, student_id);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_classes_teacher ON classes(teacher_id);
+CREATE INDEX IF NOT EXISTS idx_subjects_teacher ON subjects(teacher_id);
+CREATE INDEX IF NOT EXISTS idx_class_subjects_subject ON class_subjects(subject_id);
 '''
 
 
@@ -51,6 +61,9 @@ def get_db():
         g.db = sqlite3.connect(current_app.config['DATABASE'])
         g.db.row_factory = sqlite3.Row
         g.db.execute('PRAGMA foreign_keys = ON')
+        g.db.execute('PRAGMA synchronous = NORMAL')
+        g.db.execute('PRAGMA cache_size = -64000')
+        g.db.execute('PRAGMA temp_store = MEMORY')
     return g.db
 
 
@@ -82,6 +95,16 @@ def init_db(app):
                     value TEXT NOT NULL
                 )
             ''')
+            connection.execute('CREATE INDEX IF NOT EXISTS idx_attendance_subject_date ON attendance(subject_id, attendance_date)')
+            connection.execute('CREATE INDEX IF NOT EXISTS idx_attendance_student_date ON attendance(student_id, attendance_date)')
+            connection.execute('CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(attendance_date)')
+            connection.execute('CREATE INDEX IF NOT EXISTS idx_attendance_status ON attendance(status)')
+            connection.execute('CREATE INDEX IF NOT EXISTS idx_enrollments_class ON enrollments(class_id, student_id)')
+            connection.execute('CREATE INDEX IF NOT EXISTS idx_enrollments_subject ON enrollments(subject_id, student_id)')
+            connection.execute('CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)')
+            connection.execute('CREATE INDEX IF NOT EXISTS idx_classes_teacher ON classes(teacher_id)')
+            connection.execute('CREATE INDEX IF NOT EXISTS idx_subjects_teacher ON subjects(teacher_id)')
+            connection.execute('CREATE INDEX IF NOT EXISTS idx_class_subjects_subject ON class_subjects(subject_id)')
             connection.commit()
         finally:
             connection.close()
