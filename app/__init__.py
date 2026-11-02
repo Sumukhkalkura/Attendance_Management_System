@@ -1,6 +1,7 @@
 
 """Attendance Management System application factory."""
 
+import mimetypes
 import os
 import sqlite3
 import secrets
@@ -17,6 +18,13 @@ STATE_CHANGING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
 def create_app(test_config=None):
     """Create and configure the Flask application."""
+
+    # NFR-05: Serve scripts and styles with their standard types on every host.
+    # Python otherwise takes them from the OS (/etc/mime.types or the Windows
+    # registry), and with "nosniff" browsers refuse a script or stylesheet
+    # served with the wrong type.
+    mimetypes.add_type("text/javascript", ".js")
+    mimetypes.add_type("text/css", ".css")
 
     app = Flask(__name__)
 

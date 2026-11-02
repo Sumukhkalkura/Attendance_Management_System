@@ -59,7 +59,8 @@ claimed.
 
 ### 3.4 HTTP Headers & Security Alignment
 - **Content-Security-Policy (CSP)**: `default-src 'self'; frame-ancestors 'none'` ensures that all JavaScript, CSS, SVGs, and fonts load from the application origin, eliminating cross-origin script blocking or mixed-content errors in strict browsers.
-- **MIME Sniffing Protection**: `X-Content-Type-Options: nosniff` enforces strict MIME type parsing across Chrome, Edge, Firefox, and Safari.
+- **MIME Sniffing Protection**: `X-Content-Type-Options: nosniff` enforces strict MIME type parsing across Chrome, Edge, Firefox, and Firefox.
+- **Fixed script and style types**: `create_app()` registers `.js` as `text/javascript` (RFC 9239) and `.css` as `text/css`. Without this, Python takes these types from the host (`/etc/mime.types` or the Windows registry). Two GitHub Actions runs of the same commit on the same image returned different `.js` types, and a registry entry mapping `.js` to `text/plain` would make every browser refuse the scripts because of `nosniff`. `test_nfr05_static_types_do_not_depend_on_host_mime_table` simulates that broken mapping.
 - **Cookie Security**: Active sessions utilize `SameSite=Lax` and `HttpOnly` attributes, ensuring full cross-browser compatibility with current browser cookie privacy standards (such as Chrome Privacy Sandbox and Safari ITP).
 - **File Export Headers (FR-12)**: Downloads for CSV, PDF, and JSON reports emit RFC 6266 `Content-Disposition: attachment; filename="..."` headers with explicit MIME types (`text/csv; charset=utf-8`, `application/pdf`, `application/json`), ensuring seamless handling by native browser download managers.
 
@@ -115,6 +116,6 @@ API through Flask's test client, covering:
 - Safari, mobile browser apps and assistive technology are not covered by the
   SRS or backlog criteria and are not tested here. The 375px test checks the
   responsive layout in desktop engines, not on real phones.
-- No browser-specific defects were found in the real-browser runs, so no
-  browser-specific workarounds were needed beyond the defensive polyfills and
-  prefixes in section 3.
+- No browser-specific defects were found in the real-browser runs. One
+  host-specific issue was found and fixed: the served type of `.js` files
+  depended on the host's MIME table (see section 3.4).

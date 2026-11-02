@@ -5,6 +5,7 @@ across commonly used modern web browsers (Chrome, Edge, Firefox, and Safari) on 
 and mobile platforms, satisfying all acceptance criteria in the SRS and Backlog (US-26).
 """
 
+import mimetypes
 import re
 import sqlite3
 from pathlib import Path
@@ -12,6 +13,7 @@ from pathlib import Path
 import pytest
 from werkzeug.security import generate_password_hash
 
+from app import create_app
 from session_helpers import plant_session
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -127,8 +129,8 @@ def test_nfr05_security_headers_consistent_across_browsers(
     "asset_path, expected_mimetype, expected_charset",
     [
         ("/static/css/app.css", "text/css", "utf-8"),
-        ("/static/js/common.js", "application/javascript", "utf-8"),
-        ("/static/js/login.js", "application/javascript", "utf-8"),
+        ("/static/js/common.js", "text/javascript", "utf-8"),
+        ("/static/js/login.js", "text/javascript", "utf-8"),
         ("/static/favicon.svg", "image/svg+xml", "utf-8"),
     ],
 )
@@ -143,6 +145,25 @@ def test_nfr05_static_assets_serve_correct_mime_types(
     assert response.mimetype == expected_mimetype
     if expected_charset:
         assert expected_charset in response.headers.get("Content-Type", "").lower()
+
+
+def test_nfr05_static_types_do_not_depend_on_host_mime_table(tmp_path):
+    """A host mapping .js/.css to text/plain (e.g. a Windows registry entry) must not reach browsers."""
+    mimetypes.add_type("text/plain", ".js")
+    mimetypes.add_type("text/plain", ".css")
+    try:
+        app = create_app({"TESTING": True, "DATABASE": str(tmp_path / "mime.db"), "SECRET_KEY": "test-only"})
+        client = app.test_client()
+
+        script = client.get("/static/js/common.js")
+        style = client.get("/static/css/app.css")
+
+        assert script.mimetype == "text/javascript"
+        assert style.mimetype == "text/css"
+        assert script.headers["X-Content-Type-Options"] == "nosniff"
+    finally:
+        mimetypes.add_type("text/javascript", ".js")
+        mimetypes.add_type("text/css", ".css")
 
 
 # -----------------------------------------------------------------------------
