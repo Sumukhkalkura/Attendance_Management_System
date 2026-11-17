@@ -148,8 +148,15 @@ const App = (() => {
         );
     }
 
+    // FR-04: attendance percentages are shown with exactly two decimal places
+    // (83.33%, 58.33%, 100.00%). Values are rounded half away from zero to two
+    // decimals first, so binary floating-point artefacts such as 1.005 do not
+    // round down.
     function formatPercent(value) {
-        return `${Number.isInteger(value) ? value : value.toFixed(1)}%`;
+        const number = Number(value);
+        if (!Number.isFinite(number)) return "–";
+        const rounded = Math.sign(number) * Math.round((Math.abs(number) + Number.EPSILON) * 100) / 100;
+        return `${rounded.toFixed(2)}%`;
     }
 
     function formatDate(isoDate) {
@@ -190,10 +197,17 @@ const App = (() => {
             return;
         }
 
+        // FR-05 / NFR-04: each cell carries its column heading, which the
+        // stacked phone layout in app.css shows as a label (no inline styles).
+        const table = tbody.closest("table");
+        const labels = table ? [...table.querySelectorAll("thead th")].map((th) => th.textContent.trim()) : [];
+
         tbody.replaceChildren(...rows.map((cells) =>
-            el("tr", {}, ...cells.map((cell) =>
-                cell instanceof HTMLTableCellElement ? cell : el("td", {}, cell)
-            ))
+            el("tr", {}, ...cells.map((cell, index) => {
+                const td = cell instanceof HTMLTableCellElement ? cell : el("td", {}, cell);
+                if (labels[index]) td.dataset.label = labels[index];
+                return td;
+            }))
         ));
     }
 

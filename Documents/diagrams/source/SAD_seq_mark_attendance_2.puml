@@ -1,0 +1,47 @@
+@startuml SAD_seq_mark_attendance_2
+!include _style.iuml
+title Sequence Diagram 1, Part 2 - Teacher saves attendance (FR-02, FR-03)
+autonumber
+hide footbox
+actor Teacher
+participant "Browser\n(teacher.js)" as B
+participant "Flask app\n(create_app hooks)" as F
+participant "login_required\n(app/auth.py)" as A
+participant "mark_attendance\n(api/attendance_records.py)" as R
+database "SQLite\n(attendance.db)" as DB
+
+Teacher -> B : set statuses; click "Save attendance"
+B -> F : POST /api/attendance {class_id, subject_id,\nattendance_date, update_existing: true, records[]}
+F -> F : reject_cross_site_requests()\n(Origin / Referer check; 403 if cross-site)
+F -> A : protected view
+A -> A : session, active, fingerprint,\nrole in [teacher, admin] (401 / 403)
+A -> R : mark_attendance()
+R -> DB : check subject owner, class,\nenrollments (every enrolled student marked)
+R -> R : validate date (parse_date), statuses\n(normalize_status), no duplicate student
+alt invalid input
+  R --> B : 400 / 403 / 404 error JSON
+end
+loop validate each record
+  R -> DB : SELECT student; SELECT existing\n(student, subject, date)
+  alt exists and update_existing is false
+    R --> B : 409 record already exists
+  end
+end
+loop write each record
+  alt record exists
+    R -> DB : UPDATE attendance SET status
+  else new record
+    R -> DB : INSERT INTO attendance
+  end
+end
+R -> DB : COMMIT
+alt IntegrityError (UNIQUE student, subject, date)
+  R -> DB : ROLLBACK
+  R --> B : 409 duplicate attendance record
+else other sqlite3.Error
+  R -> DB : ROLLBACK
+  R --> B : 503 Database temporarily unavailable
+end
+R --> B : 201 {message, records, count}
+B --> Teacher : toast "Saved attendance for N student(s)."
+@enduml

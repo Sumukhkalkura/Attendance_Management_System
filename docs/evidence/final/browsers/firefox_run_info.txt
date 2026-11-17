@@ -1,0 +1,4 @@
+Started: 2026-11-11 09:36:59 IST
+Note: first Firefox run inside the Claude Code command sandbox failed to launch ('Could not find profile folder'); see firefox_output_sandboxed.txt. This run is outside the sandbox.
+Command: NFR05_BROWSERS=firefox .venv/bin/python -m pytest -v -rA -p no:cacheprovider tests/test_nfr05_browser_compatibility.py --junitxml=docs/evidence/final/browsers/firefox_junit.xml
+exit=1 Finished: 2026-11-11 09:37:00 IST

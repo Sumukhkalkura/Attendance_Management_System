@@ -1,0 +1,26 @@
+08:28:45.083 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:28:45.088 navigated: http://127.0.0.1:5001/login
+08:28:45.313 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:28:45.315 response: 200 GET http://127.0.0.1:5001/student cache-control='no-store'
+08:28:45.318 navigated: http://127.0.0.1:5001/student
+08:28:45.347 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:28:46.299 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:28:46.305 navigated: http://127.0.0.1:5001/login
+08:28:46.323 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:28:46.327 navigated: http://127.0.0.1:5001/login
+08:28:46.477 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:28:46.479 response: 200 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+08:28:46.482 navigated: http://127.0.0.1:5001/teacher
+08:28:46.496 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:28:47.066 navigated: http://127.0.0.1:5001/teacher#mark
+08:28:47.624 navigated: http://127.0.0.1:5001/teacher#records
+08:28:48.765 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:28:48.769 navigated: http://127.0.0.1:5001/login
+08:28:48.783 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:28:48.786 navigated: http://127.0.0.1:5001/login
+08:28:48.926 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:28:48.929 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+08:28:48.932 navigated: http://127.0.0.1:5001/admin
+08:28:48.943 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:28:49.510 navigated: http://127.0.0.1:5001/admin#users
+08:28:50.242 navigated: http://127.0.0.1:5001/admin#enrollments

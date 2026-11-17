@@ -1,0 +1,49 @@
+03:43:00.278 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:43:00.279 navigated: http://127.0.0.1:5001/login
+03:43:00.574 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+03:43:00.579 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+03:43:00.586 navigated: http://127.0.0.1:5001/admin
+03:43:00.586 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.586 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.586 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.586 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.587 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.587 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.587 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.587 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.587 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.587 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.587 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.587 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.587 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:00.587 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:01.210 navigated: http://127.0.0.1:5001/admin#users
+03:43:02.112 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:02.687 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:43:02.690 navigated: http://127.0.0.1:5001/login
+03:43:02.716 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:43:02.717 navigated: http://127.0.0.1:5001/login
+03:43:02.911 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+03:43:02.920 response: 200 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+03:43:02.923 navigated: http://127.0.0.1:5001/teacher
+03:43:02.923 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:02.924 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:02.924 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:02.924 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:02.924 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:02.925 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:03.539 navigated: http://127.0.0.1:5001/teacher#mark
+03:43:04.242 navigated: http://127.0.0.1:5001/teacher#records
+03:43:05.062 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:05.709 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:43:05.713 navigated: http://127.0.0.1:5001/login
+03:43:05.728 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:43:05.729 navigated: http://127.0.0.1:5001/login
+03:43:05.927 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+03:43:05.932 response: 200 GET http://127.0.0.1:5001/student cache-control='no-store'
+03:43:05.935 navigated: http://127.0.0.1:5001/student
+03:43:05.936 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:05.936 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:06.481 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+03:43:06.602 navigated: http://127.0.0.1:5001/student#history
+03:43:06.768 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.

@@ -1,0 +1,28 @@
+08:30:23.731 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:30:23.738 navigated: http://127.0.0.1:5001/login
+08:30:23.997 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:30:24.001 response: 200 GET http://127.0.0.1:5001/student cache-control='no-store'
+08:30:24.006 navigated: http://127.0.0.1:5001/student
+08:30:24.031 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:30:24.979 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:30:24.985 navigated: http://127.0.0.1:5001/login
+08:30:25.000 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:30:25.003 requestfailed: GET http://127.0.0.1:5001/static/favicon.svg net::ERR_ABORTED
+08:30:25.004 navigated: http://127.0.0.1:5001/login
+08:30:25.142 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:30:25.145 response: 200 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+08:30:25.147 navigated: http://127.0.0.1:5001/teacher
+08:30:25.161 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:30:25.725 navigated: http://127.0.0.1:5001/teacher#mark
+08:30:26.287 navigated: http://127.0.0.1:5001/teacher#records
+08:30:27.428 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:30:27.436 navigated: http://127.0.0.1:5001/login
+08:30:27.450 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:30:27.454 requestfailed: GET http://127.0.0.1:5001/static/favicon.svg net::ERR_ABORTED
+08:30:27.454 navigated: http://127.0.0.1:5001/login
+08:30:27.607 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:30:27.610 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+08:30:27.612 navigated: http://127.0.0.1:5001/admin
+08:30:27.624 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:30:28.189 navigated: http://127.0.0.1:5001/admin#users
+08:30:28.922 navigated: http://127.0.0.1:5001/admin#enrollments

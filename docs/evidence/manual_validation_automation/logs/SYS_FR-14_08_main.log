@@ -1,0 +1,28 @@
+03:42:43.018 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:43.023 navigated: http://127.0.0.1:5001/login
+03:42:43.283 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+03:42:43.286 response: 200 GET http://127.0.0.1:5001/student cache-control='no-store'
+03:42:43.289 navigated: http://127.0.0.1:5001/student
+03:42:43.318 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+03:42:44.032 navigated: http://127.0.0.1:5001/student#history
+03:42:44.519 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:44.524 navigated: http://127.0.0.1:5001/login
+03:42:44.538 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:44.542 navigated: http://127.0.0.1:5001/login
+03:42:44.679 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+03:42:44.682 response: 200 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+03:42:44.684 navigated: http://127.0.0.1:5001/teacher
+03:42:44.698 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+03:42:45.462 navigated: http://127.0.0.1:5001/teacher#percentages
+03:42:45.678 navigated: http://127.0.0.1:5001/teacher#mark
+03:42:46.021 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:46.026 navigated: http://127.0.0.1:5001/login
+03:42:46.040 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:46.043 navigated: http://127.0.0.1:5001/login
+03:42:46.196 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+03:42:46.199 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+03:42:46.202 navigated: http://127.0.0.1:5001/admin
+03:42:46.212 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+03:42:46.844 navigated: http://127.0.0.1:5001/admin#users
+03:42:47.077 navigated: http://127.0.0.1:5001/admin#classes
+03:42:47.295 navigated: http://127.0.0.1:5001/admin#subjects

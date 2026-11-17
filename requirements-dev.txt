@@ -1,0 +1,4 @@
+# Development / documentation tooling (not needed to run the application).
+# Install with: python -m pip install -r requirements.txt -r requirements-dev.txt
+openpyxl>=3.1,<4   # builds docs/Test_Case_Document.xlsx (scripts/build_test_case_document.py)
+pytest-cov>=7,<8  # statement and branch coverage (docs/Code_Coverage_Report.md, docs/Branch_Coverage_Report.md)

@@ -1,0 +1,21 @@
+Run: final (after Phase 2 test additions; app/ code unchanged)
+Git branch: feature/deliverable-3-testing  HEAD: dd96a2c  (uncommitted Phase 1+2 changes; app/ unchanged: yes)
+Started (local): 2026-11-11 09:40:13 IST
+OS: macOS 27.0 arm64
+Python: Python 3.13.7
+Flask             3.1.3
+greenlet          3.5.6
+itsdangerous      2.2.0
+Jinja2            3.1.6
+openpyxl          3.1.5
+playwright        1.64.1
+pluggy            1.7.0
+pyee              14.0.0
+pytest            9.1.1
+Werkzeug          3.1.9
+Playwright browsers: chromium-1248 chromium_headless_shell-1248 ffmpeg-1013 firefox-1555 webkit-2370 
+Google Chrome: Google Chrome 157.0.8103.39 
+Microsoft Edge: not installed (installation not approved)
+Default NFR-05 browsers (NFR05_BROWSERS unset): chrome, edge, firefox
+Command: .venv/bin/python -m pytest -v -rA --durations=20 -p no:cacheprovider --junitxml=docs/evidence/final/junit.xml
+Finished (local): 2026-11-11 09:42:27 IST  wall-clock: 134s  pytest exit code: 1

@@ -1,0 +1,8 @@
+Attempt 1 (firefox + webkit together): failed - 'Error: Failed to download Firefox 157.0 (playwright firefox v1555) ... Download failure, code=1'
+Attempt 2 (one at a time):
+Downloading Firefox 157.0 (playwright firefox v1555) from https://cdn.playwright.dev/dbazure/download/playwright/builds/firefox/1555/firefox-mac-arm64.zip
+Firefox 157.0 (playwright firefox v1555) downloaded to /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555
+firefox exit=0
+Downloading WebKit 27.2 (playwright webkit v2370) from https://cdn.playwright.dev/dbazure/download/playwright/builds/webkit/2370/webkit-mac-26-arm64.zip
+WebKit 27.2 (playwright webkit v2370) downloaded to /Users/sumukhkalkura/Library/Caches/ms-playwright/webkit-2370
+webkit exit=0

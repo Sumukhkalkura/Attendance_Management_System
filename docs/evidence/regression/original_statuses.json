@@ -1,0 +1,1006 @@
+{
+ "meta": {
+  "description": "Test case statuses before the six fixes (Test Case Document v2.5): automated cases from docs/evidence/final (2026-11-11), manual validation cases from docs/evidence/manual_validation_automation (2026-11-17).",
+  "evidence": {
+   "main": "docs/evidence/final/junit.xml",
+   "chromium": "docs/evidence/final/browsers/chromium_junit.xml",
+   "firefox": "docs/evidence/final/browsers/firefox_junit.xml",
+   "webkit": "docs/evidence/final/browsers/webkit_junit.xml"
+  },
+  "manual_results": "docs/evidence/manual_validation_automation",
+  "counts": {
+   "PASS": 182,
+   "NOT APPLICABLE": 1,
+   "FAIL": 6,
+   "NOT RUN": 4,
+   "BLOCKED": 4
+  }
+ },
+ "cases": {
+  "UT_FR-01_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 5 recorded result(s), all passed."
+  },
+  "UT_FR-01_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 4 recorded result(s), all passed."
+  },
+  "UT_FR-01_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-01_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 6 recorded result(s), all passed."
+  },
+  "IT_FR-01_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 6 recorded result(s), all passed."
+  },
+  "IT_FR-01_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 6 recorded result(s), all passed."
+  },
+  "IT_FR-01_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 14 recorded result(s), all passed."
+  },
+  "SYS_FR-01_08": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "After logout, Back (twice) showed the login page with no attendance rows; reload and typing /teacher both redirected to /login; /api/attendance returned 401; /teacher and the API both sent Cache-Control: no-store."
+  },
+  "SYS_FR-01_09": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 4 recorded result(s), all passed."
+  },
+  "SYS_FR-01_10": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-01_11": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "UT_FR-01_12": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-01_13": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-02_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-02_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-02_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-02_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-02_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-02_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-02_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-02_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "SYS_FR-02_09": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "SYS_FR-02_10": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-02_11": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-02_12": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "SYS_FR-02_13": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-03_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-03_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-03_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-03_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-03_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-03_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-03_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-03_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "SYS_FR-03_09": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "SYS_FR-03_10": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-03_11": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_FR-03_12": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "SYS_FR-03_13": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "aarav / Programming Fundamentals / 16 Nov 2026 corrected Present -> Late; delete showed a confirmation dialog; Cancel kept the record; confirming deleted it (96 -> 95 rows) with 'Attendance record deleted.'"
+  },
+  "UT_FR-04_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-04_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-04_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-04_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-04_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-04_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_FR-04_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-04_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "SYS_FR-04_09": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "SYS_FR-04_10": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-05_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-05_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-05_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-05_04": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "Date 2020-01-05 showed 'No matching records - Try different filters.' and '0 of 23 record(s) shown.'; the API returned {'count': 0, 'records': []}. No Clear filters button on the student History screen (the step says 'if shown'); clearing the date restored all 23 records."
+  },
+  "IT_FR-05_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-05_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-05_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "SYS_FR-05_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "SYS_FR-05_09": {
+   "status": "NOT APPLICABLE",
+   "date": "2026-11-11",
+   "actual": "Pagination is not implemented in the API or the UI."
+  },
+  "SYS_FR-05_10": {
+   "status": "FAIL",
+   "date": "2026-11-17",
+   "actual": "No page-level horizontal scrolling at 375, 768 or 1280 px on the checked screens; student tables fit at all widths. At 375 px the teacher Attendance records table overflows its container by 181 px: Status badges are cut off and the Actions column needs sideways scrolling inside the table (defect MV-03)."
+  },
+  "UT_FR-06_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-06_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-06_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-06_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_FR-06_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-06_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-06_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "SYS_FR-06_08": {
+   "status": "FAIL",
+   "date": "2026-11-11",
+   "actual": "API part verified: zero records and zero totals returned. UI part: no reporting screen exists, so no empty-report message can be shown."
+  },
+  "SYS_FR-06_09": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "SYS_FR-06_10": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-06_11": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 4 recorded result(s), all passed."
+  },
+  "UT_FR-06_12": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "UT_FR-07_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 3 recorded result(s), all passed."
+  },
+  "UT_FR-07_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 11 recorded result(s), all passed."
+  },
+  "UT_FR-07_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-07_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-07_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 5 recorded result(s), all passed."
+  },
+  "IT_FR-07_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 9 recorded result(s), all passed."
+  },
+  "IT_FR-07_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_FR-07_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-07_09": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 5 linked test(s), 9 recorded result(s), all passed."
+  },
+  "SYS_FR-07_10": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "All actions worked. Empty username blocked by the browser's native 'Please fill out this field.' message (dialog stayed open); manual_s1 created; search and role/status filters filtered correctly; rename to manual_s1b updated the table; the deactivated account could not log in ('Invalid username or password'); reactivation worked."
+  },
+  "UT_FR-08_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-08_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 4 recorded result(s), all passed."
+  },
+  "UT_FR-08_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "UT_FR-08_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 4 recorded result(s), all passed."
+  },
+  "IT_FR-08_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-08_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 4 recorded result(s), all passed."
+  },
+  "IT_FR-08_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-08_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-08_09": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "SYS_FR-08_10": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "Manual Class created, prof.mehta assigned, Manual Subject created and linked; duplicate class rejected with 'Class name already exists' (no duplicate row); class and subject searches filtered correctly; Manual Subject appeared on prof.mehta's Overview."
+  },
+  "UT_FR-09_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-09_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-09_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-09_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-09_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 11 recorded result(s), all passed."
+  },
+  "IT_FR-09_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-09_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_FR-09_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_FR-09_09": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "Manual Class had 0 enrollments; aarav enrolled; prof.mehta's roster for Manual Class / Manual Subject listed exactly aarav and nobody else."
+  },
+  "SYS_FR-09_10": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "diya enrolled (17 -> 18 enrollments); duplicate rejected with 'Student is already enrolled'; search and class filter correct; removal through the confirmation dialog removed the row."
+  },
+  "UT_FR-10_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-10_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-10_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-10_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "UT_FR-10_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-10_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-10_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 10 recorded result(s), all passed."
+  },
+  "IT_FR-10_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 4 recorded result(s), all passed."
+  },
+  "IT_FR-10_09": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "SYS_FR-10_10": {
+   "status": "FAIL",
+   "date": "2026-11-17",
+   "actual": "Teacher search, subject, date and status filters all updated the table correctly, but the teacher Attendance records screen has no 'Clear filters' control, so 'Clear filters restores all rows' could not be performed there (defect MV-01). No class or date-range filter (gap G-03). On the admin Attendance screen all filters and 'Clear filters' worked (191 rows restored)."
+  },
+  "UT_FR-11_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-11_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-11_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "UT_FR-11_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-11_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-11_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-11_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_FR-11_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_FR-11_09": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "SYS_FR-11_10": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "Teacher Overview listed kabir and vikram (58.3% each), exactly the students below 75% on Percentages; admin Overview listed vikram (50%) and kabir (70.8%), exactly those below 75%. No threshold control (gap G-04). The 'Everyone is on track' state was not exercised: the seeded data always has students below 75%."
+  },
+  "UT_FR-12_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-12_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-12_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-12_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-12_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-12_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 5 linked test(s), 5 recorded result(s), all passed."
+  },
+  "IT_FR-12_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-12_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 4 recorded result(s), all passed."
+  },
+  "SYS_FR-12_09": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "SYS_FR-12_10": {
+   "status": "FAIL",
+   "date": "2026-11-11",
+   "actual": "No export control exists in the admin, teacher or student dashboards. Export works only by calling /api/reports/.../export directly."
+  },
+  "UT_FR-13_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 3 recorded result(s), all passed."
+  },
+  "UT_FR-13_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_FR-13_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 3 recorded result(s), all passed."
+  },
+  "UT_FR-13_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-13_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 12 recorded result(s), all passed."
+  },
+  "IT_FR-13_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_FR-13_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-13_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 4 recorded result(s), all passed."
+  },
+  "IT_FR-13_09": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "SYS_FR-13_10": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "Wrong current password -> 'Current password is incorrect'; 7-character password blocked by native minlength validation; valid change -> 'Your password has been changed.'; old password refused, new password accepted; password restored afterwards."
+  },
+  "UT_FR-14_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-14_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 6 recorded result(s), all passed."
+  },
+  "IT_FR-14_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-14_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-14_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-14_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_FR-14_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "SYS_FR-14_08": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "Student cards (95.7%; 22 Present, 0 Absent, 1 Late, 23 total) match the History records; teacher cards (3 subjects, 3 classes, 8 students, 83.2% = 79/95) match the Percentages and Mark attendance screens; admin cards (9 students, 2 teachers, 3 classes, 5 subjects) match the Users, Classes and Subjects lists."
+  },
+  "UT_FR-15_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "UT_FR-15_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-15_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-15_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_FR-15_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "SYS_FR-15_06": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "Admin, student (aarav) and teacher each logged out through the confirmation dialog and landed on /login; afterwards /admin, /student and /teacher each redirected to /login."
+  },
+  "SYS_FR-15_07": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "After logout, Back landed on /login#history with no attendance rows; reload stayed on /login."
+  },
+  "SYS_FR-15_08": {
+   "status": "NOT RUN",
+   "date": "",
+   "actual": "Not verified: the linked CSRF test posts to /api/users, not /api/logout. The Origin check is global, but no test proves it for logout."
+  },
+  "UT_NFR-01_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_NFR-01_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 11 recorded result(s), all passed."
+  },
+  "IT_NFR-01_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "SYS_NFR-01_04": {
+   "status": "BLOCKED",
+   "date": "2026-11-11",
+   "actual": "No HTTPS deployment is available; the development server serves plain HTTP. Only the Secure-cookie switch exists."
+  },
+  "SYS_NFR-01_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 5 recorded result(s), all passed."
+  },
+  "IT_NFR-01_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 4 recorded result(s), all passed."
+  },
+  "IT_NFR-01_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 9 recorded result(s), all passed."
+  },
+  "UT_NFR-01_08": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 4 recorded result(s), all passed."
+  },
+  "SYS_NFR-02_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 3 recorded result(s), all passed."
+  },
+  "SYS_NFR-02_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "SYS_NFR-02_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "SYS_NFR-02_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "SYS_NFR-02_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "UT_NFR-03_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "IT_NFR-03_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_NFR-03_03": {
+   "status": "NOT RUN",
+   "date": "",
+   "actual": "Partially verified by automated tests: the backup contains exactly the saved attendance rows and is unaffected by later changes. Not yet verified: restoring the backup into a database and using it through the application."
+  },
+  "SYS_NFR-03_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 1 recorded result(s), all passed."
+  },
+  "SYS_NFR-03_05": {
+   "status": "NOT RUN",
+   "date": "",
+   "actual": "Partially verified by automated tests: a failed batch rolls back completely and a missing database fails safely. Not yet verified: retrying the same save after the failure."
+  },
+  "IT_NFR-03_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 9 recorded result(s), all passed."
+  },
+  "UT_NFR-04_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 4 recorded result(s), all passed."
+  },
+  "UT_NFR-04_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 1 linked test(s), 3 recorded result(s), all passed."
+  },
+  "IT_NFR-04_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_NFR-04_04": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "Keyboard-only login worked; all 8 sidebar items showed a :focus-visible style and had accessible names; Enter opened Users; the New user dialog opened with Enter and closed with Esc; class and subject chosen by typing; Tab reached Load students; ArrowRight moved a roster status from Present to Absent with a focus style."
+  },
+  "IT_NFR-04_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 4 recorded result(s), all passed."
+  },
+  "SYS_NFR-04_06": {
+   "status": "NOT RUN",
+   "date": "",
+   "actual": "Not executed: the case needs a person who has not used the app, and automation cannot observe usability. A scripted smoke only showed the three role tasks can be completed (student viewed 95.7% and Discrete Mathematics 11/12; teacher saved today's attendance and corrected a status; admin created usability_s1 and enrolled them)."
+  },
+  "SYS_NFR-05_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 5 linked test(s), 6 recorded result(s), all passed."
+  },
+  "SYS_NFR-05_02": {
+   "status": "BLOCKED",
+   "date": "2026-11-11",
+   "actual": "Playwright Firefox 157.0 was installed but cannot start on this Mac (macOS 27.0): \"Could not find profile folder\", even when started directly without Playwright and outside the Claude Code sandbox. No Firefox result is claimed."
+  },
+  "SYS_NFR-05_03": {
+   "status": "BLOCKED",
+   "date": "2026-11-11",
+   "actual": "Microsoft Edge is not installed and installing it was not approved. The suite reports: \"Chromium distribution 'msedge' is not found at /Applications/Microsoft Edge.app\"."
+  },
+  "SYS_NFR-05_04": {
+   "status": "FAIL",
+   "date": "2026-11-11",
+   "actual": "Every workflow step passed in WebKit 27.2 (7 test calls passed), but each test's teardown check failed: WebKit logged \"Refused to apply a stylesheet ... Content Security Policy\" once per <select> element on every dashboard (admin 15 errors / 14 selects, teacher 7/6, student 3/2). Screenshots show no visible difference from Chromium."
+  },
+  "IT_NFR-05_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 4 linked test(s), 37 recorded result(s), all passed."
+  },
+  "SYS_NFR-05_06": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 4 recorded result(s), all passed."
+  },
+  "UT_NFR-06_01": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 19 recorded result(s), all passed."
+  },
+  "IT_NFR-06_02": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 2 recorded result(s), all passed."
+  },
+  "IT_NFR-06_03": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 3 linked test(s), 15 recorded result(s), all passed."
+  },
+  "IT_NFR-06_04": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 2 linked test(s), 71 recorded result(s), all passed."
+  },
+  "SYS_NFR-06_05": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Final full run: 836 passed; 13 failed/errored, 13 of them environmental (Edge/Firefox cannot launch); 0 other failures."
+  },
+  "SYS_FR-04_11": {
+   "status": "FAIL",
+   "date": "2026-11-17",
+   "actual": "Hand counts for rohan (10 Present / 2 Absent / 0 Late -> 83.33) and vikram (7 / 5 / 0 -> 58.33) equal the backend percentages, but the Percentages screen shows 83.3% and 58.3%: one decimal place instead of the two decimals in the expected result (defect MV-02)."
+  },
+  "SYS_NFR-02_06": {
+   "status": "PASS",
+   "date": "2026-11-17",
+   "actual": "Browser cache disabled. Overview Load event 28 ms, Overview data shown 202 ms, Mark attendance 74 ms, Attendance records 235 ms, Percentages 193 ms; all under 3 seconds (measured on the development Mac)."
+  },
+  "SYS_NFR-05_07": {
+   "status": "PASS",
+   "date": "2026-11-11",
+   "actual": "Expected result verified: 5 linked test(s), 6 recorded result(s), all passed."
+  },
+  "SYS_NFR-05_08": {
+   "status": "BLOCKED",
+   "date": "2026-11-17",
+   "actual": "Blocked: Playwright cannot drive the Safari application, and enabling safaridriver remote automation (a system setting change) was not approved. Supplementary Playwright WebKit 27.2 run (not Safari): admin, teacher and student tasks completed; 26 'Refused to apply a stylesheet' CSP console errors (consistent with D-01); no page errors."
+  }
+ }
+}

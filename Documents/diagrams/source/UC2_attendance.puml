@@ -1,0 +1,39 @@
+@startuml UC2_attendance
+!pragma layout smetana
+!include _style.iuml
+title Use Case Diagram 2 - Attendance Operations
+left to right direction
+
+actor "Teacher" as Teacher
+actor "Student" as Student
+actor "Administrator" as Admin
+
+rectangle "Attendance Management System" {
+  usecase "UC-02 Select class / subject\nand date - FR-02" as UC02
+  usecase "UC-03 Mark attendance\n(Present / Absent / Late) - FR-02" as UC03
+  usecase "UC-04 Save / update / delete\nattendance record - FR-03" as UC04
+  usecase "UC-05 View attendance\nrecords - FR-05" as UC05
+  usecase "UC-11 Search and filter\nattendance - FR-10" as UC11
+  usecase "UC-06 View attendance\npercentage - FR-04" as UC06
+  usecase "UC-12 View low-attendance\nalerts - FR-11" as UC12
+  usecase "UC-07 Generate attendance\nreport - FR-06" as UC07
+  usecase "UC-13 Export report\nCSV / PDF / JSON - FR-12" as UC13
+}
+
+Teacher --> UC02
+Teacher --> UC03
+Teacher --> UC04
+Teacher --> UC05
+Teacher --> UC06
+Teacher --> UC12
+Teacher --> UC07
+UC05 <-- Student
+UC06 <-- Student
+UC05 <-- Admin
+UC06 <-- Admin
+UC12 <-- Admin
+UC07 <-- Admin
+UC03 .> UC02 : <<include>>
+UC11 .> UC05 : <<extend>>
+UC13 .> UC07 : <<extend>>
+@enduml

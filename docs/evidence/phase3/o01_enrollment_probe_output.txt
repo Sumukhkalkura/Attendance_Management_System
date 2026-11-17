@@ -1,0 +1,6 @@
+Setup: DBMS is linked to CSE-A only (class_subjects). CSE-B has no subjects.
+POST /api/enrollments stud1 -> CSE-B / DBMS: 201 {'enrollment': {'class_id': 2, 'student_id': 3, 'subject_id': 1}, 'message': 'Student enrolled successfully'}
+enrollments rows: [(3, 2, 1)]
+class_subjects rows: [(1, 1)]
+GET /api/classes/2/subjects: 200 {'class_id': 2, 'subjects': []}
+teacher GET /api/roster?class_id=2&subject_id=1: 200 {'attendance_date': None, 'class_id': 2, 'class_name': 'CSE-B', 'count': 1, 'students': [{'attendance_date': None, 'attendance_id': None, 'status': None, 'student_id': 3, 'username': 'stud1'}], 'subject_id': 1, 'subject_name': 'DBMS'}

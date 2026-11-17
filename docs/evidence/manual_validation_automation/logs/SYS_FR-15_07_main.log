@@ -1,0 +1,14 @@
+03:42:47.627 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:47.630 navigated: http://127.0.0.1:5001/login
+03:42:47.835 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+03:42:47.838 response: 200 GET http://127.0.0.1:5001/student cache-control='no-store'
+03:42:47.840 navigated: http://127.0.0.1:5001/student
+03:42:47.867 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+03:42:48.459 navigated: http://127.0.0.1:5001/student#history
+03:42:48.943 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:48.950 navigated: http://127.0.0.1:5001/login
+03:42:48.964 response: 302 GET http://127.0.0.1:5001/student cache-control='no-store'
+03:42:48.965 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:48.967 navigated: http://127.0.0.1:5001/login#history
+03:42:50.091 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:50.095 navigated: http://127.0.0.1:5001/login#history

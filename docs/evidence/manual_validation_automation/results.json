@@ -1,0 +1,1316 @@
+{
+  "meta": {
+    "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+    "run_date": "2026-11-17",
+    "base_url": "http://127.0.0.1:5001",
+    "database": "validation_demo.db",
+    "attendance_db_unchanged": true,
+    "attendance_db_sha256": "df6b0f51568511668bc629e3fed0845646eca18fcb99c56c1e784717dbcf838c"
+  },
+  "results": [
+    {
+      "id": "SYS_FR-07_10",
+      "tester": "Sumukh",
+      "title": "Manage users through admin dashboard",
+      "expected": "Each action succeeds and the table updates; validation errors shown for bad input.",
+      "status": "PASS",
+      "human_review": "Optional: the empty-username error is the browser's native validation bubble, which headless screenshots cannot capture; a person should confirm it is visible.",
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:41:47",
+      "finished": "2026-11-17T03:41:52",
+      "error": null,
+      "checks_total": 13,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Log in as demo.admin",
+          "ok": null,
+          "observed": "http://127.0.0.1:5001/admin"
+        },
+        {
+          "step": "Open Users",
+          "ok": null,
+          "observed": "11 users listed"
+        },
+        {
+          "step": "Submit New user with an empty username -> validation error, dialog stays open",
+          "ok": true,
+          "observed": "native validation message: 'Please fill out this field.'; dialog open=True; form-error box=''"
+        },
+        {
+          "step": "Create student 'manual_s1' (8+ char password)",
+          "ok": true,
+          "observed": "toast: 'Created student account \"manual_s1\".'"
+        },
+        {
+          "step": "Search 'manual' lists only matching users",
+          "ok": true,
+          "observed": "rows: ['manual_s1']"
+        },
+        {
+          "step": "Role filter 'student' shows only Student rows",
+          "ok": true,
+          "observed": "9 row(s)"
+        },
+        {
+          "step": "Role filter 'teacher' shows only Teacher rows",
+          "ok": true,
+          "observed": "2 row(s)"
+        },
+        {
+          "step": "Role filter 'admin' shows only Admin rows",
+          "ok": true,
+          "observed": "1 row(s)"
+        },
+        {
+          "step": "Status filter 'Active' shows only Active rows",
+          "ok": true,
+          "observed": "12 row(s)"
+        },
+        {
+          "step": "Status filter 'Inactive' shows only Inactive rows",
+          "ok": true,
+          "observed": "0 row(s); empty state: 'No users found\\nTry a different search or filter.'"
+        },
+        {
+          "step": "Edit 'manual_s1' -> 'manual_s1b'; table updates",
+          "ok": true,
+          "observed": "dialog title 'Edit manual_s1'; toast 'Updated manual_s1b.'"
+        },
+        {
+          "step": "Deactivate 'manual_s1b' (confirmation dialog)",
+          "ok": true,
+          "observed": "confirm 'Deactivate manual_s1b?'; toast 'manual_s1b deactivated.'; badge 'Inactive'"
+        },
+        {
+          "step": "Log out",
+          "ok": null,
+          "observed": "http://127.0.0.1:5001/login"
+        },
+        {
+          "step": "Login as deactivated 'manual_s1b' must fail",
+          "ok": true,
+          "observed": "error shown: 'Invalid username or password'"
+        },
+        {
+          "step": "Log in as demo.admin again and reactivate the account",
+          "ok": true,
+          "observed": "toast 'manual_s1b activated.'"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-07_10_01_users_list.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-07_10_02_empty_username_validation.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-07_10_03_search_manual.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-07_10_04_filters_student_active.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-07_10_05_deactivated.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-07_10_06_deactivated_login_refused.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-07_10_07_reactivated.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-07_10_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_FR-08_10",
+      "tester": "Sumukh",
+      "title": "Manage classes and subjects through admin dashboard",
+      "expected": "Each action succeeds and the lists update.",
+      "status": "PASS",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:41:52",
+      "finished": "2026-11-17T03:41:57",
+      "error": null,
+      "checks_total": 11,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Log in as demo.admin",
+          "ok": null,
+          "observed": ""
+        },
+        {
+          "step": "Open Classes; create class 'Manual Class'",
+          "ok": true,
+          "observed": "toast 'Created class \"Manual Class\".'"
+        },
+        {
+          "step": "Edit it and assign teacher prof.mehta",
+          "ok": true,
+          "observed": "row: ['Manual Class', 'prof.mehta', 'No subjects']"
+        },
+        {
+          "step": "Open Subjects; create 'Manual Subject' assigned to prof.mehta",
+          "ok": true,
+          "observed": "toast 'Created subject \"Manual Subject\".'"
+        },
+        {
+          "step": "Link 'Manual Subject' to 'Manual Class'",
+          "ok": true,
+          "observed": "chips ['Manual Subject']; toast 'Subject added to class.'"
+        },
+        {
+          "step": "Create duplicate 'Manual Class' -> error shown",
+          "ok": true,
+          "observed": "error: 'Class name already exists'"
+        },
+        {
+          "step": "Duplicate was not created",
+          "ok": true,
+          "observed": "1 'Manual Class' row(s)"
+        },
+        {
+          "step": "Class search 'Manual' lists only matching classes",
+          "ok": true,
+          "observed": "['Manual Class']"
+        },
+        {
+          "step": "Class search 'Year 2' lists only matching classes",
+          "ok": true,
+          "observed": "['BSc Computer Science - Year 2']"
+        },
+        {
+          "step": "Subject search 'Manual' lists only matching subjects",
+          "ok": true,
+          "observed": "['Manual Subject']"
+        },
+        {
+          "step": "Log in as prof.mehta; 'Manual Subject' appears in Overview",
+          "ok": true,
+          "observed": "['Database Systems\\nAssigned', 'Manual Subject\\nAssigned', 'Programming Fundamentals\\nAssigned']"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-08_10_01_class_created_edited.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-08_10_02_subject_created.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-08_10_03_link_subject_dialog.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-08_10_04_duplicate_class_error.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-08_10_05_subject_search.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-08_10_06_teacher_overview_manual_subject.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-08_10_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "IT_FR-09_09",
+      "tester": "Sumukh",
+      "title": "Enrolled student appears in roster",
+      "expected": "S01 listed; unenrolled students not listed.",
+      "status": "PASS",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:41:57",
+      "finished": "2026-11-17T03:42:00",
+      "error": null,
+      "checks_total": 4,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Admin > Enrollments: note enrollments in Manual Class / Manual Subject",
+          "ok": null,
+          "observed": "0 before: []"
+        },
+        {
+          "step": "Enroll exactly one student (aarav)",
+          "ok": true,
+          "observed": "toast 'Student enrolled.'; Manual Class rows ['aarav']"
+        },
+        {
+          "step": "Manual Class offered in Mark attendance",
+          "ok": true,
+          "observed": "classes: ['Choose a class', 'BSc Computer Science - Year 1', 'BSc Computer Science - Year 2', 'Manual Class']"
+        },
+        {
+          "step": "Select Manual Class, Manual Subject, today's date; click Load",
+          "ok": null,
+          "observed": "2026-11-17"
+        },
+        {
+          "step": "Only the enrolled student is listed and nobody else",
+          "ok": true,
+          "observed": "roster: ['aarav']"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/IT_FR-09_09_01_one_student_enrolled.png",
+        "docs/evidence/manual_validation_automation/screenshots/IT_FR-09_09_02_roster_only_enrolled.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/IT_FR-09_09_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_FR-09_10",
+      "tester": "Sumukh",
+      "title": "Enroll through admin dashboard",
+      "expected": "Enrollment appears in the list and can be removed.",
+      "status": "PASS",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:00",
+      "finished": "2026-11-17T03:42:02",
+      "error": null,
+      "checks_total": 7,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Enroll diya in Manual Class / Manual Subject; appears in list",
+          "ok": true,
+          "observed": "toast 'Student enrolled.'; count '17 enrollment(s) in total.' -> '18 enrollment(s) in total.'"
+        },
+        {
+          "step": "Enroll the same combination again -> error",
+          "ok": true,
+          "observed": "error toast: 'Student is already enrolled'"
+        },
+        {
+          "step": "Search 'diya' lists only diya's enrollments",
+          "ok": true,
+          "observed": "3 row(s)"
+        },
+        {
+          "step": "Class filter 'Year 2' lists only that class",
+          "ok": true,
+          "observed": "8 row(s)"
+        },
+        {
+          "step": "Class filter 'Manual Class' lists only that class",
+          "ok": true,
+          "observed": "['aarav', 'diya']"
+        },
+        {
+          "step": "Remove the enrollment; it disappears",
+          "ok": true,
+          "observed": "confirm 'diya will be removed from Manual Subject in Manual Class. Past attendance records are kept.'; toast 'Enrollment removed.'"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-09_10_01_enrolled.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-09_10_02_duplicate_error.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-09_10_03_class_filter.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-09_10_04_removed.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-09_10_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_FR-13_10",
+      "tester": "Sumukh",
+      "title": "Change password through the dashboard",
+      "expected": "Success message; new password works.",
+      "status": "PASS",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:02",
+      "finished": "2026-11-17T03:42:08",
+      "error": null,
+      "checks_total": 7,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Log in as demo student meera",
+          "ok": null,
+          "observed": ""
+        },
+        {
+          "step": "Wrong current password -> error",
+          "ok": true,
+          "observed": "error: 'Current password is incorrect'"
+        },
+        {
+          "step": "Correct current + 7-character new password -> error",
+          "ok": true,
+          "observed": "form-error=''; native tooShort=True message='Please lengthen this text to 8 characters or more (you are currently using 7 characters).'"
+        },
+        {
+          "step": "Correct current + new 8+ char password -> success message",
+          "ok": true,
+          "observed": "toast 'Your password has been changed.'"
+        },
+        {
+          "step": "Log in with the old password must fail",
+          "ok": true,
+          "observed": "Invalid username or password"
+        },
+        {
+          "step": "Log in with the new password must work",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/student"
+        },
+        {
+          "step": "Change the password back (original password works again)",
+          "ok": true,
+          "observed": "toast 'Your password has been changed.'"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-13_10_01_wrong_current.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-13_10_02_seven_char_rejected.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-13_10_03_changed.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-13_10_04_new_password_login.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-13_10_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_FR-01_08",
+      "tester": "Jagadeesh",
+      "title": "Logout",
+      "expected": "Protected pages cannot be reopened: page requests redirect to /login, API requests return 401. Responses carry Cache-Control: no-store.",
+      "status": "PASS",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:08",
+      "finished": "2026-11-17T03:42:13",
+      "error": null,
+      "checks_total": 7,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Log in as prof.mehta (teacher)",
+          "ok": null,
+          "observed": "/teacher Cache-Control: 'no-store'"
+        },
+        {
+          "step": "Open Attendance records",
+          "ok": null,
+          "observed": "96 rows; /api/attendance Cache-Control 'no-store'"
+        },
+        {
+          "step": "Click Log out and confirm",
+          "ok": null,
+          "observed": "http://127.0.0.1:5001/login"
+        },
+        {
+          "step": "Press Back (1): no attendance data shown",
+          "ok": true,
+          "observed": "url http://127.0.0.1:5001/login#records; record rows visible 0"
+        },
+        {
+          "step": "Press Back (2): no attendance data shown",
+          "ok": true,
+          "observed": "url http://127.0.0.1:5001/login; record rows visible 0"
+        },
+        {
+          "step": "Reload the page -> login page",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/login"
+        },
+        {
+          "step": "Type /teacher in the address bar -> redirected to /login",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/login"
+        },
+        {
+          "step": "API request after logout returns 401",
+          "ok": true,
+          "observed": "status 401; body {'error': 'Authentication required'}"
+        },
+        {
+          "step": "Responses carry Cache-Control: no-store",
+          "ok": true,
+          "observed": "/teacher 'no-store'; /api/attendance 'no-store'"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-01_08_01_records_before_logout.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-01_08_02_after_back_1.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-01_08_03_after_back_2.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-01_08_04_teacher_url_redirected.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-01_08_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_FR-03_13",
+      "tester": "Jagadeesh",
+      "title": "Edit and delete through teacher dashboard",
+      "expected": "Edited status shown; deleted record removed from the table after confirmation.",
+      "status": "PASS",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:13",
+      "finished": "2026-11-17T03:42:16",
+      "error": null,
+      "checks_total": 5,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Open Attendance records; pick a record",
+          "ok": null,
+          "observed": "96 rows; record ('Mon, Nov 16, 2026', 'aarav', 'Programming Fundamentals') status 'Present'"
+        },
+        {
+          "step": "Correct status -> Late; table shows Late",
+          "ok": true,
+          "observed": "toast 'Attendance record updated.'; row ['Mon, Nov 16, 2026', 'A\\naarav', 'Programming Fundamentals', 'Late', '']"
+        },
+        {
+          "step": "Click delete -> confirmation dialog appears",
+          "ok": true,
+          "observed": "'Delete this record?': \"aarav's Late record for Programming Fundamentals on Mon, Nov 16, 2026 will be permanently deleted.\""
+        },
+        {
+          "step": "Cancel -> the record is still there",
+          "ok": true,
+          "observed": ""
+        },
+        {
+          "step": "Delete and confirm -> record disappears and a message is shown",
+          "ok": true,
+          "observed": "toast 'Attendance record deleted.'; rows 96 -> 95"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-03_13_01_status_corrected.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-03_13_02_delete_confirm.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-03_13_03_record_deleted.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-03_13_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_FR-10_10",
+      "tester": "Jagadeesh",
+      "title": "Search and filter in the dashboards",
+      "expected": "Table updates to matching rows; 'Clear filters' restores all rows.",
+      "status": "FAIL",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:16",
+      "finished": "2026-11-17T03:42:21",
+      "error": null,
+      "checks_total": 10,
+      "checks_failed": 1,
+      "steps": [
+        {
+          "step": "Log in as prof.mehta; open Attendance records",
+          "ok": null,
+          "observed": "95 rows"
+        },
+        {
+          "step": "Search 'kabir' -> only kabir's rows",
+          "ok": true,
+          "observed": "12 rows"
+        },
+        {
+          "step": "Subject filter 'Database Systems' -> table updates",
+          "ok": true,
+          "observed": "48 rows"
+        },
+        {
+          "step": "Then date 2026-11-16 -> table updates",
+          "ok": true,
+          "observed": "4 rows"
+        },
+        {
+          "step": "Then status Present -> table updates",
+          "ok": true,
+          "observed": "4 rows"
+        },
+        {
+          "step": "Click 'Clear filters' (teacher Attendance records)",
+          "ok": false,
+          "observed": "No 'Clear filters' control exists on the teacher Attendance records screen (toolbar: search, Subject, Date, Status only)"
+        },
+        {
+          "step": "Workaround: reset each filter by hand",
+          "ok": null,
+          "observed": "95 rows (was 95)"
+        },
+        {
+          "step": "Look for a class filter and a date-range filter (known gap G-03)",
+          "ok": null,
+          "observed": "class filter present=False; date-range present=False; controls ['recordSearch:search', 'recordSubject:select-one', 'recordDate:date', 'recordStatus:select-one']"
+        },
+        {
+          "step": "Admin: subject filter 'Database Systems'",
+          "ok": true,
+          "observed": "48 rows"
+        },
+        {
+          "step": "Admin: date 2026-11-16",
+          "ok": true,
+          "observed": "4 rows"
+        },
+        {
+          "step": "Admin: status Absent",
+          "ok": true,
+          "observed": "0 rows"
+        },
+        {
+          "step": "Admin: 'Clear filters' restores all rows",
+          "ok": true,
+          "observed": "191 rows (all = 191)"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-10_10_01_teacher_search.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-10_10_02_teacher_filters.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-10_10_03_admin_filters.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-10_10_04_admin_cleared.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-10_10_main.log"
+      ],
+      "notes": [
+        "Student History has no search box or Clear filters either; the student filters are exercised in UT_FR-05_04."
+      ]
+    },
+    {
+      "id": "SYS_FR-11_10",
+      "tester": "Jagadeesh",
+      "title": "Alerts shown on dashboards",
+      "expected": "Low-attendance students listed; 'Everyone is on track' when none.",
+      "status": "PASS",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:21",
+      "finished": "2026-11-17T03:42:25",
+      "error": null,
+      "checks_total": 3,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "prof.mehta: Overview 'Students needing attention'",
+          "ok": null,
+          "observed": "{'kabir': 58.3, 'vikram': 58.3}"
+        },
+        {
+          "step": "prof.mehta: every student below 75% is listed, none at/above 75%",
+          "ok": true,
+          "observed": "below 75% on Percentages: {'kabir': 58.3, 'vikram': 58.3}; listed: ['kabir', 'vikram'] (overview shows at most 6)"
+        },
+        {
+          "step": "demo.admin: Overview 'Students needing attention'",
+          "ok": null,
+          "observed": "{'vikram': 50.0, 'kabir': 70.8}"
+        },
+        {
+          "step": "demo.admin: every student below 75% is listed, none at/above 75%",
+          "ok": true,
+          "observed": "below 75% on Percentages: {'kabir': 70.8, 'vikram': 50.0}; listed: ['kabir', 'vikram'] (overview shows at most 8)"
+        },
+        {
+          "step": "Record that there is no screen to change the 75% threshold (known gap G-04)",
+          "ok": null,
+          "observed": "threshold controls found in admin dashboard: 0"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-11_10_01_prof_overview_alerts.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-11_10_02_prof_percentages.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-11_10_03_demo_overview_alerts.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-11_10_04_demo_percentages.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-11_10_main.log"
+      ],
+      "notes": [
+        "The 'Everyone is on track' empty state was not exercised: in the seeded data both dashboards have students below 75%."
+      ]
+    },
+    {
+      "id": "SYS_FR-15_06",
+      "tester": "Jagadeesh",
+      "title": "Logout button on every dashboard",
+      "expected": "Returned to /login with a signed-out state.",
+      "status": "PASS",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:25",
+      "finished": "2026-11-17T03:42:30",
+      "error": null,
+      "checks_total": 7,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "demo.admin: Log out + confirm -> login page",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/login"
+        },
+        {
+          "step": "demo.admin: signed-out state (/admin redirects to /login)",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/login"
+        },
+        {
+          "step": "aarav: Log out + confirm -> login page",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/login"
+        },
+        {
+          "step": "aarav: signed-out state (/student redirects to /login)",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/login"
+        },
+        {
+          "step": "prof.mehta: Log out + confirm -> login page",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/login"
+        },
+        {
+          "step": "prof.mehta: signed-out state (/teacher redirects to /login)",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/login"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-15_06_01_demo_logged_out.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-15_06_02_aarav_logged_out.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-15_06_03_prof_logged_out.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-15_06_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_FR-04_11",
+      "tester": "Jagadeesh",
+      "title": "Percentages displayed on the teacher dashboard",
+      "expected": "Displayed percentages equal Present / total x 100 rounded to 2 decimals; Late is not counted as attended.",
+      "status": "FAIL",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:30",
+      "finished": "2026-11-17T03:42:33",
+      "error": null,
+      "checks_total": 5,
+      "checks_failed": 2,
+      "steps": [
+        {
+          "step": "Open Percentages; pick subject 'Database Systems'",
+          "ok": null,
+          "observed": "4 students"
+        },
+        {
+          "step": "Records for rohan / Database Systems: count statuses",
+          "ok": null,
+          "observed": "Present 10, Absent 2, Late 0"
+        },
+        {
+          "step": "rohan: backend percentage = Present/(P+A+L)x100 to 2 dp (Late not attended)",
+          "ok": true,
+          "observed": "hand calc 83.33; API 83.33"
+        },
+        {
+          "step": "rohan: Percentages screen shows the same value rounded to 2 decimals",
+          "ok": false,
+          "observed": "screen '83.3%'; 2-dp value 83.33 (83.33%)"
+        },
+        {
+          "step": "Records for vikram / Database Systems: count statuses",
+          "ok": null,
+          "observed": "Present 7, Absent 5, Late 0"
+        },
+        {
+          "step": "vikram: backend percentage = Present/(P+A+L)x100 to 2 dp (Late not attended)",
+          "ok": true,
+          "observed": "hand calc 58.33; API 58.33"
+        },
+        {
+          "step": "vikram: Percentages screen shows the same value rounded to 2 decimals",
+          "ok": false,
+          "observed": "screen '58.3%'; 2-dp value 58.33 (58.33%)"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-04_11_01_percentages_subject.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-04_11_02_records_rohan.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-04_11_03_records_vikram.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-04_11_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_NFR-02_06",
+      "tester": "Jagadeesh",
+      "title": "Perceived load time on the demo machine",
+      "expected": "Every section loads within 3 seconds.",
+      "status": "PASS",
+      "human_review": "Optional: timings were taken on this Mac; repeat on the demo machine if it is a different computer.",
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:33",
+      "finished": "2026-11-17T03:42:35",
+      "error": null,
+      "checks_total": 6,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Disable the browser cache (DevTools 'Disable cache' via CDP)",
+          "ok": null,
+          "observed": ""
+        },
+        {
+          "step": "overview (Load event) under 3 seconds",
+          "ok": true,
+          "observed": "28 ms"
+        },
+        {
+          "step": "overview (data shown) under 3 seconds",
+          "ok": true,
+          "observed": "202 ms"
+        },
+        {
+          "step": "mark under 3 seconds",
+          "ok": true,
+          "observed": "74 ms"
+        },
+        {
+          "step": "records under 3 seconds",
+          "ok": true,
+          "observed": "235 ms"
+        },
+        {
+          "step": "percentages under 3 seconds",
+          "ok": true,
+          "observed": "193 ms"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_NFR-02_06_01_overview.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_NFR-02_06_02_mark.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_NFR-02_06_03_records.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_NFR-02_06_04_percentages.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_NFR-02_06_main.log"
+      ],
+      "notes": [
+        "{\"overview (Load event)\": 28, \"overview (data shown)\": 202, \"mark\": 74, \"records\": 235, \"percentages\": 193}"
+      ]
+    },
+    {
+      "id": "UT_FR-05_04",
+      "tester": "Tharith",
+      "title": "Empty result handling",
+      "expected": "API returns an empty list; UI shows a clear empty-state message.",
+      "status": "PASS",
+      "human_review": "Judge whether the empty-state message is 'clear' to a student (wording judgement).",
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:35",
+      "finished": "2026-11-17T03:42:36",
+      "error": null,
+      "checks_total": 4,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Log in as a demo student; open Attendance history",
+          "ok": null,
+          "observed": "23 records"
+        },
+        {
+          "step": "Choose a date with no attendance (Sun 2020-01-05) -> clear 'no records' message",
+          "ok": true,
+          "observed": "message: 'No matching records\\nTry different filters.'; count line '0 of 23 record(s) shown.'"
+        },
+        {
+          "step": "API returns an empty list for that date",
+          "ok": true,
+          "observed": "200 {'count': 0, 'records': []}"
+        },
+        {
+          "step": "Click Clear filters (if shown)",
+          "ok": null,
+          "observed": "no Clear filters button is shown on the student History screen"
+        },
+        {
+          "step": "Clearing the date by hand returns the records",
+          "ok": true,
+          "observed": "23 records (clear button present: False)"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/UT_FR-05_04_01_empty_state.png",
+        "docs/evidence/manual_validation_automation/screenshots/UT_FR-05_04_02_records_back.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/UT_FR-05_04_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_FR-05_10",
+      "tester": "Tharith",
+      "title": "Responsive viewing",
+      "expected": "Content remains readable with no horizontal overflow.",
+      "status": "FAIL",
+      "human_review": "Readability and 'nothing overlaps' are visual judgements; review the screenshots or repeat on a device.",
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:36",
+      "finished": "2026-11-17T03:42:42",
+      "error": null,
+      "checks_total": 20,
+      "checks_failed": 1,
+      "steps": [
+        {
+          "step": "student_overview at 375px: no page-level sideways scrolling",
+          "ok": true,
+          "observed": "page overflow 0px; elements past right edge 0"
+        },
+        {
+          "step": "student_overview at 375px: tables fit without their own sideways scroll",
+          "ok": true,
+          "observed": "table-wrap overflow [] px"
+        },
+        {
+          "step": "student_history at 375px: no page-level sideways scrolling",
+          "ok": true,
+          "observed": "page overflow 0px; elements past right edge 0"
+        },
+        {
+          "step": "student_history at 375px: tables fit without their own sideways scroll",
+          "ok": true,
+          "observed": "table-wrap overflow [] px"
+        },
+        {
+          "step": "student_overview at 768px: no page-level sideways scrolling",
+          "ok": true,
+          "observed": "page overflow 0px; elements past right edge 0"
+        },
+        {
+          "step": "student_overview at 768px: tables fit without their own sideways scroll",
+          "ok": true,
+          "observed": "table-wrap overflow [] px"
+        },
+        {
+          "step": "student_history at 768px: no page-level sideways scrolling",
+          "ok": true,
+          "observed": "page overflow 0px; elements past right edge 0"
+        },
+        {
+          "step": "student_history at 768px: tables fit without their own sideways scroll",
+          "ok": true,
+          "observed": "table-wrap overflow [] px"
+        },
+        {
+          "step": "student_overview at 1280px: no page-level sideways scrolling",
+          "ok": true,
+          "observed": "page overflow 0px; elements past right edge 0"
+        },
+        {
+          "step": "student_overview at 1280px: tables fit without their own sideways scroll",
+          "ok": true,
+          "observed": "table-wrap overflow [] px"
+        },
+        {
+          "step": "student_history at 1280px: no page-level sideways scrolling",
+          "ok": true,
+          "observed": "page overflow 0px; elements past right edge 0"
+        },
+        {
+          "step": "student_history at 1280px: tables fit without their own sideways scroll",
+          "ok": true,
+          "observed": "table-wrap overflow [] px"
+        },
+        {
+          "step": "aarav: no uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        },
+        {
+          "step": "teacher_records at 375px: no page-level sideways scrolling",
+          "ok": true,
+          "observed": "page overflow 0px; elements past right edge 0"
+        },
+        {
+          "step": "teacher_records at 375px: tables fit without their own sideways scroll",
+          "ok": false,
+          "observed": "table-wrap overflow [181] px"
+        },
+        {
+          "step": "teacher_records at 768px: no page-level sideways scrolling",
+          "ok": true,
+          "observed": "page overflow 0px; elements past right edge 0"
+        },
+        {
+          "step": "teacher_records at 768px: tables fit without their own sideways scroll",
+          "ok": true,
+          "observed": "table-wrap overflow [] px"
+        },
+        {
+          "step": "teacher_records at 1280px: no page-level sideways scrolling",
+          "ok": true,
+          "observed": "page overflow 0px; elements past right edge 0"
+        },
+        {
+          "step": "teacher_records at 1280px: tables fit without their own sideways scroll",
+          "ok": true,
+          "observed": "table-wrap overflow [] px"
+        },
+        {
+          "step": "prof.mehta: no uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-05_10_01_student_overview_375px.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-05_10_02_student_history_375px.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-05_10_03_student_overview_768px.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-05_10_04_student_history_768px.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-05_10_05_student_overview_1280px.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-05_10_06_student_history_1280px.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-05_10_07_teacher_records_375px.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-05_10_08_teacher_records_768px.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-05_10_09_teacher_records_1280px.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-05_10_aarav.log",
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-05_10_prof.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_FR-14_08",
+      "tester": "Tharith",
+      "title": "Dashboard summary displayed in browser",
+      "expected": "Summary cards show figures matching the data; no errors.",
+      "status": "PASS",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:42",
+      "finished": "2026-11-17T03:42:47",
+      "error": null,
+      "checks_total": 4,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Student: My attendance numbers match the History records",
+          "ok": true,
+          "observed": "cards {'overallPercent': '95.7%', 'countPresent': '22', 'countAbsent': '0', 'countLate': '1', 'countTotal': '23'}; counted from history P22 A0 L1 T23 -> 95.7%"
+        },
+        {
+          "step": "Teacher: Overview cards match Percentages / Mark attendance screens",
+          "ok": true,
+          "observed": "cards {'statSubjects': '3', 'statClasses': '3', 'statStudents': '8', 'statAverage': '83.2%'}; screens: subjects 3, classes 3, students 8, average 83.2% (79/95)"
+        },
+        {
+          "step": "Admin: Overview counts match the Users, Classes and Subjects lists",
+          "ok": true,
+          "observed": "cards {'statStudents': '9', 'statTeachers': '2', 'statClasses': '3', 'statSubjects': '5'}; lists: students 9, teachers 2, classes 3, subjects 5"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-14_08_01_student_overview.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-14_08_02_teacher_overview.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-14_08_03_admin_overview.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-14_08_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_FR-15_07",
+      "tester": "Tharith",
+      "title": "Back button after logout",
+      "expected": "Protected content is not shown again (no-store caching; redirect to login).",
+      "status": "PASS",
+      "human_review": null,
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:47",
+      "finished": "2026-11-17T03:42:50",
+      "error": null,
+      "checks_total": 4,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Log in as a demo student; open Attendance history",
+          "ok": null,
+          "observed": "23 records"
+        },
+        {
+          "step": "Log out and confirm",
+          "ok": null,
+          "observed": "http://127.0.0.1:5001/login"
+        },
+        {
+          "step": "Press Back: attendance data is not shown",
+          "ok": true,
+          "observed": "url http://127.0.0.1:5001/login#history; record rows visible 0"
+        },
+        {
+          "step": "Press Back: user is on the login page",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/login#history"
+        },
+        {
+          "step": "Reload -> login page",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/login#history"
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_FR-15_07_01_after_back.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_FR-15_07_main.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "IT_NFR-04_04",
+      "tester": "Tharith",
+      "title": "Keyboard and accessibility",
+      "expected": "Visible focus; controls reachable and labelled.",
+      "status": "PASS",
+      "human_review": "Whether the focus outline is clearly visible, and screen-reader use, need a person (visual/assistive judgement).",
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:50",
+      "finished": "2026-11-17T03:42:53",
+      "error": null,
+      "checks_total": 9,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Log in as demo.admin using only the keyboard",
+          "ok": true,
+          "observed": "http://127.0.0.1:5001/admin"
+        },
+        {
+          "step": "Tab through the sidebar: visible focus style on every item",
+          "ok": true,
+          "observed": "8 items: ['Overview', 'Users', 'Classes', 'Subjects', 'Enrollments', 'Attendance', 'Change password', 'Log out']; without focus style: []"
+        },
+        {
+          "step": "Every focused control has an accessible name",
+          "ok": true,
+          "observed": "unnamed: []"
+        },
+        {
+          "step": "Open a section with Enter (Users)",
+          "ok": true,
+          "observed": ""
+        },
+        {
+          "step": "Open a dialog with the keyboard and close it with Esc",
+          "ok": true,
+          "observed": "opened True; closed by Esc True"
+        },
+        {
+          "step": "Choose class and subject with the keyboard",
+          "ok": true,
+          "observed": "class value '1', subject value '1'"
+        },
+        {
+          "step": "Reach 'Load students' with Tab",
+          "ok": true,
+          "observed": "loadRosterButton"
+        },
+        {
+          "step": "Select attendance statuses with the keyboard (arrow keys in the status group)",
+          "ok": true,
+          "observed": "focused 'Present' (Present); after ArrowRight Absent:true; focus style True"
+        },
+        {
+          "step": "Attendance was not saved (keyboard check only)",
+          "ok": null,
+          "observed": ""
+        },
+        {
+          "step": "No uncaught JavaScript errors",
+          "ok": true,
+          "observed": "[]"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/IT_NFR-04_04_01_focus_nav_users.png",
+        "docs/evidence/manual_validation_automation/screenshots/IT_NFR-04_04_02_dialog_opened_keyboard.png",
+        "docs/evidence/manual_validation_automation/screenshots/IT_NFR-04_04_03_roster_keyboard_status.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/IT_NFR-04_04_main.log",
+        "docs/evidence/manual_validation_automation/logs/IT_NFR-04_04_teacher.log"
+      ],
+      "notes": []
+    },
+    {
+      "id": "SYS_NFR-04_06",
+      "tester": "Tharith",
+      "title": "Human usability walkthrough",
+      "expected": "Tasks completed easily; observations recorded.",
+      "status": "NOT RUN",
+      "human_review": "Required: a person who has not used the app must perform the tasks unaided and record time, hesitation and comments. Automation cannot measure usability; the smoke only shows the tasks can be completed.",
+      "browser": "Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)",
+      "started": "2026-11-17T03:42:53",
+      "finished": "2026-11-17T03:42:59",
+      "error": null,
+      "checks_total": 0,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Smoke - student: find overall and one subject's attendance",
+          "ok": null,
+          "observed": "95.7%; 'Discrete Mathematics\\n11 of 12 classes attended'"
+        },
+        {
+          "step": "Smoke - teacher: mark today's attendance and correct one status",
+          "ok": null,
+          "observed": "Saved attendance for 4 student(s)."
+        },
+        {
+          "step": "Smoke - admin: create a student and enroll them",
+          "ok": null,
+          "observed": "usability_s1 enrolled in Year 1 / Programming Fundamentals"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_NFR-04_06_01_student_task.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_NFR-04_06_02_teacher_task.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_NFR-04_06_03_admin_task.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_NFR-04_06_main.log"
+      ],
+      "notes": [
+        "Scripted task flows completed in 5.6 s (machine speed, not human effort)."
+      ]
+    },
+    {
+      "id": "SYS_NFR-05_08",
+      "tester": "Tharith",
+      "title": "Main workflows in the Apple Safari application",
+      "expected": "All tasks work as in other browsers; no layout or script errors.",
+      "status": "BLOCKED",
+      "human_review": "Required: a person must run the admin, teacher and student tasks in the real Safari application.",
+      "browser": "Safari application: not automatable by Playwright (supplementary run: Playwright WebKit)",
+      "started": "2026-11-17T03:42:59",
+      "finished": "2026-11-17T03:43:06",
+      "error": null,
+      "checks_total": 0,
+      "checks_failed": 0,
+      "steps": [
+        {
+          "step": "Open the Safari application on a Mac",
+          "ok": null,
+          "observed": "Safari.app installed: True. Playwright cannot drive the Safari application. safaridriver is present, but using it needs 'Allow Remote Automation' and 'sudo safaridriver --enable' (a system setting change) plus a WebDriver client; this was not set up without approval."
+        },
+        {
+          "step": "[WebKit] admin: create a user; log out",
+          "ok": null,
+          "observed": "created webkit_s1"
+        },
+        {
+          "step": "[WebKit] teacher: mark attendance; correct one status; log out",
+          "ok": null,
+          "observed": "Saved attendance for 5 student(s)."
+        },
+        {
+          "step": "[WebKit] student: view My attendance and Attendance history",
+          "ok": null,
+          "observed": "24 records"
+        },
+        {
+          "step": "[WebKit] console errors (D-01 'Refused to apply a stylesheet')",
+          "ok": null,
+          "observed": "26 console.error line(s); 26 CSP-related; page errors 0"
+        }
+      ],
+      "screenshots": [
+        "docs/evidence/manual_validation_automation/screenshots/SYS_NFR-05_08_01_webkit_admin.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_NFR-05_08_02_webkit_teacher.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_NFR-05_08_03_webkit_student_overview.png",
+        "docs/evidence/manual_validation_automation/screenshots/SYS_NFR-05_08_04_webkit_student_history.png"
+      ],
+      "logs": [
+        "docs/evidence/manual_validation_automation/logs/SYS_NFR-05_08_webkit_supplementary.log"
+      ],
+      "notes": [
+        "Supplementary engine-level run in Playwright WebKit 27.2 (NOT the Safari application).",
+        "WebKit CSP-related console lines: 26; first: 03:43:00.586 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Securi"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+Superseded coverage measurement (2026-11-17 08:36-08:44).
+The app/ figures are valid (statement 1766/2136, branch 654/828), but the scripts/ scope also listed the new
+documentation and test tooling scripts at 0% because .coveragerc did not yet omit them. .coveragerc was
+corrected (they are tooling, not application code, as its header already states) and both coverage runs were
+repeated in docs/evidence/regression/coverage/.

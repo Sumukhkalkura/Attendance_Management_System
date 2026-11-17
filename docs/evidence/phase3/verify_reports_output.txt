@@ -1,0 +1,66 @@
+PASS Unit Test Report Baseline row = pytest console summary
+PASS Unit Test Report Final row = pytest console summary
+PASS baseline JUnit tests attr = console total
+PASS final JUnit tests attr = console total
+PASS Unit Test Report level rows (final) sum to 856
+PASS Unit-level results reported as 12 (not 836)
+PASS Level table matches saved test_type_inventory.md
+PASS Statement CLI TOTAL Cover = computed statement %
+PASS Code Coverage Report headline matches CLI
+PASS Branch run statements identical to statement run
+PASS Cobertura XML app/ branch count = CLI Branch column
+PASS Branch Coverage Report headline = XML-derived branch %
+PASS Branch report quotes the CLI combined figure correctly
+PASS Branch report partial-line total = CLI BrPart
+PASS Statement row app/__init__.py
+PASS Statement row app/api/__init__.py
+PASS Statement row app/api/academics.py
+PASS Statement row app/api/alerts.py
+PASS Statement row app/api/attendance_management.py
+PASS Statement row app/api/attendance_records.py
+PASS Statement row app/api/attendance_view.py
+PASS Statement row app/api/auth_routes.py
+PASS Statement row app/api/blueprint.py
+PASS Statement row app/api/enrollments.py
+PASS Statement row app/api/exports.py
+PASS Statement row app/api/percentages.py
+PASS Statement row app/api/reports.py
+PASS Statement row app/api/session_routes.py
+PASS Statement row app/api/users.py
+PASS Statement row app/auth.py
+PASS Statement row app/db.py
+PASS Statement row app/pages.py
+PASS Statement row app/routes.py
+PASS Statement row app/validation.py
+PASS Branch row app/__init__.py
+PASS Branch row app/api/__init__.py
+PASS Branch row app/api/academics.py
+PASS Branch row app/api/alerts.py
+PASS Branch row app/api/attendance_management.py
+PASS Branch row app/api/attendance_records.py
+PASS Branch row app/api/attendance_view.py
+PASS Branch row app/api/auth_routes.py
+PASS Branch row app/api/blueprint.py
+PASS Branch row app/api/enrollments.py
+PASS Branch row app/api/exports.py
+PASS Branch row app/api/percentages.py
+PASS Branch row app/api/reports.py
+PASS Branch row app/api/session_routes.py
+PASS Branch row app/api/users.py
+PASS Branch row app/auth.py
+PASS Branch row app/db.py
+PASS Branch row app/pages.py
+PASS Branch row app/routes.py
+PASS Branch row app/validation.py
+PASS Scripts statement total matches CLI
+PASS Coverage statement run pass/fail/error/skip = final run
+PASS Coverage branch run pass/fail/error/skip = final run
+PASS Test Case Document lists 197 unique case IDs
+PASS XLSX has the same 197 IDs as the Markdown
+PASS SVR status totals = XLSX Status column
+PASS SVR total cases = 197
+PASS 75 original Test Plan IDs kept (XLSX Change column)
+PASS 19 manual cases, all NOT RUN
+PASS Manual cases have no execution date
+
+64 of 64 checks passed.

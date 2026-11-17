@@ -1,0 +1,21 @@
+08:27:43.942 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:27:43.946 navigated: http://127.0.0.1:5001/login
+08:27:44.166 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:27:44.169 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+08:27:44.171 navigated: http://127.0.0.1:5001/admin
+08:27:44.197 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:27:44.771 navigated: http://127.0.0.1:5001/admin#classes
+08:27:45.714 navigated: http://127.0.0.1:5001/admin#subjects
+08:27:46.330 navigated: http://127.0.0.1:5001/admin#classes
+08:27:47.261 response: 409 POST http://127.0.0.1:5001/api/classes cache-control='no-store'
+08:27:47.262 console.error: Failed to load resource: the server responded with a status of 409 (CONFLICT)
+08:27:47.431 navigated: http://127.0.0.1:5001/admin#subjects
+08:27:47.975 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:27:47.982 navigated: http://127.0.0.1:5001/login
+08:27:47.996 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:27:48.000 requestfailed: GET http://127.0.0.1:5001/static/favicon.svg net::ERR_ABORTED
+08:27:48.001 navigated: http://127.0.0.1:5001/login
+08:27:48.147 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:27:48.156 response: 200 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+08:27:48.159 navigated: http://127.0.0.1:5001/teacher
+08:27:48.174 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o

@@ -57,7 +57,7 @@ async function showOverview() {
         $("#statSubjects").textContent = state.subjects.length;
         $("#statClasses").textContent = state.classes.length;
         $("#statStudents").textContent = tracked.length;
-        $("#statAverage").textContent = total ? App.formatPercent(Math.round(attended / total * 1000) / 10) : "–";
+        $("#statAverage").textContent = total ? App.formatPercent(attended / total * 100) : "–";
         $("#statAverageSub").textContent = total ? `${attended} of ${total} marked classes` : "No attendance marked yet";
 
         list.replaceChildren(...(state.subjects.length
@@ -267,7 +267,10 @@ function renderRecords() {
 async function loadRecords() {
     const params = new URLSearchParams();
     if ($("#recordSubject").value) params.set("subject_id", $("#recordSubject").value);
+    if ($("#recordClass").value) params.set("class_id", $("#recordClass").value);
     if ($("#recordDate").value) params.set("attendance_date", $("#recordDate").value);
+    if ($("#recordFrom").value) params.set("start_date", $("#recordFrom").value);
+    if ($("#recordTo").value) params.set("end_date", $("#recordTo").value);
     if ($("#recordStatus").value) params.set("status", $("#recordStatus").value);
 
     stateRow($("#recordsTable"), 5, "loading");
@@ -283,7 +286,13 @@ async function loadRecords() {
 async function showRecords(firstVisit) {
     if (firstVisit) {
         $("#recordSearch").addEventListener("input", renderRecords);
-        ["#recordSubject", "#recordDate", "#recordStatus"].forEach((id) =>
+        // FR-10: reset every filter and reload all permitted records.
+        $("#recordClear").addEventListener("click", () => {
+            ["#recordSearch", "#recordSubject", "#recordClass", "#recordDate", "#recordFrom", "#recordTo", "#recordStatus"]
+                .forEach((id) => { $(id).value = ""; });
+            loadRecords();
+        });
+        ["#recordSubject", "#recordClass", "#recordDate", "#recordFrom", "#recordTo", "#recordStatus"].forEach((id) =>
             $(id).addEventListener("change", loadRecords)
         );
     }
@@ -291,6 +300,7 @@ async function showRecords(firstVisit) {
     try {
         await loadAssignments();
         subjectFilterOptions($("#recordSubject"));
+        fillSelect($("#recordClass"), state.classes, { placeholder: "All my classes" });
     } catch (error) {
         toast(error.message, "error");
     }
@@ -354,7 +364,20 @@ const sections = {
     overview: { title: "Overview", subtitle: "Your subjects, classes and attendance at a glance.", show: showOverview },
     mark: { title: "Mark attendance", subtitle: "Record Present, Absent or Late for a class session.", show: showMark },
     records: { title: "Attendance records", subtitle: "Review and correct attendance in your subjects.", show: showRecords },
-    percentages: { title: "Percentages", subtitle: "Attendance percentages for students in your subjects.", show: showPercentages }
+    percentages: { title: "Percentages", subtitle: "Attendance percentages for students in your subjects.", show: showPercentages },
+    reports: Reports.setup({
+        subtitle: "Generate and export attendance reports for your subjects.",
+        loadOptions: async () => {
+            const [, percentages] = await Promise.all([loadAssignments(), api("/api/attendance/percentages")]);
+            return {
+                // students with attendance in this teacher's subjects
+                students: percentages.students.filter((s) => s.total_classes > 0)
+                    .map((s) => ({ id: s.student_id, name: s.student_name })),
+                classes: state.classes,
+                subjects: state.subjects
+            };
+        }
+    })
 };
 
 App.initSections(sections, (name, firstVisit) => sections[name].show(firstVisit));

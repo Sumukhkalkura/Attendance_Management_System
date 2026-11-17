@@ -251,6 +251,21 @@ select.input {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
+/* FR-06: report filters, three per row on wide screens */
+.form-grid.cols-3 {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.form-grid.cols-3 .form-error,
+.form-grid.cols-3 .form-actions {
+    grid-column: 1 / -1;
+}
+
+.report-stats {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+}
+
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -1486,6 +1501,79 @@ select.input {
     .ring {
         width: 140px;
         height: 140px;
+    }
+}
+
+/* FR-05 / NFR-04: on phones every data table becomes a list of cards, one per
+   row, with each value labelled by its column heading (data-label, set by
+   App.fillRows). Nothing is cut off and no sideways scrolling is needed. The
+   header row stays in the document for assistive technology. */
+@media (max-width: 640px) {
+    .table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tbody tr {
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .table tbody tr:last-child {
+        border-bottom: 0;
+    }
+
+    .table td,
+    .table tbody tr:last-child td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 6px 16px;
+        border-bottom: 0;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .table td[data-label]::before {
+        content: attr(data-label);
+        flex: 0 0 34%;
+        color: var(--ink-500);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    .table td[colspan] {
+        display: block;
+        text-align: center;
+    }
+
+    .table .num {
+        text-align: right;
+    }
+
+    .table .actions {
+        justify-content: flex-end;
+    }
+
+    .table .cell-user {
+        justify-content: flex-end;
     }
 }
 

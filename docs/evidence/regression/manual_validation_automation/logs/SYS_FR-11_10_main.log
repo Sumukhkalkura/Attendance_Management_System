@@ -1,0 +1,26 @@
+08:29:52.503 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:29:52.507 navigated: http://127.0.0.1:5001/login
+08:29:52.715 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:29:52.718 response: 200 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+08:29:52.721 navigated: http://127.0.0.1:5001/teacher
+08:29:52.750 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:29:53.502 navigated: http://127.0.0.1:5001/teacher#percentages
+08:29:54.069 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:29:54.073 navigated: http://127.0.0.1:5001/login
+08:29:54.087 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:29:54.091 requestfailed: GET http://127.0.0.1:5001/static/favicon.svg net::ERR_ABORTED
+08:29:54.092 navigated: http://127.0.0.1:5001/login
+08:29:54.230 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:29:54.233 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+08:29:54.236 navigated: http://127.0.0.1:5001/admin
+08:29:54.247 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:29:55.013 navigated: http://127.0.0.1:5001/admin#attendance
+08:29:56.051 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:29:56.056 navigated: http://127.0.0.1:5001/login
+08:29:56.072 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:29:56.075 requestfailed: GET http://127.0.0.1:5001/static/favicon.svg net::ERR_ABORTED
+08:29:56.075 navigated: http://127.0.0.1:5001/login
+08:29:56.238 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:29:56.242 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+08:29:56.245 navigated: http://127.0.0.1:5001/admin
+08:29:56.256 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o

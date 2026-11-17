@@ -1,0 +1,13 @@
+Name                                          Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------
+scripts/backup_db.py                             35     13 62.86%   60-67, 77-105, 112
+scripts/build_final_documents.py                624    624  0.00%   28-907
+scripts/build_phase3_reports.py                 770    770  0.00%   18-1246
+scripts/check_report_consistency.py             188    188  0.00%   16-267
+scripts/classify_tests.py                        80     80  0.00%   22-118
+scripts/run_manual_validation_automation.py    1069   1069  0.00%   18-1421
+scripts/run_regression_suite.py                  58     58  0.00%   16-105
+scripts/schedule_daily_backup.py                 75     38 49.33%   95-108, 116, 125-193, 200
+scripts/verify_final_documentation.py           181    181  0.00%   11-334
+---------------------------------------------------------------------------
+TOTAL                                          3080   3021  1.92%

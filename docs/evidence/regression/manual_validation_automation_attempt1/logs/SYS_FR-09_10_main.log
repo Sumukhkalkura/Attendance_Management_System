@@ -1,0 +1,9 @@
+08:27:51.552 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:27:51.557 navigated: http://127.0.0.1:5001/login
+08:27:51.770 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:27:51.772 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+08:27:51.775 navigated: http://127.0.0.1:5001/admin
+08:27:51.800 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:27:52.374 navigated: http://127.0.0.1:5001/admin#enrollments
+08:27:52.779 response: 409 POST http://127.0.0.1:5001/api/enrollments cache-control='no-store'
+08:27:52.780 console.error: Failed to load resource: the server responded with a status of 409 (CONFLICT)
