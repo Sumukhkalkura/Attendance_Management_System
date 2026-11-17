@@ -1,0 +1,24 @@
+03:42:21.415 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:21.419 navigated: http://127.0.0.1:5001/login
+03:42:21.627 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+03:42:21.629 response: 200 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+03:42:21.632 navigated: http://127.0.0.1:5001/teacher
+03:42:21.661 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+03:42:22.462 navigated: http://127.0.0.1:5001/teacher#percentages
+03:42:23.027 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:23.032 navigated: http://127.0.0.1:5001/login
+03:42:23.047 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:23.050 navigated: http://127.0.0.1:5001/login
+03:42:23.189 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+03:42:23.192 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+03:42:23.195 navigated: http://127.0.0.1:5001/admin
+03:42:23.206 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+03:42:23.957 navigated: http://127.0.0.1:5001/admin#attendance
+03:42:25.009 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:25.013 navigated: http://127.0.0.1:5001/login
+03:42:25.030 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:25.036 navigated: http://127.0.0.1:5001/login
+03:42:25.189 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+03:42:25.192 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+03:42:25.194 navigated: http://127.0.0.1:5001/admin
+03:42:25.205 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o

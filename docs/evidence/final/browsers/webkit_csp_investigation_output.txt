@@ -1,0 +1,6 @@
+webkit   /admin    console errors: 15  <select> elements: 14
+webkit   /teacher  console errors: 7  <select> elements: 6
+webkit   /student  console errors: 3  <select> elements: 2
+chromium /admin    console errors: 0  <select> elements: 14
+chromium /teacher  console errors: 0  <select> elements: 6
+chromium /student  console errors: 0  <select> elements: 2

@@ -1,0 +1,34 @@
+@startuml SAD_seq_mark_attendance_1
+!include _style.iuml
+title Sequence Diagram 1, Part 1 - Teacher loads the class roster (FR-02)
+autonumber
+hide footbox
+actor Teacher
+participant "Browser\n(teacher.js)" as B
+participant "login_required\n(app/auth.py)" as A
+participant "class_roster\n(api/attendance_records.py)" as R
+database "SQLite\n(attendance.db)" as DB
+
+Teacher -> B : choose class, subject, date;\nclick "Load students"
+B -> A : GET /api/roster?class_id&subject_id&attendance_date\n(session cookie)
+A -> DB : SELECT user by session user_id
+DB --> A : user row
+A -> A : check active, password fingerprint,\nrole in [teacher, admin]
+alt not logged in / session invalid
+  A --> B : 401 Authentication required
+else wrong role
+  A --> B : 403 Access denied
+end
+A -> R : class_roster()
+R -> R : validate class_id, subject_id,\ndate (parse_date)
+R -> DB : SELECT class; SELECT subject (teacher_id)
+alt class or subject not found
+  R --> B : 404 not found
+else subject not assigned to this teacher
+  R --> B : 403 teacher not assigned to this subject
+end
+R -> DB : SELECT enrolled students\nLEFT JOIN attendance for that date
+DB --> R : roster rows
+R --> B : 200 JSON roster
+B --> Teacher : roster with Present / Absent / Late\ncontrols (existing statuses selected)
+@enduml

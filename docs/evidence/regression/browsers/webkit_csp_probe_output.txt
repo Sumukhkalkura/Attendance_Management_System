@@ -1,0 +1,6 @@
+webkit   /admin    selects=19 console_errors=0 violations=0
+webkit   /teacher  selects=11 console_errors=0 violations=0
+webkit   /student  selects=2 console_errors=0 violations=0
+chromium /admin    selects=19 console_errors=0 violations=0
+chromium /teacher  selects=11 console_errors=0 violations=0
+chromium /student  selects=2 console_errors=0 violations=0

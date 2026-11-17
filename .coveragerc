@@ -1,0 +1,28 @@
+# Coverage configuration for Deliverable 3 (Code Coverage / Branch Coverage Reports).
+# Measures the application package (app/) and the two NFR-03 operational
+# scripts that the test suite imports. Documentation, seeding and benchmark
+# tooling in scripts/ is omitted because it is not application code.
+[run]
+source =
+    app
+    scripts
+omit =
+    scripts/build_test_case_document.py
+    scripts/case_catalog.py
+    scripts/summarize_junit.py
+    scripts/seed_demo_data.py
+    scripts/backend_performance_bench.py
+    scripts/run_browser_benchmarks.py
+    scripts/build_final_documents.py
+    scripts/build_phase3_reports.py
+    scripts/check_report_consistency.py
+    scripts/classify_tests.py
+    scripts/run_manual_validation_automation.py
+    scripts/run_regression_suite.py
+    scripts/verify_final_documentation.py
+relative_files = True
+
+[report]
+show_missing = True
+skip_empty = False
+precision = 2

@@ -45,16 +45,29 @@ SUPPORTED_BROWSERS = {
     "chrome": ("chromium", "chrome"),
     "edge": ("chromium", "msedge"),
     "firefox": ("firefox", None),
+    # Opt-in only (Deliverable 3): Playwright's managed Chromium build and its
+    # WebKit build. WebKit is the Safari engine but is NOT the Safari browser.
+    "chromium": ("chromium", None),
+    "webkit": ("webkit", None),
 }
+
+# Browsers run when NFR05_BROWSERS is not set (unchanged from before).
+DEFAULT_BROWSERS = ("chrome", "edge", "firefox")
 
 SELECTED_BROWSERS = [
     name.strip()
-    for name in os.environ.get("NFR05_BROWSERS", ",".join(SUPPORTED_BROWSERS)).split(",")
+    for name in os.environ.get("NFR05_BROWSERS", ",".join(DEFAULT_BROWSERS)).split(",")
     if name.strip()
 ]
 
 # Each browser marks a different past date so the shared server stays isolated.
-MARK_DATES = {"chrome": "2026-10-05", "edge": "2026-10-06", "firefox": "2026-10-07"}
+MARK_DATES = {
+    "chrome": "2026-10-05",
+    "edge": "2026-10-06",
+    "firefox": "2026-10-07",
+    "chromium": "2026-10-08",
+    "webkit": "2026-10-09",
+}
 
 # Measured browser versions, reported at the end of the module.
 BROWSER_VERSIONS = {}

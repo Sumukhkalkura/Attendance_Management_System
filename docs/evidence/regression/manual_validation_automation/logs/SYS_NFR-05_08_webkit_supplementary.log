@@ -1,0 +1,27 @@
+08:30:30.264 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:30:30.266 navigated: http://127.0.0.1:5001/login
+08:30:30.563 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:30:30.568 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+08:30:30.572 navigated: http://127.0.0.1:5001/admin
+08:30:31.194 navigated: http://127.0.0.1:5001/admin#users
+08:30:32.054 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+08:30:32.546 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:30:32.549 navigated: http://127.0.0.1:5001/login
+08:30:32.568 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:30:32.570 navigated: http://127.0.0.1:5001/login
+08:30:32.750 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:30:32.756 response: 200 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+08:30:32.758 navigated: http://127.0.0.1:5001/teacher
+08:30:33.359 navigated: http://127.0.0.1:5001/teacher#mark
+08:30:34.056 navigated: http://127.0.0.1:5001/teacher#records
+08:30:34.831 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+08:30:35.485 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:30:35.489 navigated: http://127.0.0.1:5001/login
+08:30:35.507 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:30:35.510 navigated: http://127.0.0.1:5001/login
+08:30:35.679 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:30:35.683 response: 200 GET http://127.0.0.1:5001/student cache-control='no-store'
+08:30:35.685 navigated: http://127.0.0.1:5001/student
+08:30:36.229 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.
+08:30:36.356 navigated: http://127.0.0.1:5001/student#history
+08:30:36.522 console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.

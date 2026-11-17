@@ -1,0 +1,406 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.7, pytest-9.1.1, pluggy-1.7.0 -- /Users/sumukhkalkura/Attendance_Management_System/.venv/bin/python
+rootdir: /Users/sumukhkalkura/Attendance_Management_System
+collecting ... collected 7 items
+
+tests/test_nfr05_browser_compatibility.py::test_login_page_validation_and_role_redirect[webkit] PASSED [ 14%]
+tests/test_nfr05_browser_compatibility.py::test_login_page_validation_and_role_redirect[webkit] ERROR [ 14%]
+tests/test_nfr05_browser_compatibility.py::test_teacher_marks_corrects_attendance_and_logs_out[webkit] PASSED [ 28%]
+tests/test_nfr05_browser_compatibility.py::test_teacher_marks_corrects_attendance_and_logs_out[webkit] ERROR [ 28%]
+tests/test_nfr05_browser_compatibility.py::test_student_views_own_attendance[webkit] PASSED [ 42%]
+tests/test_nfr05_browser_compatibility.py::test_student_views_own_attendance[webkit] ERROR [ 42%]
+tests/test_nfr05_browser_compatibility.py::test_admin_creates_user_through_dialog[webkit] PASSED [ 57%]
+tests/test_nfr05_browser_compatibility.py::test_admin_creates_user_through_dialog[webkit] ERROR [ 57%]
+tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[webkit-1280-800] PASSED [ 71%]
+tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[webkit-1280-800] ERROR [ 71%]
+tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[webkit-375-812] PASSED [ 85%]
+tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[webkit-375-812] ERROR [ 85%]
+tests/test_nfr05_browser_compatibility.py::test_report_tested_browser_versions PASSED [100%]
+
+==================================== ERRORS ====================================
+__ ERROR at teardown of test_login_page_validation_and_role_redirect[webkit] ___
+
+browser = <Browser type=<BrowserType name=webkit executable_path=/Users/sumukhkalkura/Library/Caches/ms-playwright/webkit-2370/pw_run.sh> version=27.2>
+
+    @pytest.fixture
+    def page(browser):
+        """A fresh browser context that records any JavaScript error on the page."""
+        context = browser.new_context(viewport={"width": 1280, "height": 800})
+        pg = context.new_page()
+        pg.set_default_timeout(10_000)
+        errors = []
+        pg.on("pageerror", lambda exc: errors.append(f"pageerror: {exc}"))
+        pg.on("console", lambda msg: errors.append(f"console.error: {msg.text}") if msg.type == "error" else None)
+        pg.js_errors = errors
+    
+        yield pg
+    
+        context.close()
+>       assert not errors, f"{browser.nfr05_name} reported JavaScript errors: {errors}"
+E       AssertionError: webkit reported JavaScript errors: ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy."]
+E       assert not ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy."]
+
+tests/test_nfr05_browser_compatibility.py:195: AssertionError
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /api/attendance/alerts HTTP/1.1" 200 -
+_ ERROR at teardown of test_teacher_marks_corrects_attendance_and_logs_out[webkit] _
+
+browser = <Browser type=<BrowserType name=webkit executable_path=/Users/sumukhkalkura/Library/Caches/ms-playwright/webkit-2370/pw_run.sh> version=27.2>
+
+    @pytest.fixture
+    def page(browser):
+        """A fresh browser context that records any JavaScript error on the page."""
+        context = browser.new_context(viewport={"width": 1280, "height": 800})
+        pg = context.new_page()
+        pg.set_default_timeout(10_000)
+        errors = []
+        pg.on("pageerror", lambda exc: errors.append(f"pageerror: {exc}"))
+        pg.on("console", lambda msg: errors.append(f"console.error: {msg.text}") if msg.type == "error" else None)
+        pg.js_errors = errors
+    
+        yield pg
+    
+        context.close()
+>       assert not errors, f"{browser.nfr05_name} reported JavaScript errors: {errors}"
+E       AssertionError: webkit reported JavaScript errors: ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy."]
+E       assert not ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy."]
+
+tests/test_nfr05_browser_compatibility.py:195: AssertionError
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/attendance/alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/roster?class_id=1&subject_id=1&attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "[35m[1mPOST /api/attendance HTTP/1.1[0m" 201 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/roster?class_id=1&subject_id=1&attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/attendance?attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/attendance?attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/attendance?attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "PATCH /api/attendance/5 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /api/attendance?attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "POST /api/logout HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "[32mGET /teacher HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/css/app.css HTTP/1.1" 200 -
+________ ERROR at teardown of test_student_views_own_attendance[webkit] ________
+
+browser = <Browser type=<BrowserType name=webkit executable_path=/Users/sumukhkalkura/Library/Caches/ms-playwright/webkit-2370/pw_run.sh> version=27.2>
+
+    @pytest.fixture
+    def page(browser):
+        """A fresh browser context that records any JavaScript error on the page."""
+        context = browser.new_context(viewport={"width": 1280, "height": 800})
+        pg = context.new_page()
+        pg.set_default_timeout(10_000)
+        errors = []
+        pg.on("pageerror", lambda exc: errors.append(f"pageerror: {exc}"))
+        pg.on("console", lambda msg: errors.append(f"console.error: {msg.text}") if msg.type == "error" else None)
+        pg.js_errors = errors
+    
+        yield pg
+    
+        context.close()
+>       assert not errors, f"{browser.nfr05_name} reported JavaScript errors: {errors}"
+E       AssertionError: webkit reported JavaScript errors: ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy."]
+E       assert not ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy."]
+
+tests/test_nfr05_browser_compatibility.py:195: AssertionError
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /student HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/js/student.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /api/attendance HTTP/1.1" 200 -
+_____ ERROR at teardown of test_admin_creates_user_through_dialog[webkit] ______
+
+browser = <Browser type=<BrowserType name=webkit executable_path=/Users/sumukhkalkura/Library/Caches/ms-playwright/webkit-2370/pw_run.sh> version=27.2>
+
+    @pytest.fixture
+    def page(browser):
+        """A fresh browser context that records any JavaScript error on the page."""
+        context = browser.new_context(viewport={"width": 1280, "height": 800})
+        pg = context.new_page()
+        pg.set_default_timeout(10_000)
+        errors = []
+        pg.on("pageerror", lambda exc: errors.append(f"pageerror: {exc}"))
+        pg.on("console", lambda msg: errors.append(f"console.error: {msg.text}") if msg.type == "error" else None)
+        pg.js_errors = errors
+    
+        yield pg
+    
+        context.close()
+>       assert not errors, f"{browser.nfr05_name} reported JavaScript errors: {errors}"
+E       AssertionError: webkit reported JavaScript errors: ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy."]
+E       assert not ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", ...]
+
+tests/test_nfr05_browser_compatibility.py:195: AssertionError
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /admin HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /static/js/admin.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/me HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/users HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/attendance/alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/classes/2/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/classes/1/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/users HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "[35m[1mPOST /api/users HTTP/1.1[0m" 201 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/users HTTP/1.1" 200 -
+_ ERROR at teardown of test_dashboard_layout_has_no_horizontal_overflow[webkit-1280-800] _
+
+browser = <Browser type=<BrowserType name=webkit executable_path=/Users/sumukhkalkura/Library/Caches/ms-playwright/webkit-2370/pw_run.sh> version=27.2>
+
+    @pytest.fixture
+    def page(browser):
+        """A fresh browser context that records any JavaScript error on the page."""
+        context = browser.new_context(viewport={"width": 1280, "height": 800})
+        pg = context.new_page()
+        pg.set_default_timeout(10_000)
+        errors = []
+        pg.on("pageerror", lambda exc: errors.append(f"pageerror: {exc}"))
+        pg.on("console", lambda msg: errors.append(f"console.error: {msg.text}") if msg.type == "error" else None)
+        pg.js_errors = errors
+    
+        yield pg
+    
+        context.close()
+>       assert not errors, f"{browser.nfr05_name} reported JavaScript errors: {errors}"
+E       AssertionError: webkit reported JavaScript errors: ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy."]
+E       assert not ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy."]
+
+tests/test_nfr05_browser_compatibility.py:195: AssertionError
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/attendance/alerts HTTP/1.1" 200 -
+_ ERROR at teardown of test_dashboard_layout_has_no_horizontal_overflow[webkit-375-812] _
+
+browser = <Browser type=<BrowserType name=webkit executable_path=/Users/sumukhkalkura/Library/Caches/ms-playwright/webkit-2370/pw_run.sh> version=27.2>
+
+    @pytest.fixture
+    def page(browser):
+        """A fresh browser context that records any JavaScript error on the page."""
+        context = browser.new_context(viewport={"width": 1280, "height": 800})
+        pg = context.new_page()
+        pg.set_default_timeout(10_000)
+        errors = []
+        pg.on("pageerror", lambda exc: errors.append(f"pageerror: {exc}"))
+        pg.on("console", lambda msg: errors.append(f"console.error: {msg.text}") if msg.type == "error" else None)
+        pg.js_errors = errors
+    
+        yield pg
+    
+        context.close()
+>       assert not errors, f"{browser.nfr05_name} reported JavaScript errors: {errors}"
+E       AssertionError: webkit reported JavaScript errors: ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy."]
+E       assert not ["console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy.", "console.error: Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' appears in neither the style-src directive nor the default-src directive of the Content Security Policy."]
+
+tests/test_nfr05_browser_compatibility.py:195: AssertionError
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/attendance/alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/classes HTTP/1.1" 200 -
+==================================== PASSES ====================================
+_____________ test_login_page_validation_and_role_redirect[webkit] _____________
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:54] "GET /api/attendance/alerts HTTP/1.1" 200 -
+_________ test_teacher_marks_corrects_attendance_and_logs_out[webkit] __________
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/attendance/alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/roster?class_id=1&subject_id=1&attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "[35m[1mPOST /api/attendance HTTP/1.1[0m" 201 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/roster?class_id=1&subject_id=1&attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/attendance?attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/attendance?attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:55] "GET /api/attendance?attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "PATCH /api/attendance/5 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /api/attendance?attendance_date=2026-10-09 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "POST /api/logout HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "[32mGET /teacher HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/css/app.css HTTP/1.1" 200 -
+__________________ test_student_views_own_attendance[webkit] ___________________
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /student HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /static/js/student.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:56] "GET /api/attendance HTTP/1.1" 200 -
+________________ test_admin_creates_user_through_dialog[webkit] ________________
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /admin HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /static/js/admin.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/me HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/users HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/attendance/alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/classes/2/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/classes/1/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/users HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "[35m[1mPOST /api/users HTTP/1.1[0m" 201 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:57] "GET /api/users HTTP/1.1" 200 -
+______ test_dashboard_layout_has_no_horizontal_overflow[webkit-1280-800] _______
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/attendance/alerts HTTP/1.1" 200 -
+_______ test_dashboard_layout_has_no_horizontal_overflow[webkit-375-812] _______
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/attendance/alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [11/Nov/2026 09:34:58] "GET /api/teacher/classes HTTP/1.1" 200 -
+_____________________ test_report_tested_browser_versions ______________________
+----------------------------- Captured stdout call -----------------------------
+NFR-05 tested webkit: webkit 27.2
+- generated xml file: /Users/sumukhkalkura/Attendance_Management_System/docs/evidence/final/browsers/webkit_junit.xml -
+=========================== short test summary info ============================
+PASSED tests/test_nfr05_browser_compatibility.py::test_login_page_validation_and_role_redirect[webkit]
+PASSED tests/test_nfr05_browser_compatibility.py::test_teacher_marks_corrects_attendance_and_logs_out[webkit]
+PASSED tests/test_nfr05_browser_compatibility.py::test_student_views_own_attendance[webkit]
+PASSED tests/test_nfr05_browser_compatibility.py::test_admin_creates_user_through_dialog[webkit]
+PASSED tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[webkit-1280-800]
+PASSED tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[webkit-375-812]
+PASSED tests/test_nfr05_browser_compatibility.py::test_report_tested_browser_versions
+ERROR tests/test_nfr05_browser_compatibility.py::test_login_page_validation_and_role_redirect[webkit]
+ERROR tests/test_nfr05_browser_compatibility.py::test_teacher_marks_corrects_attendance_and_logs_out[webkit]
+ERROR tests/test_nfr05_browser_compatibility.py::test_student_views_own_attendance[webkit]
+ERROR tests/test_nfr05_browser_compatibility.py::test_admin_creates_user_through_dialog[webkit]
+ERROR tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[webkit-1280-800]
+ERROR tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[webkit-375-812]
+========================= 7 passed, 6 errors in 11.30s =========================

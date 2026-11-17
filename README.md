@@ -1,6 +1,10 @@
-# Attendance Management System — Sprint 1 Starter
+# Attendance Management System
 
-This is a **starter scaffold**, not a completed Attendance Management System.
+A Flask web application for recording and managing student attendance, with
+role-based dashboards for administrators, teachers and students. Requirements
+FR-01 to FR-15 and NFR-01 to NFR-06 (see `Documents/SRS.pdf`) were implemented
+across Sprints 1–3 (GitHub issues #1–#21, PRs #22–#48). Known frontend gaps
+are listed in [docs/Test_Case_Document.md](docs/Test_Case_Document.md#5-known-gaps-found-while-updating).
 
 ## Local setup
 
@@ -22,9 +26,46 @@ Open http://127.0.0.1:5000/ and http://127.0.0.1:5000/api/health.
 - `app/routes.py`: backward-compatible re-exports of the old API module (no logic)
 - `app/db.py`: SQLite data layer
 - `app/__init__.py`: Flask application factory
-- `tests/test_foundation.py`: implemented scaffold checks
-- `tests/test_sprint1_requirements.py`: **skipped** requirements checklist; implement tests with each feature
+- `app/pages.py`, `app/templates/`, `app/static/`: login page and role-based dashboards
+- `tests/`: pytest suite, one file per requirement (`test_fr01_*.py` … `test_nfr06_*.py`)
+- `tests/test_sprint1_requirements.py`: original Sprint 1 checklist; 7 placeholders remain **skipped** on purpose
+  (their replacement tests are listed in the Test Case Document, section 6)
+- `scripts/`: demo seeding, backups, benchmarks, and the Test Case Document builder
 - `.github/workflows/tests.yml`: run pytest on pushes and pull requests
+
+## Testing documentation
+
+- [docs/Test_Case_Document.md](docs/Test_Case_Document.md) and
+  `docs/Test_Case_Document.xlsx`: updated test cases (197 cases, current
+  version in the document header). They keep all 75 original IDs from
+  `Documents/Test_Plan.pdf` and add cases for every remaining requirement.
+- Reports: [Unit Test Report](docs/Unit_Test_Report.md),
+  [System Validation Report](docs/System_Validation_Report.md),
+  [Code Coverage Report](docs/Code_Coverage_Report.md) and
+  [Branch Coverage Report](docs/Branch_Coverage_Report.md).
+- `docs/manual_validation/`: manual test checklists for each team member
+  (generated from the same catalogue; the 19 cases were executed by Playwright automation,
+  instructor-approved, with results in `docs/Manual_Validation_Automation_Report.md`).
+- `docs/evidence/`: raw pytest logs and JUnit XML (`baseline/`, `final/`,
+  `final/browsers/`), coverage data (`coverage/`) and Phase 3 checks
+  (`phase3/`). Summarise any JUnit file with
+  `python scripts/summarize_junit.py <path>/junit.xml`.
+- Statuses in the document are derived from the JUnit evidence, never typed in by hand.
+  All of these files are generated from `scripts/case_catalog.py`:
+
+```bash
+python -m pip install -r requirements-dev.txt
+python scripts/build_test_case_document.py
+```
+
+Coverage (configuration in `.coveragerc`; `--cov-branch` adds branch coverage).
+The four reports are then rebuilt from the saved evidence and cross-checked:
+
+```bash
+python -m pytest --cov --cov-branch --cov-config=.coveragerc --cov-report=term-missing
+python scripts/build_phase3_reports.py
+python docs/evidence/phase3/verify_reports.py
+```
 
 ## NFR-06: Maintainability
 
@@ -59,21 +100,23 @@ python -m pytest tests/test_nfr05_browser_compatibility.py tests/test_nfr05_impl
 ```
 
 Set `NFR05_BROWSERS` (for example `chrome,edge`) to run a subset of browsers.
+Two extra names are available on request only: `chromium` (Playwright's
+managed Chromium) and `webkit` (Playwright WebKit, the Safari engine; this is
+not the Safari application). Install them with
+`python -m playwright install chromium webkit`.
 
 ## Important limitations
 
-Authentication, authorization, session handling, admin workflows, attendance operations,
-percentages, backups and production HTTPS are **not yet implemented**. Placeholder routes
-return HTTP 501. The sample schema uses a placeholder password hash in one database test;
-never use this pattern for real user passwords. Before deployment, replace the development
-secret, add proper password hashing, secure session handling, HTTPS, and authorization.
-
-## Suggested feature branches
-
-`feature/fr01-auth`, `feature/fr07-users`, `feature/fr08-classes`,
-`feature/fr09-enrollment`, `feature/fr15-logout`, `feature/fr02-marking`,
-`feature/fr03-records`, `feature/fr04-percentage`, `feature/fr05-viewing`,
-`feature/nfr01-security`, `feature/nfr02-performance`, `feature/nfr03-reliability`.
+- **HTTPS is not provided by the app.** The built-in server is plain HTTP for
+  local development. Deploy behind HTTPS and set `FLASK_COOKIE_SECURE=1` so the
+  session cookie is only sent over HTTPS.
+- Set `FLASK_SECRET_KEY` in deployment; otherwise a random key is generated at
+  start-up and sessions do not survive a restart.
+- Some features are available through the REST API only. There is no reporting
+  screen, no export button and no threshold setting in the dashboards (see the
+  gap register in the Test Case Document).
+- `GET /` still returns a placeholder JSON message; use `/login` for the user
+  interface.
 
 Run tests and review pull requests before merging. Skipped tests do not count as passing acceptance tests.
 

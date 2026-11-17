@@ -1,0 +1,28 @@
+Run: regression (after fixing SYS_FR-04_11, SYS_FR-05_10, SYS_FR-06_08, SYS_FR-10_10, SYS_FR-12_10, SYS_NFR-05_04)
+Git branch: feature/deliverable-3-testing  HEAD: dd96a2c  (uncommitted changes in app/, tests/, scripts/, docs/)
+OS: macOS-27.0-arm64-arm-64bit-Mach-O
+Python: 3.13.7
+coverage==7.17.2
+Flask==3.1.3
+Jinja2==3.1.6
+openpyxl==3.1.5
+playwright==1.65.2
+pytest==9.1.1
+pytest-cov==7.1.0
+Werkzeug==3.1.9
+Playwright browsers: .links chromium-1255 chromium_headless_shell-1255 ffmpeg-1013 firefox-1572 webkit-2388
+Google Chrome: Google Chrome 157.0.8103.79
+Microsoft Edge: not installed (installation not approved)
+Playwright upgraded 1.64.1 -> 1.65.2 for this run (approved): WebKit build r2370 -> r2388 (contains the upstream fix for the <select> CSP false positive)
+attendance.db sha256 before: df6b0f51568511668bc629e3fed0845646eca18fcb99c56c1e784717dbcf838c
+attendance.db sha256 after:  df6b0f51568511668bc629e3fed0845646eca18fcb99c56c1e784717dbcf838c  (unchanged: True)
+Regression run started 2026-11-17 08:31:26 (local)
+full suite: exit=1 wall=269s finished=2026-11-17 08:35:55
+NFR-05 chromium: exit=0 wall=6s finished=2026-11-17 08:36:02
+NFR-05 webkit: exit=0 wall=8s finished=2026-11-17 08:36:11
+NFR-05 firefox: exit=1 wall=1s finished=2026-11-17 08:36:12
+six-failure browser tests chromium: exit=0 wall=9s finished=2026-11-17 08:36:22
+six-failure browser tests webkit: exit=0 wall=13s finished=2026-11-17 08:36:35
+coverage statement: exit=1 wall=272s finished=2026-11-17 08:41:08
+coverage branch: exit=1 wall=201s finished=2026-11-17 08:44:32
+WebKit CSP probe: exit=0 wall=7s finished=2026-11-17 08:44:41

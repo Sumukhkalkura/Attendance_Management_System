@@ -1,0 +1,22 @@
+03:42:08.962 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:08.967 navigated: http://127.0.0.1:5001/login
+03:42:09.193 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+03:42:09.195 response: 200 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+03:42:09.199 navigated: http://127.0.0.1:5001/teacher
+03:42:09.228 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+03:42:09.814 navigated: http://127.0.0.1:5001/teacher#records
+03:42:10.610 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:10.614 navigated: http://127.0.0.1:5001/login
+03:42:10.631 response: 302 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+03:42:10.633 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:10.635 navigated: http://127.0.0.1:5001/login#records
+03:42:11.745 response: 302 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+03:42:11.746 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:11.749 navigated: http://127.0.0.1:5001/login
+03:42:12.861 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:12.864 navigated: http://127.0.0.1:5001/login
+03:42:13.394 response: 302 GET http://127.0.0.1:5001/teacher cache-control='no-store'
+03:42:13.397 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+03:42:13.402 navigated: http://127.0.0.1:5001/login
+03:42:13.414 response: 401 GET http://127.0.0.1:5001/api/attendance cache-control='no-store'
+03:42:13.414 console.error: Failed to load resource: the server responded with a status of 401 (UNAUTHORIZED)

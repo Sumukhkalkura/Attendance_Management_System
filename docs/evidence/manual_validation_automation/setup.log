@@ -1,0 +1,23 @@
+Run started 2026-11-17T03:41:44
+attendance.db sha256 before: df6b0f51568511668bc629e3fed0845646eca18fcb99c56c1e784717dbcf838c
+$ python scripts/seed_demo_data.py --database validation_demo.db  (exit 0)
+Database: validation_demo.db
+New users: 11
+  admin    demo.admin
+  teacher  prof.mehta
+  teacher  prof.iyer
+  student  aarav
+  student  diya
+  student  kabir
+  student  meera
+  student  rohan
+  student  sara
+  student  vikram
+  student  zoya
+New classes: 2, subjects: 4, enrollments: 16, attendance records: 192
+Demo password for newly created users: <REDACTED>
+Saved to demo_credentials.txt (git-ignored).
+Flask started: create_app({'DATABASE': 'validation_demo.db'}).run(port=5001), pid 1456
+Browser: Google Chrome 157.0.8103.51 (Playwright channel 'chrome', headless)
+attendance.db sha256 after:  df6b0f51568511668bc629e3fed0845646eca18fcb99c56c1e784717dbcf838c  (unchanged: True)
+Run finished 2026-11-17T03:43:06

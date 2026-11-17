@@ -1,0 +1,13 @@
+Name                                          Stmts   Miss Branch BrPart  Cover   Missing
+-----------------------------------------------------------------------------------------
+scripts/backup_db.py                             35     13      6      2 63.41%   60-67, 77-105, 112
+scripts/build_final_documents.py                624    624    232      0  0.00%   28-907
+scripts/build_phase3_reports.py                 770    770    216      0  0.00%   18-1246
+scripts/check_report_consistency.py             188    188     48      0  0.00%   16-267
+scripts/classify_tests.py                        80     80     40      0  0.00%   22-118
+scripts/run_manual_validation_automation.py    1069   1069    120      0  0.00%   18-1421
+scripts/run_regression_suite.py                  58     58     12      0  0.00%   16-105
+scripts/schedule_daily_backup.py                 75     38     16      1 43.96%   95-108, 116, 125-193, 200
+scripts/verify_final_documentation.py           181    181     50      0  0.00%   11-334
+-----------------------------------------------------------------------------------------
+TOTAL                                          3080   3021    740      3  1.73%

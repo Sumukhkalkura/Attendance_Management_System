@@ -1,0 +1,21 @@
+08:27:38.750 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:27:38.754 navigated: http://127.0.0.1:5001/login
+08:27:39.059 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:27:39.076 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+08:27:39.082 navigated: http://127.0.0.1:5001/admin
+08:27:39.113 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:27:39.716 navigated: http://127.0.0.1:5001/admin#users
+08:27:42.143 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:27:42.150 navigated: http://127.0.0.1:5001/login
+08:27:42.164 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:27:42.168 requestfailed: GET http://127.0.0.1:5001/static/favicon.svg net::ERR_ABORTED
+08:27:42.168 navigated: http://127.0.0.1:5001/login
+08:27:42.249 response: 401 POST http://127.0.0.1:5001/api/login cache-control='no-store'
+08:27:42.249 console.error: Failed to load resource: the server responded with a status of 401 (UNAUTHORIZED)
+08:27:42.428 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:27:42.432 navigated: http://127.0.0.1:5001/login
+08:27:42.573 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:27:42.575 response: 200 GET http://127.0.0.1:5001/admin cache-control='no-store'
+08:27:42.578 navigated: http://127.0.0.1:5001/admin
+08:27:42.589 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:27:43.156 navigated: http://127.0.0.1:5001/admin#users

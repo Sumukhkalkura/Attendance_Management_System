@@ -1,0 +1,41 @@
+@startuml SAD_seq_student_percentage
+!include _style.iuml
+title Sequence Diagram 2 - Student views attendance percentage (FR-04, FR-05, FR-14)
+autonumber
+hide footbox
+actor Student
+participant "Browser\n(student.js)" as B
+participant "Page route\n/student (app/pages.py)" as P
+participant "login_required\n(app/auth.py)" as A
+participant "view_attendance\n(api/attendance_view.py)" as V
+database "SQLite\n(attendance.db)" as DB
+
+Student -> B : open /student
+B -> P : GET /student
+P -> DB : SELECT user by session user_id
+alt no valid session
+  P --> B : 302 redirect to /login
+else role is not student
+  P --> B : 302 redirect to own dashboard
+end
+P --> B : 200 student.html (no attendance data)
+B -> A : GET /api/attendance (session cookie)
+A -> DB : SELECT user; check active,\nfingerprint, role
+alt not authenticated
+  A --> B : 401 -> browser goes to /login
+end
+A -> V : view_attendance()
+V -> V : role is student: force\nstudent_id = current user\n(other student_id -> 403)
+V -> DB : SELECT attendance JOIN users, subjects\nWHERE a.student_id = ? ORDER BY date DESC
+DB --> V : own records only
+V --> B : 200 {count, records[]}
+B -> B : percentOf(records):\nPresent / total x 100,\nrounded to 2 decimals
+B -> B : group by subject; counts of\nPresent, Absent, Late; ring and cards
+B --> Student : overall %, per-subject %, recent records
+note over B
+  The student percentage is calculated in the browser.
+  GET /api/attendance/percentages (server-side SQL
+  calculation) is limited to admin and teacher.
+  Displayed with two decimal places (App.formatPercent).
+end note
+@enduml

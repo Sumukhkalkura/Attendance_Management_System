@@ -1,0 +1,5 @@
+Superseded attempt (2026-11-17).
+SYS_FR-14_08 failed only because the harness's own reference value for the teacher Average card still used the
+old one-decimal rounding (round(x*1000)/10 -> 83.20%); the dashboard correctly showed 83.16% (79/95) after the
+FR-04 two-decimal fix. The harness reference was corrected and the full run repeated in
+docs/evidence/regression/manual_validation_automation/ (the run of record). All 19 results of this attempt are kept unchanged.

@@ -1,0 +1,735 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.7, pytest-9.1.1, pluggy-1.7.0 -- /Users/sumukhkalkura/Attendance_Management_System/.venv/bin/python
+rootdir: /Users/sumukhkalkura/Attendance_Management_System
+collecting ... collected 7 items
+
+tests/test_nfr05_browser_compatibility.py::test_login_page_validation_and_role_redirect[firefox] ERROR [ 14%]
+tests/test_nfr05_browser_compatibility.py::test_teacher_marks_corrects_attendance_and_logs_out[firefox] ERROR [ 28%]
+tests/test_nfr05_browser_compatibility.py::test_student_views_own_attendance[firefox] ERROR [ 42%]
+tests/test_nfr05_browser_compatibility.py::test_admin_creates_user_through_dialog[firefox] ERROR [ 57%]
+tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[firefox-1280-800] ERROR [ 71%]
+tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[firefox-375-812] ERROR [ 85%]
+tests/test_nfr05_browser_compatibility.py::test_report_tested_browser_versions FAILED [100%]
+
+==================================== ERRORS ====================================
+___ ERROR at setup of test_login_page_validation_and_role_redirect[firefox] ____
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+>           instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_nfr05_browser_compatibility.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/playwright/sync_api/_generated.py:4103: in launch
+    self._sync(
+.venv/lib/python3.13/site-packages/playwright/_impl/_browser_type.py:101: in launch
+    await self._channel.send(
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:78: in send
+    return await self._connection.wrap_api_call(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x10767ecf0>
+cb = <function Channel.send.<locals>.<lambda> at 0x10773a200>
+is_internal = False, title = None
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        parsed_st = _attach_api_call_information(
+            getattr(task, "__pw_stack__", None) or _capture_stack_trace(),
+            is_internal,
+            title,
+        )
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.Error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:636: Error
+
+During handling of the above exception, another exception occurred:
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+            instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+        except Exception as err:
+            install = channel or engine
+>           pytest.fail(
+                f"NFR-05 requires {name} but it could not be launched. "
+                f"Install it with 'python -m playwright install {install}'. Original error: {err}"
+            )
+E           Failed: NFR-05 requires firefox but it could not be launched. Install it with 'python -m playwright install firefox'. Original error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+tests/test_nfr05_browser_compatibility.py:170: Failed
+_ ERROR at setup of test_teacher_marks_corrects_attendance_and_logs_out[firefox] _
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+>           instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_nfr05_browser_compatibility.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/playwright/sync_api/_generated.py:4103: in launch
+    self._sync(
+.venv/lib/python3.13/site-packages/playwright/_impl/_browser_type.py:101: in launch
+    await self._channel.send(
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:78: in send
+    return await self._connection.wrap_api_call(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x10767ecf0>
+cb = <function Channel.send.<locals>.<lambda> at 0x10773a200>
+is_internal = False, title = None
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        parsed_st = _attach_api_call_information(
+            getattr(task, "__pw_stack__", None) or _capture_stack_trace(),
+            is_internal,
+            title,
+        )
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.Error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:636: Error
+
+During handling of the above exception, another exception occurred:
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+            instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+        except Exception as err:
+            install = channel or engine
+>           pytest.fail(
+                f"NFR-05 requires {name} but it could not be launched. "
+                f"Install it with 'python -m playwright install {install}'. Original error: {err}"
+            )
+E           Failed: NFR-05 requires firefox but it could not be launched. Install it with 'python -m playwright install firefox'. Original error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+tests/test_nfr05_browser_compatibility.py:170: Failed
+_________ ERROR at setup of test_student_views_own_attendance[firefox] _________
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+>           instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_nfr05_browser_compatibility.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/playwright/sync_api/_generated.py:4103: in launch
+    self._sync(
+.venv/lib/python3.13/site-packages/playwright/_impl/_browser_type.py:101: in launch
+    await self._channel.send(
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:78: in send
+    return await self._connection.wrap_api_call(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x10767ecf0>
+cb = <function Channel.send.<locals>.<lambda> at 0x10773a200>
+is_internal = False, title = None
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        parsed_st = _attach_api_call_information(
+            getattr(task, "__pw_stack__", None) or _capture_stack_trace(),
+            is_internal,
+            title,
+        )
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.Error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:636: Error
+
+During handling of the above exception, another exception occurred:
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+            instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+        except Exception as err:
+            install = channel or engine
+>           pytest.fail(
+                f"NFR-05 requires {name} but it could not be launched. "
+                f"Install it with 'python -m playwright install {install}'. Original error: {err}"
+            )
+E           Failed: NFR-05 requires firefox but it could not be launched. Install it with 'python -m playwright install firefox'. Original error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+tests/test_nfr05_browser_compatibility.py:170: Failed
+______ ERROR at setup of test_admin_creates_user_through_dialog[firefox] _______
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+>           instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_nfr05_browser_compatibility.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/playwright/sync_api/_generated.py:4103: in launch
+    self._sync(
+.venv/lib/python3.13/site-packages/playwright/_impl/_browser_type.py:101: in launch
+    await self._channel.send(
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:78: in send
+    return await self._connection.wrap_api_call(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x10767ecf0>
+cb = <function Channel.send.<locals>.<lambda> at 0x10773a200>
+is_internal = False, title = None
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        parsed_st = _attach_api_call_information(
+            getattr(task, "__pw_stack__", None) or _capture_stack_trace(),
+            is_internal,
+            title,
+        )
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.Error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:636: Error
+
+During handling of the above exception, another exception occurred:
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+            instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+        except Exception as err:
+            install = channel or engine
+>           pytest.fail(
+                f"NFR-05 requires {name} but it could not be launched. "
+                f"Install it with 'python -m playwright install {install}'. Original error: {err}"
+            )
+E           Failed: NFR-05 requires firefox but it could not be launched. Install it with 'python -m playwright install firefox'. Original error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+tests/test_nfr05_browser_compatibility.py:170: Failed
+_ ERROR at setup of test_dashboard_layout_has_no_horizontal_overflow[firefox-1280-800] _
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+>           instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_nfr05_browser_compatibility.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/playwright/sync_api/_generated.py:4103: in launch
+    self._sync(
+.venv/lib/python3.13/site-packages/playwright/_impl/_browser_type.py:101: in launch
+    await self._channel.send(
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:78: in send
+    return await self._connection.wrap_api_call(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x10767ecf0>
+cb = <function Channel.send.<locals>.<lambda> at 0x10773a200>
+is_internal = False, title = None
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        parsed_st = _attach_api_call_information(
+            getattr(task, "__pw_stack__", None) or _capture_stack_trace(),
+            is_internal,
+            title,
+        )
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.Error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:636: Error
+
+During handling of the above exception, another exception occurred:
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+            instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+        except Exception as err:
+            install = channel or engine
+>           pytest.fail(
+                f"NFR-05 requires {name} but it could not be launched. "
+                f"Install it with 'python -m playwright install {install}'. Original error: {err}"
+            )
+E           Failed: NFR-05 requires firefox but it could not be launched. Install it with 'python -m playwright install firefox'. Original error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+tests/test_nfr05_browser_compatibility.py:170: Failed
+_ ERROR at setup of test_dashboard_layout_has_no_horizontal_overflow[firefox-375-812] _
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+>           instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_nfr05_browser_compatibility.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/playwright/sync_api/_generated.py:4103: in launch
+    self._sync(
+.venv/lib/python3.13/site-packages/playwright/_impl/_browser_type.py:101: in launch
+    await self._channel.send(
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:78: in send
+    return await self._connection.wrap_api_call(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x10767ecf0>
+cb = <function Channel.send.<locals>.<lambda> at 0x10773a200>
+is_internal = False, title = None
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False, title: str = None
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        parsed_st = _attach_api_call_information(
+            getattr(task, "__pw_stack__", None) or _capture_stack_trace(),
+            is_internal,
+            title,
+        )
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.Error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+.venv/lib/python3.13/site-packages/playwright/_impl/_connection.py:636: Error
+
+During handling of the above exception, another exception occurred:
+
+request = <SubRequest 'browser' for <Function test_login_page_validation_and_role_redirect[firefox]>>
+playwright_instance = <playwright._impl._playwright.Playwright object at 0x107754440>
+
+    @pytest.fixture(scope="module", params=SELECTED_BROWSERS)
+    def browser(request, playwright_instance):
+        name = request.param
+        if name not in SUPPORTED_BROWSERS:
+            pytest.fail(f"Unknown NFR05_BROWSERS entry {name!r}; expected one of {sorted(SUPPORTED_BROWSERS)}")
+    
+        engine, channel = SUPPORTED_BROWSERS[name]
+        launcher = getattr(playwright_instance, engine)
+        try:
+            instance = launcher.launch(channel=channel, headless=True) if channel else launcher.launch(headless=True)
+        except Exception as err:
+            install = channel or engine
+>           pytest.fail(
+                f"NFR-05 requires {name} but it could not be launched. "
+                f"Install it with 'python -m playwright install {install}'. Original error: {err}"
+            )
+E           Failed: NFR-05 requires firefox but it could not be launched. Install it with 'python -m playwright install firefox'. Original error: BrowserType.launch: Failed to launch the browser process.
+E           Browser logs:
+E           
+E           <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E           <launched> pid=46677
+E           [pid=46677][err] *** You are running in headless mode.
+E           [pid=46677][err] Could not find profile folder.
+E           [pid=46677] <process did exit: exitCode=1, signal=null>
+E           [pid=46677] starting temporary directories cleanup
+E           Call log:
+E             - <launching> /Users/sumukhkalkura/Library/Caches/ms-playwright/firefox-1555/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/86/blpswy594ns6sgymkgz9cq4r0000gn/T/playwright_firefoxdev_profile-OIdlrL -juggler-pipe -silent
+E             - <launched> pid=46677
+E             - [pid=46677][err] *** You are running in headless mode.
+E             - [pid=46677][err] Could not find profile folder.
+E             - [pid=46677] <process did exit: exitCode=1, signal=null>
+E             - [pid=46677] starting temporary directories cleanup
+E             - [pid=46677] <gracefully close start>
+E             - [pid=46677] <kill>
+E             - [pid=46677] <skipped force kill spawnedProcess.killed=false processClosed=true>
+E             - [pid=46677] finished temporary directories cleanup
+E             - [pid=46677] <gracefully close end>
+
+tests/test_nfr05_browser_compatibility.py:170: Failed
+=================================== FAILURES ===================================
+_____________________ test_report_tested_browser_versions ______________________
+
+    def test_report_tested_browser_versions():
+        """Record the exact engine versions exercised, for the NFR-05 evidence."""
+>       assert set(BROWSER_VERSIONS) == set(SELECTED_BROWSERS), (
+            f"Not every selected browser was exercised: {BROWSER_VERSIONS}"
+        )
+E       AssertionError: Not every selected browser was exercised: {}
+E       assert set() == {'firefox'}
+E         
+E         Extra items in the right set:
+E         'firefox'
+E         
+E         Full diff:
+E         + set()
+E         - {
+E         -     'firefox',
+E         - }
+
+tests/test_nfr05_browser_compatibility.py:394: AssertionError
+- generated xml file: /Users/sumukhkalkura/Attendance_Management_System/docs/evidence/final/browsers/firefox_junit.xml -
+=========================== short test summary info ============================
+ERROR tests/test_nfr05_browser_compatibility.py::test_login_page_validation_and_role_redirect[firefox]
+ERROR tests/test_nfr05_browser_compatibility.py::test_teacher_marks_corrects_attendance_and_logs_out[firefox]
+ERROR tests/test_nfr05_browser_compatibility.py::test_student_views_own_attendance[firefox]
+ERROR tests/test_nfr05_browser_compatibility.py::test_admin_creates_user_through_dialog[firefox]
+ERROR tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[firefox-1280-800]
+ERROR tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[firefox-375-812]
+FAILED tests/test_nfr05_browser_compatibility.py::test_report_tested_browser_versions
+========================= 1 failed, 6 errors in 2.45s ==========================

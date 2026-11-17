@@ -1,0 +1,3 @@
+Started: 2026-11-11 09:34:48 IST
+Command: NFR05_BROWSERS=webkit .venv/bin/python -m pytest -v -rA -p no:cacheprovider tests/test_nfr05_browser_compatibility.py --junitxml=docs/evidence/final/browsers/webkit_junit.xml
+exit=1 Finished: 2026-11-11 09:34:59 IST

@@ -1,0 +1,45 @@
+@startuml SAD_component
+!pragma layout smetana
+!include _style.iuml
+title UML Component Diagram - Attendance Management System (as implemented)
+top to bottom direction
+
+package "Presentation Layer (browser)" as PL {
+  component "Web UI\nlogin, admin, teacher and student\npages (app/templates) + static/js" as WebUI
+}
+
+package "Application Layer (Flask, app/)" as AL {
+  component "App factory and security middleware\napp/~__init~__.py\nCSRF origin check, security headers" as Factory
+  component "Page routes\napp/pages.py" as Pages
+  package "Feature API modules (app/api/)" as FEAT {
+    component "Admin management\nusers, academics,\nenrollments" as AdminMgr
+    component "Attendance management\nattendance_records, _view,\n_management" as AttMgr
+    component "Percentage and alerts\npercentages, alerts" as PctMgr
+    component "Reporting and export\nreports, exports\n(CSV / PDF / JSON)" as RptMgr
+  }
+  component "Auth and session\napp/auth.py, api/auth_routes.py,\napi/session_routes.py" as Auth
+  component "Validation helpers\napp/validation.py" as Valid
+}
+
+package "Data Layer" as DL {
+  component "Data access\napp/db.py (get_db, schema)" as DBA
+  database "SQLite database\nattendance.db" as DB
+}
+
+component "Backup scripts\nscripts/backup_db.py,\nschedule_daily_backup.py" as Backup
+
+WebUI --> Pages : HTTP GET pages
+WebUI --> Factory : HTTP JSON /api/*\n(session cookie)
+Factory --> FEAT : dispatch /api requests
+Factory --> Auth : /api/login, /logout,\n/me/password
+Pages ..> Auth : session check
+FEAT ..> Auth : login_required(roles)
+FEAT ..> Valid : parse_date,\nnormalize_status
+Auth ..> Valid
+FEAT --> DBA : SQL
+Auth --> DBA : SQL
+Pages --> DBA : user lookup
+DBA --> DB : sqlite3
+Backup --> DB : SQLite backup API
+
+@enduml

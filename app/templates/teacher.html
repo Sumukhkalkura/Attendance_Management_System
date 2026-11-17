@@ -6,6 +6,7 @@
 <a class="nav-link" href="#mark" data-section="mark">{{ icon("check-square") }} Mark attendance</a>
 <a class="nav-link" href="#records" data-section="records">{{ icon("calendar") }} Attendance records</a>
 <a class="nav-link" href="#percentages" data-section="percentages">{{ icon("chart") }} Percentages</a>
+<a class="nav-link" href="#reports" data-section="reports">{{ icon("report") }} Reports</a>
 {% endblock %}
 
 {% block content %}
@@ -139,6 +140,18 @@
                 <input class="input" type="date" id="recordDate">
             </label>
             <label class="field">
+                <span class="field-label">Class</span>
+                <select class="input" id="recordClass"></select>
+            </label>
+            <label class="field">
+                <span class="field-label">From</span>
+                <input class="input" type="date" id="recordFrom">
+            </label>
+            <label class="field">
+                <span class="field-label">To</span>
+                <input class="input" type="date" id="recordTo">
+            </label>
+            <label class="field">
                 <span class="field-label">Status</span>
                 <select class="input" id="recordStatus">
                     <option value="">Any status</option>
@@ -147,6 +160,7 @@
                     <option>Late</option>
                 </select>
             </label>
+            <button type="button" class="btn btn-secondary" id="recordClear">Clear filters</button>
         </div>
         <div class="table-wrap">
             <table class="table">
@@ -185,6 +199,86 @@
     </div>
 </section>
 
+
+<!-- Reports and export (FR-06 / FR-12) -->
+<section class="section" id="section-reports" hidden>
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>Generate an attendance report</h2>
+                <p>Reports cover your subjects only. Choose any combination of student, class, subject, date range and status.</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="reportForm" class="form-grid cols-3" novalidate>
+                <label class="field">
+                    <span class="field-label">Student</span>
+                    <select class="input" id="reportStudent"></select>
+                </label>
+                <label class="field">
+                    <span class="field-label">Class</span>
+                    <select class="input" id="reportClass"></select>
+                </label>
+                <label class="field">
+                    <span class="field-label">Subject</span>
+                    <select class="input" id="reportSubject"></select>
+                </label>
+                <label class="field">
+                    <span class="field-label">From</span>
+                    <input class="input" type="date" id="reportFrom">
+                </label>
+                <label class="field">
+                    <span class="field-label">To</span>
+                    <input class="input" type="date" id="reportTo">
+                </label>
+                <label class="field">
+                    <span class="field-label">Status</span>
+                    <select class="input" id="reportStatus">
+                        <option value="">Any status</option>
+                        <option>Present</option>
+                        <option>Absent</option>
+                        <option>Late</option>
+                    </select>
+                </label>
+                <p class="form-error" id="reportError" role="alert"></p>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="reportReset">Reset</button>
+                    <button type="submit" class="btn btn-primary" id="reportGenerate">{{ icon("report") }} Generate report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card" id="reportResult" hidden>
+        <div class="card-header">
+            <div>
+                <h2 id="reportTitle">Attendance report</h2>
+                <p id="reportScope"></p>
+            </div>
+            <div class="actions" role="group" aria-label="Export report">
+                <button type="button" class="btn btn-secondary btn-sm" id="reportExportCsv" data-format="csv">{{ icon("download") }} CSV</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="reportExportPdf" data-format="pdf">{{ icon("download") }} PDF</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="reportExportJson" data-format="json">{{ icon("download") }} JSON</button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="stats report-stats">
+                <div class="card stat"><div><div class="stat-label">Records</div><div class="stat-value" id="reportTotal">0</div></div></div>
+                <div class="card stat"><div><div class="stat-label">Present</div><div class="stat-value" id="reportPresent">0</div></div></div>
+                <div class="card stat"><div><div class="stat-label">Absent</div><div class="stat-value" id="reportAbsent">0</div></div></div>
+                <div class="card stat"><div><div class="stat-label">Late</div><div class="stat-value" id="reportLate">0</div></div></div>
+                <div class="card stat"><div><div class="stat-label">Attendance</div><div class="stat-value" id="reportPercent">-</div></div></div>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Date</th><th>Student</th><th>Class</th><th>Subject</th><th>Status</th></tr></thead>
+                <tbody id="reportTable"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
 {% endblock %}
 
 {% block dialogs %}
@@ -215,5 +309,6 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/reports.js') }}"></script>
 <script src="{{ url_for('static', filename='js/teacher.js') }}"></script>
 {% endblock %}

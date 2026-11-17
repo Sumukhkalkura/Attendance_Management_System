@@ -1,0 +1,30 @@
+08:29:32.342 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:29:32.347 navigated: http://127.0.0.1:5001/login
+08:29:32.573 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:29:32.578 response: 200 GET http://127.0.0.1:5001/student cache-control='no-store'
+08:29:32.583 navigated: http://127.0.0.1:5001/student
+08:29:32.611 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:29:33.534 response: 400 POST http://127.0.0.1:5001/api/me/password cache-control='no-store'
+08:29:33.535 console.error: Failed to load resource: the server responded with a status of 400 (BAD REQUEST)
+08:29:36.093 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:29:36.098 navigated: http://127.0.0.1:5001/login
+08:29:36.114 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:29:36.117 requestfailed: GET http://127.0.0.1:5001/static/favicon.svg net::ERR_ABORTED
+08:29:36.117 navigated: http://127.0.0.1:5001/login
+08:29:36.265 response: 401 POST http://127.0.0.1:5001/api/login cache-control='no-store'
+08:29:36.265 console.error: Failed to load resource: the server responded with a status of 401 (UNAUTHORIZED)
+08:29:36.371 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:29:36.373 navigated: http://127.0.0.1:5001/login
+08:29:36.522 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:29:36.524 response: 200 GET http://127.0.0.1:5001/student cache-control='no-store'
+08:29:36.526 navigated: http://127.0.0.1:5001/student
+08:29:36.537 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o
+08:29:38.026 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:29:38.029 navigated: http://127.0.0.1:5001/login
+08:29:38.045 response: 200 GET http://127.0.0.1:5001/login cache-control='no-store'
+08:29:38.049 requestfailed: GET http://127.0.0.1:5001/static/favicon.svg net::ERR_ABORTED
+08:29:38.049 navigated: http://127.0.0.1:5001/login
+08:29:38.188 response: 302 GET http://127.0.0.1:5001/dashboard cache-control='no-store'
+08:29:38.190 response: 200 GET http://127.0.0.1:5001/student cache-control='no-store'
+08:29:38.193 navigated: http://127.0.0.1:5001/student
+08:29:38.204 console.verbose: [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o

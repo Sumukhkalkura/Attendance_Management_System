@@ -1,0 +1,39 @@
+ResourceWarning allocation sites - full suite under coverage with PYTHONTRACEMALLOC=1 (Deliverable 3, Phase 3)
+Command: PYTHONTRACEMALLOC=1 .venv/bin/python -m pytest -q -p no:cacheprovider --cov --cov-branch --cov-config=.coveragerc --cov-report=
+Result line: 1 failed, 836 passed, 7 skipped, 566 warnings, 12 errors in 192.51s (0:03:12)
+Warnings with an allocation traceback: 555
+
+By file (innermost frame = where sqlite3.connect was called):
+    95  tests/test_fr13_password_management.py
+    63  tests/test_fr07_user_management.py
+    41  tests/test_nfr05_implementation.py
+    40  tests/test_fr10_attendance_search_filter.py
+    31  tests/test_fr11_attendance_alert.py
+    29  tests/test_fr12_implementation.py
+    28  tests/test_fr06_attendance_reporting.py
+    27  tests/test_fr01_authentication.py
+    22  tests/test_fr02_attendance_marking.py
+    22  tests/test_fr09_enrollment_validation.py
+    21  tests/test_fr05_attendance_viewing_extra.py
+    19  tests/test_fr04_percentage_test_plan_cases.py
+    18  tests/test_fr03_record_management.py
+    17  tests/test_nfr02_performance.py
+    15  tests/test_fr05_attendance_viewing.py
+    14  tests/test_nfr04_usability.py
+    13  tests/test_fr14_dashboard_summary.py
+     8  tests/test_nfr03_reliability.py
+     8  scripts/backup_db.py
+     7  tests/test_nfr06_maintainability.py
+     6  tests/test_fr01_session_expiry_and_auth_failure.py
+     4  tests/test_nfr05_browser_compatibility.py
+     3  tests/test_fr04_percentages.py
+     2  tests/test_sprint1_requirements.py
+     2  tests/test_foundation.py
+
+In app/: 0
+
+Note: the number of ResourceWarnings depends on when garbage collection runs. This traced run reported 566 warnings
+(554 ResourceWarning + 12 DeprecationWarning in pytest's warnings summary); 555 allocation tracebacks were printed because
+one extra unclosed connection was reported at session end inside another warning's text. The two measured coverage runs
+reported 567 (555 ResourceWarning + 12 DeprecationWarning). In every case 0 connections were opened in app/.
+Raw output: docs/evidence/coverage/resourcewarning_allocation_trace_output.txt

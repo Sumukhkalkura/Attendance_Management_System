@@ -1,0 +1,66 @@
+@startuml SAD_er_diagram
+!pragma layout smetana
+!include _style.iuml
+title Database ER Diagram - SQLite schema (app/db.py)
+hide circle
+skinparam linetype ortho
+
+entity "users" as users {
+  * id : INTEGER <<PK, AUTOINCREMENT>>
+  --
+  * username : TEXT <<UNIQUE>>
+  * password_hash : TEXT
+  * role : TEXT <<CHECK admin / teacher / student>>
+  * active : INTEGER <<DEFAULT 1>>
+}
+entity "classes" as classes {
+  * id : INTEGER <<PK>>
+  --
+  * name : TEXT <<UNIQUE>>
+  teacher_id : INTEGER <<FK users.id>>
+}
+entity "subjects" as subjects {
+  * id : INTEGER <<PK>>
+  --
+  * name : TEXT <<UNIQUE>>
+  teacher_id : INTEGER <<FK users.id>>
+}
+entity "class_subjects" as cs {
+  * class_id : INTEGER <<PK, FK classes.id, ON DELETE CASCADE>>
+  * subject_id : INTEGER <<PK, FK subjects.id, ON DELETE CASCADE>>
+}
+entity "enrollments" as enr {
+  * student_id : INTEGER <<PK, FK users.id>>
+  * class_id : INTEGER <<PK, FK classes.id>>
+  * subject_id : INTEGER <<PK, FK subjects.id>>
+}
+entity "attendance" as att {
+  * id : INTEGER <<PK>>
+  --
+  * student_id : INTEGER <<FK users.id>>
+  * subject_id : INTEGER <<FK subjects.id>>
+  * attendance_date : TEXT (YYYY-MM-DD)
+  * status : TEXT <<CHECK Present / Absent / Late>>
+  ..
+  UNIQUE (student_id, subject_id, attendance_date)
+}
+entity "settings" as settings {
+  * key : TEXT <<PK>>
+  --
+  * value : TEXT
+}
+
+users |o--o{ classes : "class teacher"
+users |o--o{ subjects : "subject teacher"
+classes ||--o{ cs
+subjects ||--o{ cs
+users ||--o{ enr : "student"
+classes ||--o{ enr
+subjects ||--o{ enr
+users ||--o{ att : "student"
+subjects ||--o{ att
+note bottom of settings
+  Holds attendance_threshold (FR-11).
+  No foreign keys.
+end note
+@enduml

@@ -1,0 +1,152 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.7, pytest-9.1.1, pluggy-1.7.0 -- /Users/sumukhkalkura/Attendance_Management_System/.venv/bin/python
+rootdir: /Users/sumukhkalkura/Attendance_Management_System
+plugins: cov-7.1.0
+collecting ... collected 7 items
+
+tests/test_nfr05_browser_compatibility.py::test_login_page_validation_and_role_redirect[chromium] PASSED [ 14%]
+tests/test_nfr05_browser_compatibility.py::test_teacher_marks_corrects_attendance_and_logs_out[chromium] PASSED [ 28%]
+tests/test_nfr05_browser_compatibility.py::test_student_views_own_attendance[chromium] PASSED [ 42%]
+tests/test_nfr05_browser_compatibility.py::test_admin_creates_user_through_dialog[chromium] PASSED [ 57%]
+tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[chromium-1280-800] PASSED [ 71%]
+tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[chromium-375-812] PASSED [ 85%]
+tests/test_nfr05_browser_compatibility.py::test_report_tested_browser_versions PASSED [100%]
+
+==================================== PASSES ====================================
+____________ test_login_page_validation_and_role_redirect[chromium] ____________
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:56] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:56] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:56] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /static/js/reports.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /api/attendance/alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /api/attendance/percentages HTTP/1.1" 200 -
+________ test_teacher_marks_corrects_attendance_and_logs_out[chromium] _________
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /static/js/reports.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /api/attendance/alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:57] "GET /api/roster?class_id=1&subject_id=1&attendance_date=2026-10-08 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:58] "[35m[1mPOST /api/attendance HTTP/1.1[0m" 201 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:58] "GET /api/roster?class_id=1&subject_id=1&attendance_date=2026-10-08 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:58] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:58] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:58] "GET /api/attendance HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:58] "GET /api/attendance?attendance_date=2026-10-08 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:58] "GET /api/attendance?attendance_date=2026-10-08 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:58] "PATCH /api/attendance/5 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:58] "GET /api/attendance?attendance_date=2026-10-08 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "POST /api/logout HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "[32mGET /teacher HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/js/login.js HTTP/1.1" 200 -
+_________________ test_student_views_own_attendance[chromium] __________________
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /student HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/js/student.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /api/attendance HTTP/1.1" 200 -
+_______________ test_admin_creates_user_through_dialog[chromium] _______________
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /admin HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/js/reports.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /static/js/admin.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /api/me HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /api/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /api/users HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /api/attendance/alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /api/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /api/classes/1/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /api/classes/2/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:35:59] "GET /api/users HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "[35m[1mPOST /api/users HTTP/1.1[0m" 201 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /api/users HTTP/1.1" 200 -
+_____ test_dashboard_layout_has_no_horizontal_overflow[chromium-1280-800] ______
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /static/js/reports.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /api/attendance/alerts HTTP/1.1" 200 -
+______ test_dashboard_layout_has_no_horizontal_overflow[chromium-375-812] ______
+------------------------------ Captured log call -------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:00] "GET /static/js/login.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "POST /api/login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /teacher HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /static/css/app.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /static/js/reports.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /static/js/common.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /static/js/teacher.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /api/attendance/percentages HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /api/teacher/classes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /api/attendance/alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /api/teacher/subjects HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /api/teacher/classes HTTP/1.1" 200 -
+---------------------------- Captured log teardown -----------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [17/Nov/2026 08:36:01] "GET /api/attendance/percentages HTTP/1.1" 200 -
+_____________________ test_report_tested_browser_versions ______________________
+----------------------------- Captured stdout call -----------------------------
+NFR-05 tested chromium: chromium 159.0.8154.6
+- generated xml file: /Users/sumukhkalkura/Attendance_Management_System/docs/evidence/regression/browsers/chromium_junit.xml -
+=========================== short test summary info ============================
+PASSED tests/test_nfr05_browser_compatibility.py::test_login_page_validation_and_role_redirect[chromium]
+PASSED tests/test_nfr05_browser_compatibility.py::test_teacher_marks_corrects_attendance_and_logs_out[chromium]
+PASSED tests/test_nfr05_browser_compatibility.py::test_student_views_own_attendance[chromium]
+PASSED tests/test_nfr05_browser_compatibility.py::test_admin_creates_user_through_dialog[chromium]
+PASSED tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[chromium-1280-800]
+PASSED tests/test_nfr05_browser_compatibility.py::test_dashboard_layout_has_no_horizontal_overflow[chromium-375-812]
+PASSED tests/test_nfr05_browser_compatibility.py::test_report_tested_browser_versions
+============================== 7 passed in 6.21s ===============================

@@ -1,0 +1,19 @@
+Firefox (Playwright build firefox-1555, Mozilla Firefox 157.0) - local launch diagnosis
+Date: 2026-11-11 (Asia/Kolkata)   Machine: macOS 27.0 arm64
+
+1. Install: first attempt failed (download failure, code=1); second attempt succeeded
+   (see playwright_install_log.txt).
+2. NFR-05 suite, NFR05_BROWSERS=firefox, inside the Claude Code command sandbox:
+   BrowserType.launch failed - "Could not find profile folder." (firefox_output_sandboxed.txt)
+3. Same, with TMPDIR moved to a writable scratch folder: same error.
+4. Same, outside the sandbox: same error (firefox_output.txt, firefox_junit.xml).
+5. Firefox binary started directly (no Playwright), outside the sandbox:
+     firefox --version                      -> "Mozilla Firefox 157.0"
+     firefox -no-remote -headless -profile <new empty dir> -screenshot ... about:blank
+                                            -> "Could not find profile folder." (no screenshot produced)
+
+Conclusion: the downloaded Firefox build cannot start a profile on this machine, independent
+of the application, the tests, Playwright and the sandbox. Firefox validation is therefore
+BLOCKED locally. No Firefox result is claimed.
+External information only (not executed by us): GitHub Actions runs the suite on
+ubuntu-latest with Playwright Firefox; the run on main HEAD dd96a2c (2026-11-02) reported success.

@@ -1,0 +1,35 @@
+@startuml UC1_admin_access
+!pragma layout smetana
+!include _style.iuml
+title Use Case Diagram 1 - Access and Administration
+left to right direction
+
+actor "Administrator" as Admin
+actor "User\n(any role)" as User
+actor "Teacher" as Teacher
+actor "Student" as Student
+
+rectangle "Attendance Management System" {
+  usecase "UC-08 Manage user accounts\nFR-07" as UC08
+  usecase "UC-09 Manage classes and subjects\nFR-08" as UC09
+  usecase "UC-10 Enroll students\nFR-09" as UC10
+  usecase "UC-17 Set alert threshold\n(API only, gap G-04)\nFR-11" as UC17
+  usecase "UC-01 Log in (role-based access)\nFR-01" as UC01
+  usecase "UC-14 Change password\nFR-13" as UC14
+  usecase "UC-15 View dashboard summary\nFR-14" as UC15
+  usecase "UC-16 Log out\nFR-15" as UC16
+}
+
+UC08 <-- Admin
+UC09 <-- Admin
+UC10 <-- Admin
+UC17 <-- Admin
+UC01 <-- User
+UC14 <-- User
+UC15 <-- User
+UC16 <-- User
+User <|-- Teacher
+User <|-- Student
+User <|-- Admin
+UC14 .> UC01 : <<include>>
+@enduml

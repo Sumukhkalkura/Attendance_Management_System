@@ -69,7 +69,7 @@ async function showOverview() {
         const attended = students.reduce((sum, s) => sum + s.classes_attended, 0);
         const total = students.reduce((sum, s) => sum + s.total_classes, 0);
 
-        $("#statOverall").textContent = total ? App.formatPercent(Math.round(attended / total * 1000) / 10) : "–";
+        $("#statOverall").textContent = total ? App.formatPercent(attended / total * 100) : "–";
         $("#statOverallSub").textContent = total ? `${attended} of ${total} marked classes` : "No attendance marked yet";
 
         const low = alertsData.alerts.slice(0, 8);
@@ -544,23 +544,34 @@ async function loadPercentages() {
     }
 }
 
+let recordRows = [];
+
+function renderRecords() {
+    const query = $("#recordSearch").value;
+    const rows = recordRows.filter((r) => matches(r.student_name, query));
+    $("#recordCount").textContent = `${rows.length} record(s) match the current filters.`;
+    fillRows($("#recordsTable"), 4, rows.map((r) => [
+        formatDate(r.attendance_date),
+        avatarCell(r.student_name),
+        r.subject_name,
+        App.statusBadge(r.status)
+    ]), "No attendance records", "No records match the current filters.");
+}
+
 async function loadRecords() {
     const params = new URLSearchParams();
     if ($("#recordSubject").value) params.set("subject_id", $("#recordSubject").value);
+    if ($("#recordClass").value) params.set("class_id", $("#recordClass").value);
     if ($("#recordDate").value) params.set("attendance_date", $("#recordDate").value);
+    if ($("#recordFrom").value) params.set("start_date", $("#recordFrom").value);
+    if ($("#recordTo").value) params.set("end_date", $("#recordTo").value);
     if ($("#recordStatus").value) params.set("status", $("#recordStatus").value);
 
     stateRow($("#recordsTable"), 4, "loading");
 
     try {
-        const { records } = await api(`/api/attendance?${params}`);
-        $("#recordCount").textContent = `${records.length} record(s) match the current filters.`;
-        fillRows($("#recordsTable"), 4, records.map((r) => [
-            formatDate(r.attendance_date),
-            avatarCell(r.student_name),
-            r.subject_name,
-            App.statusBadge(r.status)
-        ]), "No attendance records", "Records appear here once teachers mark attendance.");
+        recordRows = (await api(`/api/attendance?${params}`)).records;
+        renderRecords();
     } catch (error) {
         stateRow($("#recordsTable"), 4, "error", "Could not load records", error.message);
     }
@@ -570,21 +581,22 @@ async function showAttendance(firstVisit) {
     if (firstVisit) {
         $("#percentSearch").addEventListener("input", renderPercentages);
         $("#percentSubject").addEventListener("change", loadPercentages);
-        ["#recordSubject", "#recordDate", "#recordStatus"].forEach((id) =>
+        $("#recordSearch").addEventListener("input", renderRecords);
+        ["#recordSubject", "#recordClass", "#recordDate", "#recordFrom", "#recordTo", "#recordStatus"].forEach((id) =>
             $(id).addEventListener("change", loadRecords)
         );
         $("#recordClear").addEventListener("click", () => {
-            $("#recordSubject").value = "";
-            $("#recordDate").value = "";
-            $("#recordStatus").value = "";
+            ["#recordSearch", "#recordSubject", "#recordClass", "#recordDate", "#recordFrom", "#recordTo", "#recordStatus"]
+                .forEach((id) => { $(id).value = ""; });
             loadRecords();
         });
     }
 
     try {
-        await loadSubjects();
+        await Promise.all([loadSubjects(), loadClasses()]);
         fillSelect($("#percentSubject"), state.subjects, { placeholder: "All subjects" });
         fillSelect($("#recordSubject"), state.subjects, { placeholder: "All subjects" });
+        fillSelect($("#recordClass"), [...state.classes].sort(byName), { placeholder: "All classes" });
     } catch (error) {
         toast(error.message, "error");
     }
@@ -603,7 +615,20 @@ const sections = {
     classes: { title: "Classes", subtitle: "Create classes and choose the subjects they include.", show: showClasses },
     subjects: { title: "Subjects", subtitle: "Create subjects and assign their teachers.", show: showSubjects },
     enrollments: { title: "Enrollments", subtitle: "Enroll students into class subjects.", show: showEnrollments },
-    attendance: { title: "Attendance", subtitle: "Attendance percentages and records across all subjects.", show: showAttendance }
+    attendance: { title: "Attendance", subtitle: "Attendance percentages and records across all subjects.", show: showAttendance },
+    reports: Reports.setup({
+        subtitle: "Generate attendance reports by student, class, subject or date range and export them.",
+        loadOptions: async () => {
+            await Promise.all([loadUsers(), loadClasses(), loadSubjects()]);
+            return {
+                students: state.users.filter((u) => u.role === "student")
+                    .map((u) => ({ id: u.id, name: u.username }))
+                    .sort(byName),
+                classes: [...state.classes].sort(byName),
+                subjects: state.subjects
+            };
+        }
+    })
 };
 
 // Quick-action links on the overview open the matching "new" dialog.
